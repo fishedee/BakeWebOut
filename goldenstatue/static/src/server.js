@@ -8,5 +8,6 @@ var mvcServer = new MvcServer();
 mvcServer.setWebPackConfig(WebpackConfig);
 mvcServer.setRoute(route);
 mvcServer.setPort(3000);
+mvcServer.setStaticDir(__dirname+'/public');
 mvcServer.setDevelopment(true);
 mvcServer.run();

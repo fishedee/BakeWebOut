@@ -17,8 +17,5 @@ function asyncLoader(moduleLoader){
 }
 
 export default (
-	<Route path="/" getComponent={asyncLoader(AppController)}>
-		<IndexRoute getComponent={asyncLoader(IndexController)}/>
-		<Route path="play" getComponent={asyncLoader(PlayController)}/>
-	</Route>
+	<Route path="/" getComponent={asyncLoader(AppController)} />
 );
