@@ -72,7 +72,7 @@ var style = StyleSheet.create({
 });
 
 var styleTextImage = Immutable.fromJS([
-	{key:'styleChiffon', className:style.styleChiffon, ordinaryImage:'styleChiffon', selectImage:'styleChiffonSelect', isSelectImage:true},
+	{key:'styleChiffon', className:style.styleChiffon, ordinaryImage:'styleChiffon', selectImage:'styleChiffonSelect', isSelectImage:false},
 	{key:'styleMissCheese', className:style.styleMissCheese, ordinaryImage:'styleMissCheese', selectImage:'styleMissCheeseSelect', isSelectImage:false},
 	{key:'styleBenji', className:style.styleBenji, ordinaryImage:'styleBenji', selectImage:'styleBenjiSelect', isSelectImage:false},
 	{key:'styleCoco', className:style.styleCoco, ordinaryImage:'styleCoco', selectImage:'styleCocoSelect', isSelectImage:false},
@@ -107,8 +107,25 @@ export default Views.createClass({
 	getInitialState(){
 		return {
 			styleImageData:styleTextImage,
-			styleName:'styleChiffon',
+			titleId:1,
 		};
+	},
+	componentDidMount(){
+		var titleId = this.props.materialData.getIn(["component","titleId"]);
+		if(titleId != 0){
+			titleId = titleId;
+		}else{
+			titleId = this.state.titleId;
+		}
+		var newData = this.state.styleImageData;
+		for(var i=0; i!=newData.size; ++i){
+			newData=newData.setIn([i,'isSelectImage'],false);
+		}
+		newData=newData.setIn([titleId-1,'isSelectImage'],true);
+
+		this.setState({
+			styleImageData:newData,
+		});
 	},
 	selectClick(index){
 		var newData = this.state.styleImageData;
@@ -117,21 +134,22 @@ export default Views.createClass({
 				newData=newData.setIn([i,'isSelectImage'],false);
 			}
 			newData=newData.setIn([index,'isSelectImage'],true);
-			this.state.styleName = newData.getIn([index,'key']);
+			this.state.titleId = index+1;
 		}
 		this.setState({
 			styleImageData:newData,
-			styleName:this.state.styleName,
+			titleId:this.state.titleId,
 		});
 	},
 	changePage(pageName){
-		this.props.changePage(pageName,this.state.styleName);
+		this.props.changePage(pageName,this.state.titleId);
 	},
 	render(){
+		var data = this.props.materialData;
 		return (
 			<div className={style.dialogPage}>
 				<img className={style.imagePage} src='/img/styleSelectPage.png' />
-				<ClientImage className={style.headSculpture} src='http://image.hongbeibang.com/FneBp_v3aQEE2eI8DPWlbXmrFVKW' />
+				<ClientImage className={style.headSculpture} src={data.get("clientImage")!=""?data.get("clientImage"):null} />
 				<div className={style.styleList}>
 					<StyleImageList onClick={this.selectClick} styleTextImage = {this.state.styleImageData} />
 				</div>

@@ -1,8 +1,8 @@
 package puzzleactivity
 
 import (
-	. "../common"
 	. "github.com/fishedee/language"
+	. "goldenstatue/models/common"
 	"time"
 )
 
@@ -46,10 +46,9 @@ func (this *PuzzleActivityAoModel) SetComponentTitle(contentId int, loginClientI
 	PuzzleActivityComponentAo.SetTitle(contentId, loginClientId, titleId)
 }
 
-func (this *PuzzleActivityAoModel) AddComponentPuzzle(contentId int, clientId int, loginClientId int) {
+func (this *PuzzleActivityAoModel) AddComponentPuzzle(contentId int, clientId int, loginClientId int) ContentPuzzleActivityComponentPuzzle {
 	this.checkJoinTime(contentId)
-
-	PuzzleActivityComponentAo.AddPuzzle(contentId, clientId, loginClientId)
+	return PuzzleActivityComponentAo.AddPuzzle(contentId, clientId, loginClientId)
 }
 
 func (this *PuzzleActivityAoModel) SetComponentAddress(contentId int, clientId int, data ContentPuzzleActivityComponentAddress) {
@@ -62,19 +61,16 @@ func (this *PuzzleActivityAoModel) GetFinishComponent(contentId int, limit Commo
 
 func (this *PuzzleActivityAoModel) checkJoinTime(contentId int) {
 	activity := this.Get(contentId)
-	t := time.Now().Unix()
-	beginTime, err := time.Parse("2015-01-01 00:00:00", activity.BeginTime)
-	if err != nil {
-		panic(err)
+	if activity.BeginTime.IsZero() ||
+		activity.BeginTime.IsZero() {
+		return
 	}
-	endTime, err := time.Parse("2015-01-01 00:00:00", activity.EndTime)
-	if err != nil {
-		panic(err)
-	}
-	if beginTime.Unix() > t {
+	now := time.Now()
+
+	if now.Before(activity.BeginTime) {
 		Throw(1, "活动未开始！")
 	}
-	if endTime.Unix() < t {
+	if now.After(activity.EndTime) {
 		Throw(1, "活动已结束！")
 	}
 }

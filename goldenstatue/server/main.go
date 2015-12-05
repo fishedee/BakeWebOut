@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "./routers"
+	_ "goldenstatue/routers"
 	"github.com/astaxie/beego"
 )
 

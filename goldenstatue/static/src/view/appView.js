@@ -33,22 +33,29 @@ export default Views.createClass({
 			isScanningCodePage:false,
 			isWinningPage:false,
 			isInvitationPage:false,
-			isRulePage:this.props.isRulePage,
-			isDetailInfoPage:this.props.isDetailInfoPage,
-			isGetGiftPage:this.props.isGetGiftPage,
-			isThanksPage:this.props.isThanksPage,
-			styleName:'',
+			clickRulePage:false,
+			isRulePage:true,
+			isDonePage:true,
+			isDetailInfoPage:true,
+			isGetGiftPage:true,
+			isThanksPage:true,
+			//isRulePage:this.props.isRulePage,
+			//isDetailInfoPage:this.props.isDetailInfoPage,
+			//isGetGiftPage:this.props.isGetGiftPage,
+			//isThanksPage:this.props.isThanksPage,
 		};
 	},
-	changePage(pageName,styleName){
+	changePage(pageName,titleId){
 		this.setState({
-			isRulePage:false,
 			isStyleSelectPage:false,
 			isMakeCakeClick:false,
 			isSharePage:false,
 			isScanningCodePage:false,
 			isWinningPage:false,
 			isInvitationPage:false,
+			clickRulePage:false,
+			isRulePage:false,
+			isDonePage:false,
 			isDetailInfoPage:false,
 			isGetGiftPage:false,
 			isThanksPage:false,
@@ -56,13 +63,14 @@ export default Views.createClass({
 
 		if(pageName=='rulePage'){
 			this.setState({
-				isRulePage:true
+				clickRulePage:true,
 			});
 		}else if(pageName=='styleSelectPage'){
 			this.setState({
 				isStyleSelectPage:true
 			});
 		}else if(pageName=='congratulationPageOrLoginPage'){
+			asdf = await this.props.addComponentPuzzle();
 			this.setState({
 				isMakeCakeClick:true
 			});
@@ -87,14 +95,13 @@ export default Views.createClass({
 				isInvitationPage:true
 			});
 		}else if(pageName=='materialPage'){
-			this.setState({
-				styleName:styleName
-			});
+			this.props.setComponentTitle(titleId);
 		}
 	},
 	getCode(){
 	},
 	render(){
+		var materialData = this.props.materialData;
 		return (
 			<div className={style.body}>
 				<DocumentHead
@@ -110,11 +117,17 @@ export default Views.createClass({
 						{src:"/bundle.js"}
 					]} />
 
-				{this.state.isStyleSelectPage ? 
-					<StyleSelectPage changePage={this.changePage} />
-					:this.state.isWinningPage ?
-						<WinningPage changePage={this.changePage} />
-						:<MaterialPage changePage={this.changePage} isLoginClient={this.props.isLoginClient} styleName={this.state.styleName} />
+				{(materialData.getIn(["component","state"])!=undefined) ? 
+					this.state.isStyleSelectPage? 
+						<StyleSelectPage changePage={this.changePage} materialData={materialData} />
+						:this.state.isWinningPage ?
+							<WinningPage changePage={this.changePage} />
+							:<MaterialPage changePage={this.changePage} 
+								materialData={materialData}
+								state={materialData.getIn(["component","state"])}
+								isLoginClient={this.props.isLoginClient} />
+					
+					:null
 				}
 
 				{this.state.isMakeCakeClick ? 
@@ -136,28 +149,28 @@ export default Views.createClass({
 					:null
 				}
 
-				{this.state.isDetailInfoPage ?
+				{this.state.clickRulePage || (this.props.isLoginClient && this.state.isRulePage && (materialData.getIn(["component","state"])==1)) ?
+					<RulePage changePage={this.changePage} />
+					:null
+				}
+
+				{this.props.isLoginClient && this.state.isDetailInfoPage && (materialData.getIn(["component","state"])==3) ?
 					<DetailInfoPage changePage={this.changePage} data={this.props.data} />
 					:null
 				}
 
-				{this.state.isGetGiftPage ?
+				{this.props.isLoginClient && this.state.isGetGiftPage && (materialData.getIn(["component","state"])==4) ?
 					<GetGiftPage changePage={this.changePage} />
 					:null
 				}
 
-				{this.state.isInvitationPage ?
+				{this.state.isInvitationPage || (this.props.isLoginClient && this.state.isDonePage && (materialData.getIn(["component","state"])==5)) ?
 					<InvitationPage changePage={this.changePage} />
 					:null
 				}
 
-				{this.state.isThanksPage ?
+				{!this.props.isLoginClient && this.state.isThanksPage && ((materialData.getIn(["component","state"])==4) || (materialData.getIn(["component","state"])==5)) ?
 					<ThanksPage changePage={this.changePage} />
-					:null
-				}
-
-				{this.state.isRulePage ?
-					<RulePage changePage={this.changePage} />
 					:null
 				}
 			</div>

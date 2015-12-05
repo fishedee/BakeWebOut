@@ -35,6 +35,8 @@ func (this *BaseController) AutoRender(returnValue interface{}, viewname string)
 		result.Data = returnValue
 		result.Msg = ""
 	}
+	this.Ctx.Output.Header("Access-Control-Allow-Origin", this.Ctx.Input.Header("Origin"))
+	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
 	if viewname == "json" {
 		resultString, err := EncodeJson(result)
 		if err != nil {

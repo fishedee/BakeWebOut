@@ -1,7 +1,7 @@
 package client
 
 import (
-	. "../common"
+	. "goldenstatue/models/common"
 	. "github.com/fishedee/language"
 	. "github.com/fishedee/web"
 	"strconv"

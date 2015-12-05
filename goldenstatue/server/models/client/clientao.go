@@ -1,7 +1,7 @@
 package client
 
 import (
-	. "../common"
+	. "goldenstatue/models/common"
 )
 
 type ClientAoModel struct {

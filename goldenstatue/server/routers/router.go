@@ -1,9 +1,11 @@
 package routers
 
 import (
-	. "../controllers"
+	. "goldenstatue/controllers"
 )
 
 func init() {
 	InitRoute("/puzzleactivity", &PuzzleActivityController{})
+	InitRoute("/user", &UserController{})
+	InitRoute("/client", &ClientController{})
 }

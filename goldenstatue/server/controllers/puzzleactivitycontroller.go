@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	. "../models/client"
-	. "../models/common"
-	. "../models/puzzleactivity"
-	. "../models/user"
+	. "goldenstatue/models/client"
+	. "goldenstatue/models/common"
+	. "goldenstatue/models/puzzleactivity"
+	. "goldenstatue/models/user"
 )
 
 type PuzzleActivityController struct {
@@ -98,9 +98,7 @@ func (this *PuzzleActivityController) GetComponentInfo_Json() PuzzleActivityComp
 	//业务逻辑
 	clientId := where.ClientId
 	contentId := where.ContentId
-	// fix me
-	clientId = 10001
-	contentId = 10001
+
 	return PuzzleActivityAo.GetComponentInfo(contentId, clientId, client.ClientId)
 }
 
@@ -108,7 +106,7 @@ func (this *PuzzleActivityController) GetComponentInfo_Json() PuzzleActivityComp
 func (this *PuzzleActivityController) SetComponentTitle_Json() {
 	//检查输入
 	where := ContentPuzzleActivityComponent{}
-	this.CheckGet(&where)
+	this.CheckPost(&where)
 
 	//检查权限
 	client := ClientLoginAo.CheckMustLogin(this.Ctx)
@@ -118,19 +116,19 @@ func (this *PuzzleActivityController) SetComponentTitle_Json() {
 }
 
 //获得一块材料
-func (this *PuzzleActivityController) AddComponentPuzzle_Json() {
+func (this *PuzzleActivityController) AddComponentPuzzle_Json() ContentPuzzleActivityComponentPuzzle {
 	//检查输入
 	var where struct {
 		ContentId int
 		ClientId  int
 	}
-	this.CheckGet(&where)
+	this.CheckPost(&where)
 
 	//检查权限
 	client := ClientLoginAo.CheckMustLogin(this.Ctx)
 
 	//业务逻辑
-	PuzzleActivityAo.AddComponentPuzzle(where.ContentId, where.ClientId, client.ClientId)
+	return PuzzleActivityAo.AddComponentPuzzle(where.ContentId, where.ClientId, client.ClientId)
 }
 
 //记录收获信息

@@ -133,6 +133,14 @@ export default Views.createClass({
 				radioWrap.scrollLeft++;
 			}
 		},30);
+
+		
+		if(!this.props.isLoginClient && (this.props.state==1)){
+			alert('好友还没开始游戏呢,你也来制作一个蛋糕吧!');
+			this.changePage('rulePage');
+		}
+		
+		
 	},
 	componentWillUnMount(){
 		clearInterval(this.timer);
@@ -141,55 +149,70 @@ export default Views.createClass({
 		this.props.changePage(pageName);
 	},
 	render(){
+		var data = this.props.materialData;
 
-		switch(this.props.styleName){
-			case 'styleChiffon' : 
-				var styleName = 'nameChiffon.png';
-				var styleTitle = 'titleChiffon.png';
+		switch(data.getIn(["component","titleId"])){
+			case 0 : 
+				var styleName = null;
+				var styleTitle = null;
 				break;
-			case 'styleMissCheese' :
-				var styleName = 'nameMissCheese.png';
-				var styleTitle = 'titleMissCheese.png';
+			case 1 : 
+				var styleName = '/img/nameChiffon.png';
+				var styleTitle = '/img/titleChiffon.png';
 				break;
-			case 'styleBenji' :
-				var styleName = 'nameBenji.png';
-				var styleTitle = 'titleBenji.png';
+			case 2 :
+				var styleName = '/img/nameMissCheese.png';
+				var styleTitle = '/img/titleMissCheese.png';
 				break;
-			case 'styleCoco' :
-				var styleName = 'nameCoco.png';
-				var styleTitle = 'titleCoco.png';
+			case 3 :
+				var styleName = '/img/nameBenji.png';
+				var styleTitle = '/img/titleBenji.png';
 				break;
-			case 'styleCheese' :
-				var styleName = 'nameCheese.png';
-				var styleTitle = 'titleCheese.png';
+			case 4 :
+				var styleName = '/img/nameCoco.png';
+				var styleTitle = '/img/titleCoco.png';
 				break;
-			case 'styleMousse' :
-				var styleName = 'nameMousse.png';
-				var styleTitle = 'titleMousse.png';
+			case 5 :
+				var styleName = '/img/nameCheese.png';
+				var styleTitle = '/img/titleCheese.png';
+				break;
+			case 6 :
+				var styleName = '/img/nameMousse.png';
+				var styleTitle = '/img/titleMousse.png';
 				break;
 			default :
 				break;
 		}
-
-		var newData = materialData.map(function(e){
+		var newData = materialData.map(function(e,i){
+			var puzzle = data.getIn(["puzzle",i]);
+			if(!puzzle){
+				var image = e.get("ordinaryImage");
+			}else{
+				var image = e.get("selectImage");
+			}
 			return (
 				<img key={e.get("key")} 
 					className={classnames(style.materialImage,e.get("className"))} 
-					src={'/img/'+e.get("ordinaryImage")+'.png'} />
+					src={'/img/'+image+'.png'} />
 			);
 		});
+		if(this.props.isLoginClient && (data.getIn(["component","state"])==3)){
+			var makeCakeClickLink = 'sharePage';
+		}else{
+			var makeCakeClickLink = 'congratulationPageOrLoginPage';
+		}
 		return (
 			<div>
 
 				<img className={style.imagePage} src='/img/materialPage.png' />
 				<div className={style.btnActivityRule} onClick={this.changePage.bind(null,'rulePage')}></div>
-				<ClientImage className={style.headSculpture} src='http://image.hongbeibang.com/FneBp_v3aQEE2eI8DPWlbXmrFVKW' />
+				<ClientImage className={style.headSculpture} src={data.get("clientImage")!=""?data.get("clientImage"):null} />
 				<div className={style.name}>
-					<img className={style.image} src={'/img/'+styleName} />
-					<div className={style.clientName}>NickNickNick</div>
+					<img className={style.image} src={styleName} />
+					<div className={style.clientName}>{data.get("clientName")!=""?data.get("clientName"):null}</div>
 				</div>
 				<div className={style.nameTitle}>
-					<img className={style.image} src={'/img/'+styleTitle} />
+					<img className={style.image} src={styleTitle} />
 				</div>
 				<div className={style.materialBox}>
 					{newData}
@@ -197,7 +220,7 @@ export default Views.createClass({
 				<div className={style.btnMakeCakeOrHelpPeople}>
 					<img className={style.image} 
 						src={this.props.isLoginClient ? '/img/btnMakeCake.png' : '/img/btnHelpPeople.png'} 
-						onClick={this.changePage.bind(null,'congratulationPageOrLoginPage')} />
+						onClick={this.changePage.bind(null,makeCakeClickLink)} />
 				</div>
 				<div className={style.radioWrap} ref='radioWrap'>
 					<span className={style.radio} ref='radio'>{'嘭～小伙伴XXX烘焙出了戚风蛋糕！！！'}</span>

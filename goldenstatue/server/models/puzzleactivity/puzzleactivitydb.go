@@ -1,9 +1,9 @@
 package puzzleactivity
 
 import (
-	. "../common"
 	. "github.com/fishedee/language"
 	. "github.com/fishedee/web"
+	. "goldenstatue/models/common"
 	"strconv"
 )
 
@@ -26,11 +26,11 @@ func (this *ContentPuzzleActivityDbModel) Search(puzzleActivity ContentPuzzleAct
 	if puzzleActivity.Title != "" {
 		db = db.Where("title like ?", "%"+puzzleActivity.Title+"%")
 	}
-	if puzzleActivity.BeginTime != "" {
-		db = db.Where("beginTime >= ", puzzleActivity.BeginTime+" 00:00:00")
+	if puzzleActivity.BeginTime.IsZero() == false {
+		db = db.Where("beginTime >= ?", puzzleActivity.BeginTime)
 	}
-	if puzzleActivity.EndTime != "" {
-		db = db.Where("endTime <= ", puzzleActivity.EndTime+" 00:00:00")
+	if puzzleActivity.EndTime.IsZero() == false {
+		db = db.Where("endTime <= ?", puzzleActivity.EndTime)
 	}
 
 	data := []ContentPuzzleActivity{}

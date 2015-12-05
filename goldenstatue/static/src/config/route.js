@@ -1,6 +1,4 @@
 import AppController from '../controller/appController';
-import IndexController from '../controller/indexController';
-import PlayController from '../controller/playController';
 import {Route,IndexRoute} from 'fishfront/react/react-mvc';
 import Env from 'fishfront/runtime/env';
 

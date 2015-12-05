@@ -1,2 +1,4 @@
 /goldenstatue/server/server
 /goldenstatue/data/golog/*
+/goldenstatue/server/nohup.out
+/goldenstatue/server/goldenstatue

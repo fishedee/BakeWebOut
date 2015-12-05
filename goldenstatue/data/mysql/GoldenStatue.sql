@@ -87,17 +87,23 @@ alter table t_content_puzzle_activity_component_address add index contentPuzzleA
 
 #初始数据
 insert into t_user(userId, name, password, type)values
-(10001, 'fish', '6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9', 1);
+(10001, 'fish', sha1('123'), 1);
 
 insert into t_client(clientId, name, image, openId)values
-(10001, 'fish', 'http://image.hongbeibang.com/FnOs-rk9erEuSVo0abmlGs7CD_Qz?460X460', '');
+(10001, 'fish', 'http://image.hongbeibang.com/FnOs-rk9erEuSVo0abmlGs7CD_Qz?460X460', '1'),
+(10002, 'jd', 'http://image.hongbeibang.com/FnOs-rk9erEuSVo0abmlGs7CD_Qz?460X460', '2'),
+(10003, 'doing', 'http://image.hongbeibang.com/FnOs-rk9erEuSVo0abmlGs7CD_Qz?460X460', '3'),
+(10004, 'winmay', 'http://image.hongbeibang.com/FnOs-rk9erEuSVo0abmlGs7CD_Qz?460X460', '4');
 
 insert into t_content_puzzle_activity(contentId, title, beginTime, endTime)values
 (10001, '拼图游戏', now(), DATE_ADD(now(), INTERVAL 2 DAY));
 
-insert into t_content_puzzle_activity_component(contentPuzzleActivityComponentId, contentId, clientId, titleId,state)values
-(10001, 10001, 10001, 1, 1);
+#insert into t_content_puzzle_activity_component(contentPuzzleActivityComponentId, contentId, clientId, titleId,state)values
+#(10001, 10001, 10001, 1, 1);
 
 select * from t_user;
 select * from t_client;
 select * from t_content_puzzle_activity;
+select * from t_content_puzzle_activity_component;
+select * from t_content_puzzle_activity_component_puzzle;
+select * from t_content_puzzle_activity_component_address;

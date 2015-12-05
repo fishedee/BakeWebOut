@@ -1,9 +1,9 @@
 package puzzleactivity
 
 import (
-	. "../common"
 	. "github.com/fishedee/language"
 	. "github.com/fishedee/web"
+	. "goldenstatue/models/common"
 	"strconv"
 )
 
@@ -38,18 +38,19 @@ func (this *PuzzleActivityComponentDbModel) GetFinishByContentId(contentId int, 
 
 	var puzzleActivityComponents []ContentPuzzleActivityComponent
 	db = db.Where("contentId = ? and state = ? or state = ?", contentId, 3, 4)
-	err := db.OrderBy("createTime desc").Limit(limit.PageSize, limit.PageIndex).Find(puzzleActivityComponents)
+	err := db.OrderBy("createTime asc").Limit(limit.PageSize, limit.PageIndex).Find(puzzleActivityComponents)
 	if err != nil {
 		panic(err)
 	}
 	return puzzleActivityComponents
 }
 
-func (this *PuzzleActivityComponentDbModel) Add(puzzleActivityComponent ContentPuzzleActivityComponent) {
+func (this *PuzzleActivityComponentDbModel) Add(puzzleActivityComponent ContentPuzzleActivityComponent) ContentPuzzleActivityComponent {
 	_, err := DB.Insert(&puzzleActivityComponent)
 	if err != nil {
 		panic(err)
 	}
+	return puzzleActivityComponent
 }
 
 func (this *PuzzleActivityComponentDbModel) Mod(id int, puzzleActivityComponent ContentPuzzleActivityComponent) {

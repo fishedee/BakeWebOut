@@ -1,10 +1,9 @@
 package puzzleactivity
 
 import (
-	. "../client"
-	. "../common"
 	. "github.com/fishedee/language"
-	"math/rand"
+	. "goldenstatue/models/client"
+	. "goldenstatue/models/common"
 )
 
 type PuzzleActivityComponentAoModel struct {
@@ -30,28 +29,31 @@ var PuzzleActivityComponentAo = &PuzzleActivityComponentAoModel{}
 func (this *PuzzleActivityComponentAoModel) Get(contentId int, clientId int, loginClientId int) PuzzleActivityComponentInfo {
 	result := PuzzleActivityComponentInfo{}
 
+	//用户信息
+	client := ClientAo.Get(clientId)
+	result.ClientName = client.Name
+	result.ClientImage = client.Image
+
 	//参赛信息
 	componentInfo := PuzzleActivityComponentDb.GetByContentIdAndClientId(contentId, clientId)
 	if len(componentInfo) == 0 {
+		data := ContentPuzzleActivityComponent{
+			ContentId: contentId,
+			ClientId:  clientId,
+			TitleId:   0,
+			State:     PuzzleActivityComponentStateEnum.WALK,
+		}
+		data = PuzzleActivityComponentDb.Add(data)
+		result.Component = data
+		result.IsPuzzle = false
 		return result
 	}
 	componentId := componentInfo[0].ContentPuzzleActivityComponentId
 	result.Component = componentInfo[0]
 
 	//登录用户是否为参赛用户点亮
-	var isPuzzle bool
-	clientPuzzleInfo := PuzzleActivityComponentPuzzleDb.GetByComponentIdAndClientId(componentId, loginClientId)
-	if len(clientPuzzleInfo) == 0 {
-		isPuzzle = false
-	} else {
-		isPuzzle = true
-	}
+	isPuzzle := this.checkPuzzle(componentId, loginClientId)
 	result.IsPuzzle = isPuzzle
-
-	//用户信息
-	client := ClientAo.Get(clientId)
-	result.ClientName = client.Name
-	result.ClientImage = client.Image
 
 	//参赛者已成功获得的材料
 	var puzzle [6]bool
@@ -92,26 +94,22 @@ func (this *PuzzleActivityComponentAoModel) Get(contentId int, clientId int, log
 
 func (this *PuzzleActivityComponentAoModel) SetTitle(contentId int, clientId int, titleId int) {
 	//检查是否已参加
-	this.checkJoinClient(contentId, clientId)
+	componentInfo := PuzzleActivityComponentDb.GetByContentIdAndClientId(contentId, clientId)
+	if len(componentInfo) == 0 {
+		Throw(1, "该用户未参与活动")
+	}
+	singleComponentInfo := componentInfo[0]
+	componentId := singleComponentInfo.ContentPuzzleActivityComponentId
 
 	//参加
 	puzzleActivityComponent := ContentPuzzleActivityComponent{
-		ContentId: contentId,
-		ClientId:  clientId,
-		TitleId:   titleId,
-		State:     PuzzleActivityComponentStateEnum.NO_BEGIN,
+		TitleId: titleId,
+		State:   PuzzleActivityComponentStateEnum.NO_BEGIN,
 	}
-	PuzzleActivityComponentDb.Add(puzzleActivityComponent)
+	PuzzleActivityComponentDb.Mod(componentId, puzzleActivityComponent)
 }
 
-func (this *PuzzleActivityComponentAoModel) checkJoinClient(contentId int, clientId int) {
-	componentInfo := PuzzleActivityComponentDb.GetByContentIdAndClientId(contentId, clientId)
-	if len(componentInfo) != 0 {
-		Throw(1, "你已参加该活动！")
-	}
-}
-
-func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId int, loginClientId int) {
+func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId int, loginClientId int) ContentPuzzleActivityComponentPuzzle {
 	//检查状态
 	componentInfo := this.getComponent(contentId, clientId)
 	componentId := componentInfo.ContentPuzzleActivityComponentId
@@ -127,32 +125,25 @@ func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId in
 		}
 	}
 
-	//生成拼图
-	puzzleId := this.makePuzzle()
-
-	//检查拼图是否已存在
-	var valid int
-	isFirst := this.checkFirstPuzzle(componentId, puzzleId)
-	if isFirst == true {
-		valid = PuzzleActivityComponentPuzzleEnum.SUCCESS
-	} else {
-		valid = PuzzleActivityComponentPuzzleEnum.FAIL
+	//检查是否已点亮
+	isPuzzle := this.checkPuzzle(componentId, loginClientId)
+	if isPuzzle == true {
+		Throw(1, "你已为该用户点亮过了！")
 	}
 
-	//检查是否已完成, 完成则切换状态
-	isFinish := false
-	if valid == PuzzleActivityComponentPuzzleEnum.SUCCESS {
-		isFinish = this.checkFinish(componentId)
-	}
-
-	//记录拼图
 	data := ContentPuzzleActivityComponentPuzzle{
 		ContentPuzzleActivityComponentId: componentId,
 		PuzzleClientId:                   loginClientId,
-		PuzzleId:                         puzzleId,
-		Type:                             valid,
 	}
-	PuzzleActivityComponentPuzzleDb.Add(data, isFinish)
+	return PuzzleActivityComponentPuzzleDb.Add(data)
+}
+
+func (this *PuzzleActivityComponentAoModel) checkPuzzle(componentId int, clientId int) bool {
+	data := PuzzleActivityComponentPuzzleDb.GetByComponentIdAndClientId(componentId, clientId)
+	if len(data) != 0 {
+		return true
+	}
+	return false
 }
 
 func (this *PuzzleActivityComponentAoModel) getComponent(contentId int, clientId int) ContentPuzzleActivityComponent {
@@ -161,42 +152,6 @@ func (this *PuzzleActivityComponentAoModel) getComponent(contentId int, clientId
 		panic("该用户未参加活动!")
 	}
 	return componentInfo[0]
-}
-
-func (this *PuzzleActivityComponentAoModel) makePuzzle() int {
-	var result int
-	num := rand.Intn(5)
-	switch num {
-	case 0:
-		result = 1
-	case 1:
-		result = 2
-	case 2:
-		result = 3
-	case 3:
-		result = 4
-	case 4:
-		result = 5
-	case 5:
-		result = 6
-	}
-	return result
-}
-
-func (this *PuzzleActivityComponentAoModel) checkFirstPuzzle(componentId int, puzzleId int) bool {
-	puzzleInfo := PuzzleActivityComponentPuzzleDb.GetByComponentIdAndPuzzleId(componentId, puzzleId)
-	if len(puzzleInfo) == 0 {
-		return true
-	}
-	return false
-}
-
-func (this *PuzzleActivityComponentAoModel) checkFinish(componentId int) bool {
-	successInfo := PuzzleActivityComponentPuzzleDb.GetSuccessByComponentId(componentId)
-	if len(successInfo) == 5 {
-		return true
-	}
-	return false
 }
 
 func (this *PuzzleActivityComponentAoModel) SetAddress(contentId int, clientId int, data ContentPuzzleActivityComponentAddress) {

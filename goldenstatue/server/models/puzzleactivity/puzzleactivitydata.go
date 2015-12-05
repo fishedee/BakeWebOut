@@ -6,10 +6,10 @@ import (
 
 //	t_content_puzzle_activity
 type ContentPuzzleActivity struct {
-	ContentId  int
+	ContentId  int `xorm:"autoincr"`
 	Title      string
-	BeginTime  string
-	EndTime    string
+	BeginTime  time.Time
+	EndTime    time.Time
 	CreateTime time.Time `xorm:"created"`
 	ModifyTime time.Time `xorm:"updated"`
 }
@@ -21,7 +21,7 @@ type PuzzleActivitys struct {
 
 //	t_content_puzzle_activity_component
 type ContentPuzzleActivityComponent struct {
-	ContentPuzzleActivityComponentId int
+	ContentPuzzleActivityComponentId int `xorm:"autoincr"`
 	ContentId                        int
 	ClientId                         int
 	TitleId                          int
@@ -32,7 +32,7 @@ type ContentPuzzleActivityComponent struct {
 
 //	t_content_puzzle_activity_component_puzzle
 type ContentPuzzleActivityComponentPuzzle struct {
-	ContentPuzzleActivityComponentPuzzleId int
+	ContentPuzzleActivityComponentPuzzleId int `xorm:"autoincr"`
 	ContentPuzzleActivityComponentId       int
 	PuzzleClientId                         int
 	PuzzleId                               int
@@ -43,7 +43,7 @@ type ContentPuzzleActivityComponentPuzzle struct {
 
 //	t_content_puzzle_activity_component_address
 type ContentPuzzleActivityComponentAddress struct {
-	ContentPuzzleActivityComponentAddressId int
+	ContentPuzzleActivityComponentAddressId int `xorm:"autoincr"`
 	ContentPuzzleActivityComponentId        int
 	Name                                    string
 	Address                                 string
