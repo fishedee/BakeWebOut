@@ -1,0 +1,15 @@
+server {
+	listen 80;
+	root /var/www/BakeWebOut/;
+	server_name api.goldenstatue.hongbeibang.com api.goldenstatue.test2.hongbeibang.com;
+
+	location ~ \.(html|css|js|map|jpg|jpeg|png|gif|mp3|midi|swf|ico|json) {
+		try_files $uri =404;
+	}
+
+	location / {
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_pass http://localhost:8080;
+	}
+}
