@@ -141,8 +141,9 @@ export default Views.createClass({
 			titleId:this.state.titleId,
 		});
 	},
-	changePage(pageName){
-		this.props.changePage(pageName,this.state.titleId);
+	selectStyle(){
+		this.props.changePage();
+		this.props.selectStyle(this.state.titleId);
 	},
 	render(){
 		var data = this.props.materialData;
@@ -153,7 +154,7 @@ export default Views.createClass({
 				<div className={style.styleList}>
 					<StyleImageList onClick={this.selectClick} styleTextImage = {this.state.styleImageData} />
 				</div>
-				<div className={style.btnEnsure} onClick={this.changePage.bind(null,'materialPage')}></div>
+				<div className={style.btnEnsure} onClick={this.selectStyle}></div>
 			</div>
 		);
 	}

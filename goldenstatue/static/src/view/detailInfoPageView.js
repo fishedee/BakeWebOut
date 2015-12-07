@@ -77,13 +77,40 @@ export default Views.createClass({
 		this.props.changePage();
 	},
 	render(){
-		var data = this.props.data.map(function(e,i){
+		var data = this.props.materialData.get("allPuzzle").map(function(e,i){
+			switch(e.get("puzzleId")){
+				case 1 : 
+					var materialName = '面粉';
+					break;
+				case 2 :
+					var materialName = '鸡蛋';
+					break;
+				case 3 :
+					var materialName = '牛奶';
+					break;
+				case 4 :
+					var materialName = '糖分';
+					break;
+				case 5 :
+					var materialName = '油';
+					break;
+				case 6 :
+					var materialName = '烤箱';
+					break;
+				default :
+					break;
+			}
+			if(e.get("type")==1){
+				var successOrNot = '成功';
+			}else{
+				var successOrNot = '失败';
+			}
 			return (
 				<div key={'detail'+i} className={style.detailWrap}>
 					<ClientImage className={style.headSculpture} src={e.get("clientImage")} />
 					<div className={style.placeholder}></div>
 					<div className={style.info}>
-						{e.get("clientName")+'帮你收集'+e.get("material")+'成功'}
+						{e.get("clientName")+'帮你收集'+materialName+successOrNot}
 					</div>
 				</div>
 			);

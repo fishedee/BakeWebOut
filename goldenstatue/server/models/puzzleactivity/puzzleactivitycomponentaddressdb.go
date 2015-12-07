@@ -1,6 +1,7 @@
 package puzzleactivity
 
 import (
+	. "github.com/fishedee/language"
 	. "github.com/fishedee/web"
 )
 
@@ -32,4 +33,16 @@ func (this *PuzzleActivityComponentAddressDbModel) Add(data ContentPuzzleActivit
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (this *PuzzleActivityComponentAddressDbModel) GetByComponentId(componentId int) ContentPuzzleActivityComponentAddress {
+	var results []ContentPuzzleActivityComponentAddress
+	err := DB.Where("contentPuzzleActivityComponentId = ?", componentId).Find(&results)
+	if err != nil {
+		panic(err)
+	}
+	if len(results) == 0 {
+		Throw(1, "该用户未填写收货地址！")
+	}
+	return results[0]
 }

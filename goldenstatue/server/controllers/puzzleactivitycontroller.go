@@ -83,8 +83,66 @@ func (this *PuzzleActivityController) Del_Json() {
 	PuzzleActivityAo.Del(data.ContentId)
 }
 
+func (this *PuzzleActivityController) SearchComponent_Json() PuzzleActivityComponentWithClientInfos {
+	//检查输入
+	where := ContentPuzzleActivityComponent{}
+	this.CheckGet(&where)
+
+	limit := CommonPage{}
+	this.CheckGet(&limit)
+
+	//检查权限
+	UserLoginAo.CheckMustLogin(this.Ctx)
+
+	//业务逻辑
+	return PuzzleActivityAo.SearchComponent(where, limit)
+}
+
+func (this *PuzzleActivityController) GetComponentAddress_Json() ContentPuzzleActivityComponentAddress {
+	//检查输入
+	where := ContentPuzzleActivityComponentAddress{}
+	this.CheckGet(&where)
+
+	//检查权限
+	UserLoginAo.CheckMustLogin(this.Ctx)
+
+	//业务逻辑
+	return PuzzleActivityAo.GetComponentAddress(where.ContentPuzzleActivityComponentId)
+}
+
+func (this *PuzzleActivityController) SearchComponentPuzzle_Json() PuzzleActivityComponentPuzzleWithClientInfos {
+	//检查输入
+	where := ContentPuzzleActivityComponentPuzzle{}
+	this.CheckGet(&where)
+
+	limit := CommonPage{}
+	this.CheckGet(&limit)
+
+	//检查权限
+	UserLoginAo.CheckMustLogin(this.Ctx)
+
+	//业务逻辑
+	return PuzzleActivityAo.SearchComponentPuzzle(where, limit)
+}
+
+func (this *PuzzleActivityController) GetTitles_Json() interface{} {
+	return PuzzleActivityTitleEnum.Names()
+}
+
+func (this *PuzzleActivityController) GetStates_Json() interface{} {
+	return PuzzleActivityComponentStateEnum.Names()
+}
+
+func (this *PuzzleActivityController) GetTypes_Json() interface{} {
+	return PuzzleActivityComponentPuzzleEnum.Names()
+}
+
+func (this *PuzzleActivityController) GetPuzzles_Json() interface{} {
+	return PuzzleActivityPuzzleEnum.Names()
+}
+
 //获得指定用户参赛信息
-func (this *PuzzleActivityController) GetComponentInfo_Json() PuzzleActivityComponentInfo {
+func (this *PuzzleActivityController) GetComponentInfo_Json() interface{} {
 	//检查输入
 	var where struct {
 		ContentId int
@@ -99,7 +157,14 @@ func (this *PuzzleActivityController) GetComponentInfo_Json() PuzzleActivityComp
 	clientId := where.ClientId
 	contentId := where.ContentId
 
-	return PuzzleActivityAo.GetComponentInfo(contentId, clientId, client.ClientId)
+	isLoginClient := false
+	if clientId == client.ClientId {
+		isLoginClient = true
+	}
+	puzzleActivityComponentInfo := PuzzleActivityAo.GetComponentInfo(contentId, clientId, client.ClientId)
+	puzzleActivityComponentInfo.IsLoginClient = isLoginClient
+
+	return puzzleActivityComponentInfo
 }
 
 //参与活动并设置头衔
@@ -149,7 +214,7 @@ func (this *PuzzleActivityController) SetComponentAddress_Json() {
 }
 
 //获得活动获奖名单
-func (this *PuzzleActivityController) GetFinishComponent_Json() []ContentPuzzleActivityComponent {
+func (this *PuzzleActivityController) GetFinishComponent_Json() []ContentPuzzleActivityComponentWithClientInfo {
 	//检查输入
 	var where struct {
 		ContentId int

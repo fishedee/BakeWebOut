@@ -44,18 +44,58 @@ var style = StyleSheet.create({
 	},
 });
 
+var Input = React.createClass({
+	render(){
+		var inputData = this.props.data.map(function(e){
+			return (
+				<input key={e.get("key")} type='text' className={classnames(e.get("className"),style.input)} onChange={e.get("onChange")} autoFocus={e.get("autoFocus")} />
+			)
+		});
+		return (
+			<div>
+				{inputData}
+			</div>
+		)
+	}
+});
+
 export default Views.createClass({
-	changePage(pageName){
-		this.props.changePage(pageName);
+	getInitialState(){
+		return {
+			name:'',
+			phoneNumber:'',
+			address:'',
+		};
+	},
+	onChange(key,event){
+		if(key == 'name'){
+			this.setState({
+				name:event.target.value
+			});
+		}else if(key == 'phoneNumber'){
+			this.setState({
+				phoneNumber:event.target.value
+			});
+		}else if(key == 'address'){
+			this.setState({
+				address:event.target.value
+			});
+		}
+	},
+	signInfo(){
+		this.props.changePage();
+		this.props.signInfo(this.state.name,this.state.phoneNumber,this.state.address);
 	},
 	render(){
 		return (
 			<div className={style.dialogPage}>
 				<img className={style.imagePage} src='/img/winningPage.png' />
-				<input type='text' className={classnames(style.winningName,style.input)} autoFocus />
-				<input type='text' className={classnames(style.winningPhoneNum,style.input)} />
-				<input type='text' className={classnames(style.winningAddress,style.input)} />
-				<div className={style.btnEnsure} onClick={this.changePage.bind(null,'invitationPage')}></div>
+				<Input data={Immutable.fromJS([
+						{key:'name',className:style.winningName,onChange:this.onChange.bind(null,'name'),autoFocus:true},
+						{key:'phoneNumber',className:style.winningPhoneNum,onChange:this.onChange.bind(null,'phoneNumber'),autoFocus:false},
+						{key:'address',className:style.winningAddress,onChange:this.onChange.bind(null,'address'),autoFocus:false},
+					])} />
+				<div className={style.btnEnsure} onClick={this.signInfo}></div>
 			</div>
 		);
 	}

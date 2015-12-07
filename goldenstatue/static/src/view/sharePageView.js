@@ -33,7 +33,7 @@ export default Views.createClass({
 	render(){
 		return (
 			<div className={style.dialogPage} onClick={this.changePage.bind(null,'scanningCodePage')}>
-				<img className={style.shareImage} src='http://image.hongbeibang.com/FsC8L0MUNoN_W2gWyupk8Tyh5Ju7' />
+				<img className={style.shareImage} src='/img/shareImage.png' />
 				<div className={style.shareTip} >
 					<p>咦,</p>
 					<p>这里有个按钮</p>

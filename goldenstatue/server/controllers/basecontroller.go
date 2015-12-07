@@ -43,6 +43,13 @@ func (this *BaseController) AutoRender(returnValue interface{}, viewname string)
 			panic(err)
 		}
 		this.Ctx.WriteString(string(resultString))
+	} else if viewname == "redirect" {
+		//FIXME 没有做更多的容错尝试
+		if result.Code == 0 {
+			this.Ctx.Redirect(302, result.Data.(string))
+		} else {
+			this.Ctx.WriteString("跳转不成功 " + result.Msg)
+		}
 	} else {
 		panic("不合法的viewName " + viewname)
 	}

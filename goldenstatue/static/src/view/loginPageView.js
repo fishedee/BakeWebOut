@@ -56,20 +56,38 @@ var style = StyleSheet.create({
 });
 
 export default Views.createClass({
-	changePage(){
+	getInitialState(){
+		return {
+			phone:'',
+			captcha:'',
+		};
+	},
+	onChange(key,event){
+		if(key == 'phone'){
+			this.setState({
+				phone:event.target.value
+			});
+		}else if(key == 'captcha'){
+			this.setState({
+				captcha:event.target.value
+			});
+		}
+	},
+	registerPhone(){
 		this.props.changePage();
+		this.props.registerPhone(this.state.phone,this.state.captcha);
 	},
 	getCode(){
-		this.props.getCode();
+		this.props.getCode(this.state.phone);
 	},
 	render(){
 		return (
 			<div className={style.dialogPage}>
 				<img className={style.imagePage} src='/img/loginPage.png' />
-				<input type='text' className={style.loginPhoneNum} autoFocus />
-				<input type='text' className={style.loginCode} />
+				<input type='text' className={style.loginPhoneNum} onChange={this.onChange.bind(null,'phone')} autoFocus />
+				<input type='text' className={style.loginCode} onChange={this.onChange.bind(null,'captcha')} />
 				<div className={style.btnGetCode} onClick={this.getCode}></div>
-				<div className={style.btnEnsure} onClick={this.changePage}></div>
+				<div className={style.btnEnsure} onClick={this.registerPhone}></div>
 			</div>
 		);
 	}

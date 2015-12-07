@@ -27,10 +27,15 @@ export default Views.createClass({
 		this.props.changePage(pageName);
 	},
 	render(){
+		if(this.props.isPuzzleClient && (this.props.state != 1)){
+			var clickLink = this.changePage;
+		}else{
+			var clickLink = this.changePage.bind(null,'styleSelectPage');
+		}
 		return (
 			<div className={style.dialogPage}>
 				<img className={style.imagePage} src='/img/rulePage.png' />
-				<div className={style.btnIKnow} onClick={this.changePage.bind(null,'styleSelectPage')}></div>
+				<div className={style.btnIKnow} onClick={clickLink}></div>
 			</div>
 		);
 	}

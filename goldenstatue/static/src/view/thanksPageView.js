@@ -38,7 +38,7 @@ export default Views.createClass({
 		return (
 			<div className={style.dialogPage}>
 				<img className={style.imagePage} src='/img/thanksPage.png' />
-				<img className={style.closeBtn} src='/img/closeBtn.png' onClick={this.changePage} />
+				<img className={style.closeBtn} src='/img/closeBtn.png' onClick={this.changePage.bind(null,'scanningCodePage')} />
 				<div className={style.btnLetsGo} onClick={this.changePage.bind(null,'scanningCodePage')}></div>
 			</div>
 		);

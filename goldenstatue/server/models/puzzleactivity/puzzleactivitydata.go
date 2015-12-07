@@ -30,6 +30,22 @@ type ContentPuzzleActivityComponent struct {
 	ModifyTime                       time.Time `xorm:"updated"`
 }
 
+type PuzzleActivityComponents struct {
+	Count int
+	Data  []ContentPuzzleActivityComponent
+}
+
+type ContentPuzzleActivityComponentWithClientInfo struct {
+	ContentPuzzleActivityComponent
+	ClientName  string
+	ClientImage string
+}
+
+type PuzzleActivityComponentWithClientInfos struct {
+	Count int
+	Data  []ContentPuzzleActivityComponentWithClientInfo
+}
+
 //	t_content_puzzle_activity_component_puzzle
 type ContentPuzzleActivityComponentPuzzle struct {
 	ContentPuzzleActivityComponentPuzzleId int `xorm:"autoincr"`
@@ -41,6 +57,22 @@ type ContentPuzzleActivityComponentPuzzle struct {
 	ModifyTime                             time.Time `xorm:"updated"`
 }
 
+type PuzzleActivityComponentPuzzles struct {
+	Count int
+	Data  []ContentPuzzleActivityComponentPuzzle
+}
+
+type ContentPuzzleActivityComponentPuzzleWithClientInfo struct {
+	ContentPuzzleActivityComponentPuzzle
+	ClientName  string
+	ClientImage string
+}
+
+type PuzzleActivityComponentPuzzleWithClientInfos struct {
+	Count int
+	Data  []ContentPuzzleActivityComponentPuzzleWithClientInfo
+}
+
 //	t_content_puzzle_activity_component_address
 type ContentPuzzleActivityComponentAddress struct {
 	ContentPuzzleActivityComponentAddressId int `xorm:"autoincr"`
@@ -50,4 +82,20 @@ type ContentPuzzleActivityComponentAddress struct {
 	Phone                                   string
 	CreateTime                              time.Time `xorm:"created"`
 	ModifyTime                              time.Time `xorm:"updated"`
+}
+
+type PuzzleActivityComponentInfo struct {
+	IsLoginClient bool
+	Component     ContentPuzzleActivityComponent
+	IsPuzzle      bool
+	ClientImage   string
+	ClientName    string
+	Puzzle        [6]bool
+	AllPuzzle     []PuzzleActivityComponentPuzzleWithClientInfo
+}
+
+type PuzzleActivityComponentPuzzleWithClientInfo struct {
+	ContentPuzzleActivityComponentPuzzle
+	ClientName  string
+	ClientImage string
 }

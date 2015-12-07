@@ -16,11 +16,18 @@ func (this *ClientDbModel) Search(where Client, limit CommonPage) Clients {
 	db := DB.NewSession()
 	defer db.Close()
 
+	if limit.PageIndex == 0 && limit.PageSize == 0 {
+		return Clients{
+			Count:0,
+			Data:[]Client{},
+		}
+	}
+
 	if where.ClientId != 0 {
-		db = db.Where("clientId = ?", where.ClientId)
+		db = db.And("clientId = ?", where.ClientId)
 	}
 	if where.Name != "" {
-		db = db.Where("name like ?", "%"+where.Name+"%")
+		db = db.And("name like ?", "%"+where.Name+"%")
 	}
 
 	data := []Client{}
@@ -53,6 +60,15 @@ func (this *ClientDbModel) Get(id int) Client {
 	return clients[0]
 }
 
+func (this *ClientDbModel) GetByOpenId(openid string) []Client {
+	var clients []Client
+	err := DB.Where("openid = ?",openid).Find(&clients)
+	if err != nil{
+		panic(err)
+	}
+	return clients
+}
+
 func (this *ClientDbModel) GetByIds(ids []int) []Client {
 	var clients []Client
 	err := DB.In("clientId", ids).Find(&clients)
@@ -62,11 +78,12 @@ func (this *ClientDbModel) GetByIds(ids []int) []Client {
 	return clients
 }
 
-func (this *ClientDbModel) Add(data Client) {
+func (this *ClientDbModel) Add(data Client)(int){
 	_, err := DB.Insert(&data)
 	if err != nil {
 		panic(err)
 	}
+	return data.ClientId
 }
 
 func (this *ClientDbModel) Mod(id int, data Client) {

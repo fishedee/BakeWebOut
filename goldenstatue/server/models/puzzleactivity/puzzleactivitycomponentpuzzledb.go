@@ -3,13 +3,56 @@ package puzzleactivity
 import (
 	//. "github.com/fishedee/language"
 	. "github.com/fishedee/web"
-	"math/rand"
+	. "goldenstatue/models/common"
+	"strconv"
 )
 
 type ContentPuzzleActivityComponentPuzzleDbModel struct {
 }
 
 var PuzzleActivityComponentPuzzleDb = &ContentPuzzleActivityComponentPuzzleDbModel{}
+
+func (this *ContentPuzzleActivityComponentPuzzleDbModel) Search(where ContentPuzzleActivityComponentPuzzle, limit CommonPage) PuzzleActivityComponentPuzzles {
+	db := DB.NewSession()
+	defer db.Close()
+
+	if limit.PageSize == 0 && limit.PageIndex == 0 {
+		return PuzzleActivityComponentPuzzles{
+			Count: 0,
+			Data:  []ContentPuzzleActivityComponentPuzzle{},
+		}
+	}
+
+	if where.ContentPuzzleActivityComponentId != 0 {
+		db = db.And("contentPuzzleActivityComponentId = ?", where.ContentPuzzleActivityComponentId)
+	}
+	if where.PuzzleClientId != 0 {
+		db = db.And("puzzleClientId = ?", where.PuzzleClientId)
+	}
+	if where.PuzzleId != 0 {
+		db = db.And("puzzleId = ?", where.PuzzleId)
+	}
+	if where.Type != 0 {
+		db = db.And("type = ?", where.Type)
+	}
+
+	data := []ContentPuzzleActivityComponentPuzzle{}
+	var err error
+	err = db.OrderBy("createTime desc").Limit(limit.PageSize, limit.PageIndex).Find(&data)
+	if err != nil {
+		panic(err)
+	}
+
+	count, err := db.Count(&where)
+	if err != nil {
+		panic(err)
+	}
+
+	return PuzzleActivityComponentPuzzles{
+		Data:  data,
+		Count: int(count),
+	}
+}
 
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentIdAndClientId(componentId int, clientId int) []ContentPuzzleActivityComponentPuzzle {
 	var puzzleActivityComponentPuzzles []ContentPuzzleActivityComponentPuzzle
@@ -29,9 +72,9 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetSuccessByComponentId
 	return puzzleActivityComponentPuzzles
 }
 
-func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentIdWithoutClientId(componentId int, clientId int) []ContentPuzzleActivityComponentPuzzle {
+func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentId(componentId int) []ContentPuzzleActivityComponentPuzzle {
 	var puzzleActivityComponentPuzzles []ContentPuzzleActivityComponentPuzzle
-	err := DB.Where("contentPuzzleActivityComponentId=? and puzzleClientId != ?", componentId, clientId).Find(&puzzleActivityComponentPuzzles)
+	err := DB.Where("contentPuzzleActivityComponentId=?", componentId).Find(&puzzleActivityComponentPuzzles)
 	if err != nil {
 		panic(err)
 	}
@@ -52,28 +95,18 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) Add(data ContentPuzzleA
 	defer db.Close()
 
 	db.Begin()
-	data.PuzzleId = this.makePuzzle()
+	componentId := data.ContentPuzzleActivityComponentId
+	puzzleId := data.PuzzleId
 
-	_, err := db.Insert(&data)
+	//判断是否是第一块材料
+	var isSuccess int
+	oneSql := "select * from t_content_puzzle_activity_component_puzzle where contentPuzzleActivityComponentId = " + strconv.Itoa(componentId) + " for update "
+	results, err := db.Query(oneSql)
 	if err != nil {
 		db.Rollback()
 		panic(err)
 	}
-
-	if data.Type == 1 {
-		component := ContentPuzzleActivityComponent{
-			State: PuzzleActivityComponentStateEnum.FINISH_NO_ADDRESS,
-		}
-		_, err := db.Where("contentPuzzleActivityComponentId =?", data.ContentPuzzleActivityComponentId).Update(&component)
-		if err != nil {
-			db.Rollback()
-			panic(err)
-		}
-		err = db.Commit()
-		if err != nil {
-			panic(err)
-		}
-	} else {
+	if len(results) == 0 {
 		component := ContentPuzzleActivityComponent{
 			State: PuzzleActivityComponentStateEnum.HAVE_BEGIN,
 		}
@@ -82,78 +115,52 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) Add(data ContentPuzzleA
 			db.Rollback()
 			panic(err)
 		}
-		err = db.Commit()
+		isSuccess = PuzzleActivityComponentPuzzleEnum.SUCCESS
+	} else {
+		//判断是否已有该材料
+		firstSql := "select * from t_content_puzzle_activity_component_puzzle where contentPuzzleActivityComponentId = " + strconv.Itoa(componentId) + " and puzzleId = " + strconv.Itoa(puzzleId) + " for update "
+		results, err = db.Query(firstSql)
 		if err != nil {
+			db.Rollback()
 			panic(err)
 		}
+		if len(results) != 0 {
+			isSuccess = PuzzleActivityComponentPuzzleEnum.FAIL
+		} else {
+			isSuccess = PuzzleActivityComponentPuzzleEnum.SUCCESS
+		}
+	}
+	data.Type = isSuccess
+
+	//插入该材料记录
+	_, err = db.Insert(&data)
+	if err != nil {
+		db.Rollback()
+		panic(err)
+	}
+
+	if data.Type == PuzzleActivityComponentPuzzleEnum.SUCCESS {
+		//判断是否已收集齐全
+		finishSql := "select * from t_content_puzzle_activity_component_puzzle where contentPuzzleActivityComponentId = " + strconv.Itoa(componentId) + " and type = " + strconv.Itoa(PuzzleActivityComponentPuzzleEnum.SUCCESS) + " for update"
+		results, err = db.Query(finishSql)
+		if err != nil {
+			db.Rollback()
+			panic(err)
+		}
+		if len(results) == 6 {
+			component := ContentPuzzleActivityComponent{
+				State: PuzzleActivityComponentStateEnum.FINISH_NO_ADDRESS,
+			}
+			_, err := db.Where("contentPuzzleActivityComponentId =?", data.ContentPuzzleActivityComponentId).Update(&component)
+			if err != nil {
+				db.Rollback()
+				panic(err)
+			}
+		}
+	}
+	err = db.Commit()
+	if err != nil {
+		panic(err)
 	}
 	return data
 }
-
-func (this *ContentPuzzleActivityComponentPuzzleDbModel) makePuzzle() int {
-	var result int
-	num := rand.Intn(6)
-	switch num {
-	case 0:
-		result = 1
-	case 1:
-		result = 2
-	case 2:
-		result = 3
-	case 3:
-		result = 4
-	case 4:
-		result = 5
-	case 5:
-		result = 6
-	}
-	return result
-}
-
-/*
-	//生成拼图
-	puzzleId := this.makePuzzle()
-
-	//检查拼图是否已存在
-	var valid int
-	isFirst := this.checkFirstPuzzle(componentId, puzzleId)
-	if isFirst == true {
-		valid = PuzzleActivityComponentPuzzleEnum.SUCCESS
-	} else {
-		valid = PuzzleActivityComponentPuzzleEnum.FAIL
-	}
-
-	//检查是否已完成, 完成则切换状态
-	isFinish := false
-	if valid == PuzzleActivityComponentPuzzleEnum.SUCCESS {
-		isFinish = this.checkFinish(componentId)
-	}
-
-	//记录拼图
-	data := ContentPuzzleActivityComponentPuzzle{
-		ContentPuzzleActivityComponentId: componentId,
-		PuzzleClientId:                   loginClientId,
-		PuzzleId:                         puzzleId,
-		Type:                             valid,
-	}
-	PuzzleActivityComponentPuzzleDb.Add(data, isFinish)
-
-
-
-
-func (this *ContentPuzzleActivityComponentPuzzleDbModel) checkFirstPuzzle(componentId int, puzzleId int) bool {
-	puzzleInfo := PuzzleActivityComponentPuzzleDb.GetByComponentIdAndPuzzleId(componentId, puzzleId)
-	if len(puzzleInfo) == 0 {
-		return true
-	}
-	return false
-}
-
-func (this *ContentPuzzleActivityComponentPuzzleDbModel) checkFinish(componentId int) bool {
-	successInfo := PuzzleActivityComponentPuzzleDb.GetSuccessByComponentId(componentId)
-	if len(successInfo) == 5 {
-		return true
-	}
-	return false
-}
-*/

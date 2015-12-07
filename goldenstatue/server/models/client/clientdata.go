@@ -5,7 +5,7 @@ import (
 )
 
 type Client struct {
-	ClientId   int
+	ClientId   int `xorm:"autoincr"`
 	Name       string
 	Image      string
 	OpenId     string

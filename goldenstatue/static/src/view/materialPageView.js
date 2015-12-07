@@ -107,7 +107,6 @@ var style = StyleSheet.create({
 		color:'#fcd54a',
 		fontSize:'16px',
 		letterSpacing:'1.5px',
-		margin:'0 5px',
 	},
 });
 
@@ -135,7 +134,7 @@ export default Views.createClass({
 		},30);
 
 		
-		if(!this.props.isLoginClient && (this.props.state==1)){
+		if(!this.props.isPuzzleClient && (this.props.state==1)){
 			alert('好友还没开始游戏呢,你也来制作一个蛋糕吧!');
 			this.changePage('rulePage');
 		}
@@ -147,6 +146,10 @@ export default Views.createClass({
 	},
 	changePage(pageName){
 		this.props.changePage(pageName);
+	},
+	makeCakeClick(){
+		this.props.changePage();
+		this.props.makeCakeClick();
 	},
 	render(){
 		var data = this.props.materialData;
@@ -196,10 +199,20 @@ export default Views.createClass({
 					src={'/img/'+image+'.png'} />
 			);
 		});
-		if(this.props.isLoginClient && (data.getIn(["component","state"])==3)){
-			var makeCakeClickLink = 'sharePage';
+		if(data.get("isPuzzle")){
+
+			var makeCakeClickLink = this.props.isPuzzleClient ? 
+				this.changePage.bind(null,'sharePage')
+				:this.changePage.bind(null,'scanningCodePage');
 		}else{
-			var makeCakeClickLink = 'congratulationPageOrLoginPage';
+			var makeCakeClickLink = this.makeCakeClick;
+		}
+		if(data.get("radio").size != 0){
+			var radioData = data.get("radio").map(function(e){
+				return (' 嘭～小伙伴'+e.clientName+'烘焙出了戚风蛋糕！！！ ')
+			});
+		}else{
+			var radioData = "";
 		}
 		return (
 			<div>
@@ -219,11 +232,11 @@ export default Views.createClass({
 				</div>
 				<div className={style.btnMakeCakeOrHelpPeople}>
 					<img className={style.image} 
-						src={this.props.isLoginClient ? '/img/btnMakeCake.png' : '/img/btnHelpPeople.png'} 
-						onClick={this.changePage.bind(null,makeCakeClickLink)} />
+						src={this.props.isPuzzleClient ? '/img/btnMakeCake.png' : '/img/btnHelpPeople.png'} 
+						onClick={makeCakeClickLink} />
 				</div>
 				<div className={style.radioWrap} ref='radioWrap'>
-					<span className={style.radio} ref='radio'>{'嘭～小伙伴XXX烘焙出了戚风蛋糕！！！'}</span>
+					<span className={style.radio} ref='radio'>{radioData}</span>
 					<span className={style.radio} ref='radio2'></span>
 				</div>
 			</div>

@@ -24,13 +24,13 @@ func (this *ContentPuzzleActivityDbModel) Search(puzzleActivity ContentPuzzleAct
 	}
 
 	if puzzleActivity.Title != "" {
-		db = db.Where("title like ?", "%"+puzzleActivity.Title+"%")
+		db = db.And("title like ?", "%"+puzzleActivity.Title+"%")
 	}
 	if puzzleActivity.BeginTime.IsZero() == false {
-		db = db.Where("beginTime >= ?", puzzleActivity.BeginTime)
+		db = db.And("beginTime >= ?", puzzleActivity.BeginTime)
 	}
 	if puzzleActivity.EndTime.IsZero() == false {
-		db = db.Where("endTime <= ?", puzzleActivity.EndTime)
+		db = db.And("endTime <= ?", puzzleActivity.EndTime)
 	}
 
 	data := []ContentPuzzleActivity{}

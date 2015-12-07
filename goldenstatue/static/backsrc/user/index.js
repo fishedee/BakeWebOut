@@ -14,6 +14,7 @@ function getType(next){
 	});
 }
 function go(){
+	console.log(query);
 	query.simpleQuery({
 		id:'container',
 		url:'/user/search',

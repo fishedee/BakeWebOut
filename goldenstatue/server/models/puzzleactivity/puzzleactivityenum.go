@@ -9,8 +9,8 @@ var PuzzleActivityComponentStateEnum struct {
 	WALK               int `enum:"1,进入活动页面"`
 	NO_BEGIN           int `enum:"2,未开始"`
 	HAVE_BEGIN         int `enum:"3,进行中"`
-	FINISH_NO_ADDRESS  int `enum:"4,完成了未填写收获地址"`
-	FINISH_HAS_ADDRESS int `enum:"5,完成并已填写收获地址"`
+	FINISH_NO_ADDRESS  int `enum:"4,完成了未填写收货地址"`
+	FINISH_HAS_ADDRESS int `enum:"5,完成并已填写收货地址"`
 }
 
 var PuzzleActivityPuzzleEnum struct {

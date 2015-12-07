@@ -36,6 +36,18 @@ func (this *PuzzleActivityAoModel) Del(id int) {
 	//Throw(1, "u can not delete the activity now! ")
 }
 
+func (this *PuzzleActivityAoModel) SearchComponent(where ContentPuzzleActivityComponent, limit CommonPage) PuzzleActivityComponentWithClientInfos {
+	return PuzzleActivityComponentAo.Search(where, limit)
+}
+
+func (this *PuzzleActivityAoModel) GetComponentAddress(componentId int) ContentPuzzleActivityComponentAddress {
+	return PuzzleActivityComponentAo.GetAddress(componentId)
+}
+
+func (this *PuzzleActivityAoModel) SearchComponentPuzzle(where ContentPuzzleActivityComponentPuzzle, limit CommonPage) PuzzleActivityComponentPuzzleWithClientInfos {
+	return PuzzleActivityComponentAo.SearchPuzzle(where, limit)
+}
+
 func (this *PuzzleActivityAoModel) GetComponentInfo(contentId int, clientId int, loginClientId int) PuzzleActivityComponentInfo {
 	return PuzzleActivityComponentAo.Get(contentId, clientId, loginClientId)
 }
@@ -55,7 +67,7 @@ func (this *PuzzleActivityAoModel) SetComponentAddress(contentId int, clientId i
 	PuzzleActivityComponentAo.SetAddress(contentId, clientId, data)
 }
 
-func (this *PuzzleActivityAoModel) GetFinishComponent(contentId int, limit CommonPage) []ContentPuzzleActivityComponent {
+func (this *PuzzleActivityAoModel) GetFinishComponent(contentId int, limit CommonPage) []ContentPuzzleActivityComponentWithClientInfo {
 	return PuzzleActivityComponentAo.GetByFinish(contentId, limit)
 }
 

@@ -35,7 +35,14 @@ function go(){
 					});
 				});
 			}
-		}],
+		},
+		{
+			name:'查看参赛作品',
+			click:function(data){
+				location.href = 'viewComponent.html?contentId='+data.contentId;
+			}
+		},
+		],
 		button:[
 		{
 			name:'添加拼图活动',

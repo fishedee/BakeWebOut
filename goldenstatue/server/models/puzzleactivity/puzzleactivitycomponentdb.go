@@ -12,6 +12,48 @@ type PuzzleActivityComponentDbModel struct {
 
 var PuzzleActivityComponentDb = &PuzzleActivityComponentDbModel{}
 
+func (this *PuzzleActivityComponentDbModel) Search(where ContentPuzzleActivityComponent, limit CommonPage) PuzzleActivityComponents {
+	db := DB.NewSession()
+	defer db.Close()
+
+	if limit.PageSize == 0 && limit.PageIndex == 0 {
+		return PuzzleActivityComponents{
+			Count: 0,
+			Data:  []ContentPuzzleActivityComponent{},
+		}
+	}
+
+	if where.ContentId != 0 {
+		db = db.And("contentId = ?", where.ContentId)
+	}
+	if where.ClientId != 0 {
+		db = db.And("clientId = ?", where.ClientId)
+	}
+	if where.TitleId != 0 {
+		db = db.And("titleId = ?", where.TitleId)
+	}
+	if where.State != 0 {
+		db = db.And("state = ?", where.State)
+	}
+
+	data := []ContentPuzzleActivityComponent{}
+	var err error
+	err = db.OrderBy("createTime desc").Limit(limit.PageSize, limit.PageIndex).Find(&data)
+	if err != nil {
+		panic(err)
+	}
+
+	count, err := db.Count(&where)
+	if err != nil {
+		panic(err)
+	}
+
+	return PuzzleActivityComponents{
+		Data:  data,
+		Count: int(count),
+	}
+}
+
 func (this *PuzzleActivityComponentDbModel) Get(id int) ContentPuzzleActivityComponent {
 	var puzzleActivityComponents []ContentPuzzleActivityComponent
 	err := DB.Where("contentPuzzleActivityComponentId = ?", id).Find(&puzzleActivityComponents)
@@ -37,8 +79,8 @@ func (this *PuzzleActivityComponentDbModel) GetFinishByContentId(contentId int, 
 	db := DB.NewSession()
 
 	var puzzleActivityComponents []ContentPuzzleActivityComponent
-	db = db.Where("contentId = ? and state = ? or state = ?", contentId, 3, 4)
-	err := db.OrderBy("createTime asc").Limit(limit.PageSize, limit.PageIndex).Find(puzzleActivityComponents)
+	db = db.Where("contentId = ? and state = ? or state = ?", contentId, PuzzleActivityComponentStateEnum.FINISH_NO_ADDRESS, PuzzleActivityComponentStateEnum.FINISH_HAS_ADDRESS)
+	err := db.OrderBy("createTime asc").Limit(limit.PageSize, limit.PageIndex).Find(&puzzleActivityComponents)
 	if err != nil {
 		panic(err)
 	}
