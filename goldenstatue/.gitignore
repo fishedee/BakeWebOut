@@ -1,0 +1,8 @@
+/server/server
+/data/golog/*
+/data/nodelog/*
+!/data/nodelog/.gitignore
+/server/nohup.out
+/server/goldenstatue
+/static/build
+/static/src2

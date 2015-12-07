@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
+	"fmt"
+	"time"
 )
 
 type ClientWxLoginAoModel struct {
@@ -27,7 +29,9 @@ func (this *ClientWxLoginAoModel) Login(context *context.Context,callback string
 	//设置callback
 	sess.Set("clientCallback",callback)
 
-	forward := "http://"+context.Input.Host()+"/client/loginCallback"
+	//生成跳转url
+	currentTime := fmt.Sprintf("%d",time.Now().Unix())
+	forward := "http://"+context.Input.Host()+"/client/loginCallback/"+currentTime
 	query := url.Values{}
 	query.Set("forward",forward)
 	queryEncode := query.Encode()
@@ -103,6 +107,7 @@ func (this *ClientWxLoginAoModel) LoginCallback(context *context.Context) string
 }
 
 func (this *ClientWxLoginAoModel) CheckHasPhoneNumber(clientId int)bool{
+	return true
 	clientInfo := ClientAo.Get(clientId)
 
 	var userPhoneInfo struct{

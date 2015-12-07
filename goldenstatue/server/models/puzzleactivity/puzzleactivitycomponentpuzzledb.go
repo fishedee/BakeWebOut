@@ -1,10 +1,9 @@
 package puzzleactivity
 
 import (
-	//. "github.com/fishedee/language"
 	. "github.com/fishedee/web"
+	"github.com/go-xorm/xorm"
 	. "goldenstatue/models/common"
-	"strconv"
 )
 
 type ContentPuzzleActivityComponentPuzzleDbModel struct {
@@ -90,75 +89,25 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentIdAndPuzz
 	return puzzleActivityComponentPuzzles
 }
 
+func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentIdForTrans(sess *xorm.Session, componentId int) []ContentPuzzleActivityComponentPuzzle {
+	var puzzles []ContentPuzzleActivityComponentPuzzle
+	err := sess.Where("contentPuzzleActivityComponentId = ?", componentId).Find(&puzzles)
+	if err != nil {
+		panic(err)
+	}
+	return puzzles
+}
+
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) Add(data ContentPuzzleActivityComponentPuzzle) ContentPuzzleActivityComponentPuzzle {
-	db := DB.NewSession()
-	defer db.Close()
-
-	db.Begin()
-	componentId := data.ContentPuzzleActivityComponentId
-	puzzleId := data.PuzzleId
-
-	//判断是否是第一块材料
-	var isSuccess int
-	oneSql := "select * from t_content_puzzle_activity_component_puzzle where contentPuzzleActivityComponentId = " + strconv.Itoa(componentId) + " for update "
-	results, err := db.Query(oneSql)
+	_, err := DB.Insert(&data)
 	if err != nil {
-		db.Rollback()
 		panic(err)
 	}
-	if len(results) == 0 {
-		component := ContentPuzzleActivityComponent{
-			State: PuzzleActivityComponentStateEnum.HAVE_BEGIN,
-		}
-		_, err := db.Where("contentPuzzleActivityComponentId =?", data.ContentPuzzleActivityComponentId).Update(&component)
-		if err != nil {
-			db.Rollback()
-			panic(err)
-		}
-		isSuccess = PuzzleActivityComponentPuzzleEnum.SUCCESS
-	} else {
-		//判断是否已有该材料
-		firstSql := "select * from t_content_puzzle_activity_component_puzzle where contentPuzzleActivityComponentId = " + strconv.Itoa(componentId) + " and puzzleId = " + strconv.Itoa(puzzleId) + " for update "
-		results, err = db.Query(firstSql)
-		if err != nil {
-			db.Rollback()
-			panic(err)
-		}
-		if len(results) != 0 {
-			isSuccess = PuzzleActivityComponentPuzzleEnum.FAIL
-		} else {
-			isSuccess = PuzzleActivityComponentPuzzleEnum.SUCCESS
-		}
-	}
-	data.Type = isSuccess
+	return data
+}
 
-	//插入该材料记录
-	_, err = db.Insert(&data)
-	if err != nil {
-		db.Rollback()
-		panic(err)
-	}
-
-	if data.Type == PuzzleActivityComponentPuzzleEnum.SUCCESS {
-		//判断是否已收集齐全
-		finishSql := "select * from t_content_puzzle_activity_component_puzzle where contentPuzzleActivityComponentId = " + strconv.Itoa(componentId) + " and type = " + strconv.Itoa(PuzzleActivityComponentPuzzleEnum.SUCCESS) + " for update"
-		results, err = db.Query(finishSql)
-		if err != nil {
-			db.Rollback()
-			panic(err)
-		}
-		if len(results) == 6 {
-			component := ContentPuzzleActivityComponent{
-				State: PuzzleActivityComponentStateEnum.FINISH_NO_ADDRESS,
-			}
-			_, err := db.Where("contentPuzzleActivityComponentId =?", data.ContentPuzzleActivityComponentId).Update(&component)
-			if err != nil {
-				db.Rollback()
-				panic(err)
-			}
-		}
-	}
-	err = db.Commit()
+func (this *ContentPuzzleActivityComponentPuzzleDbModel) AddForTrans(sess *xorm.Session, data ContentPuzzleActivityComponentPuzzle) ContentPuzzleActivityComponentPuzzle {
+	_, err := sess.Insert(&data)
 	if err != nil {
 		panic(err)
 	}

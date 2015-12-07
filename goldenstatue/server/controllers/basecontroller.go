@@ -46,7 +46,8 @@ func (this *BaseController) AutoRender(returnValue interface{}, viewname string)
 	} else if viewname == "redirect" {
 		//FIXME 没有做更多的容错尝试
 		if result.Code == 0 {
-			this.Ctx.Redirect(302, result.Data.(string))
+			url := result.Data.(string)
+			this.Ctx.Redirect(302,url)
 		} else {
 			this.Ctx.WriteString("跳转不成功 " + result.Msg)
 		}

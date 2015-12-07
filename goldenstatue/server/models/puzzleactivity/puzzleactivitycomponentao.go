@@ -2,9 +2,12 @@ package puzzleactivity
 
 import (
 	. "github.com/fishedee/language"
+	. "github.com/fishedee/web"
+	"github.com/go-xorm/xorm"
 	. "goldenstatue/models/client"
 	. "goldenstatue/models/common"
 	"math/rand"
+	"strconv"
 )
 
 type PuzzleActivityComponentAoModel struct {
@@ -148,11 +151,14 @@ func (this *PuzzleActivityComponentAoModel) SetTitle(contentId int, clientId int
 }
 
 func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId int, loginClientId int) ContentPuzzleActivityComponentPuzzle {
-	//检查状态
-	componentInfo := this.getComponent(contentId, clientId)
-	componentId := componentInfo.ContentPuzzleActivityComponentId
-	state := componentInfo.State
+	sess := DB.NewSession()
+	defer sess.Close()
+	sess.Begin()
 
+	//检查状态
+	componentInfo := this.getComponentState(sess, contentId, clientId)
+
+	state := componentInfo.State
 	if clientId != loginClientId {
 		if state != PuzzleActivityComponentStateEnum.HAVE_BEGIN {
 			Throw(1, "现在不能为该用户点亮！")
@@ -164,40 +170,60 @@ func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId in
 	}
 
 	//检查是否已点亮
-	isPuzzle := this.checkPuzzle(componentId, loginClientId)
+	componentId := componentInfo.ContentPuzzleActivityComponentId
+	puzzles := this.getComponentPuzzle(sess, componentId)
+	puzzleIds := make([]int, 0)
+	isPuzzle := false
+	for _, value := range puzzles {
+		if value.Type == PuzzleActivityComponentPuzzleEnum.SUCCESS {
+			puzzleIds = append(
+				puzzleIds,
+				value.PuzzleId,
+			)
+		}
+		if value.PuzzleClientId == loginClientId {
+			isPuzzle = true
+		}
+	}
 	if isPuzzle == true {
-		Throw(1, "你已为该用户点亮过了！")
+		Throw(1, "你已为TA点亮过了！")
 	}
 
-	puzzleId := this.makePuzzle()
+	puzzleId, isSuccess := this.makePuzzle(puzzleIds)
 	data := ContentPuzzleActivityComponentPuzzle{
 		ContentPuzzleActivityComponentId: componentId,
 		PuzzleClientId:                   loginClientId,
 		PuzzleId:                         puzzleId,
+		Type:                             isSuccess,
 	}
-	return PuzzleActivityComponentPuzzleDb.Add(data)
+	result := PuzzleActivityComponentPuzzleDb.AddForTrans(sess, data)
+
+	//扭转状态
+	if len(puzzles) == 0 {
+		state = PuzzleActivityComponentStateEnum.HAVE_BEGIN
+		this.setComponentState(sess, componentId, state)
+	} else if len(puzzleIds) == 5 && isSuccess == PuzzleActivityComponentPuzzleEnum.SUCCESS {
+		state = PuzzleActivityComponentStateEnum.FINISH_NO_ADDRESS
+		this.setComponentState(sess, componentId, state)
+	}
+
+	sess.Commit()
+	return result
 }
 
-func (this *PuzzleActivityComponentAoModel) makePuzzle() int {
+func (this *PuzzleActivityComponentAoModel) setComponentState(sess *xorm.Session, componentId int, state int) {
+	PuzzleActivityComponentDb.SetStateForTrans(sess, componentId, state)
+}
+
+func (this *PuzzleActivityComponentAoModel) getComponentPuzzle(sess *xorm.Session, componentId int) []ContentPuzzleActivityComponentPuzzle {
+	return PuzzleActivityComponentPuzzleDb.GetByComponentIdForTrans(sess, componentId)
+}
+
+func (this *PuzzleActivityComponentAoModel) makePuzzle(puzzleIds []int) (int, int) {
 	var result int
-	/*
-		num := rand.Intn(120)
-		switch {
-		case num >= 0 && num < 20:
-			result = 1
-		case num >= 20 && num < 40:
-			result = 2
-		case num >= 40 && num < 60:
-			result = 3
-		case num >= 60 && num < 80:
-			result = 4
-		case num >= 80 && num < 100:
-			result = 5
-		case num >= 100 && num < 120:
-			result = 6
-		}
-	*/
-	num := rand.Intn(6)
+	isSuccess := PuzzleActivityComponentPuzzleEnum.FAIL
+	max := len(puzzleIds) + 1
+	num := rand.Intn(max)
 	switch num {
 	case 0:
 		result = 1
@@ -212,7 +238,10 @@ func (this *PuzzleActivityComponentAoModel) makePuzzle() int {
 	case 5:
 		result = 6
 	}
-	return result
+	if result == max {
+		isSuccess = PuzzleActivityComponentPuzzleEnum.SUCCESS
+	}
+	return result, isSuccess
 }
 
 func (this *PuzzleActivityComponentAoModel) checkPuzzle(componentId int, clientId int) bool {
@@ -226,7 +255,15 @@ func (this *PuzzleActivityComponentAoModel) checkPuzzle(componentId int, clientI
 func (this *PuzzleActivityComponentAoModel) getComponent(contentId int, clientId int) ContentPuzzleActivityComponent {
 	componentInfo := PuzzleActivityComponentDb.GetByContentIdAndClientId(contentId, clientId)
 	if len(componentInfo) == 0 {
-		Throw(1, "该用户未参加活动!")
+		Throw(1, "该用户未参加活动!"+strconv.Itoa(clientId))
+	}
+	return componentInfo[0]
+}
+
+func (this *PuzzleActivityComponentAoModel) getComponentState(sess *xorm.Session, contentId int, clientId int) ContentPuzzleActivityComponent {
+	componentInfo := PuzzleActivityComponentDb.GetByContentIdAndClientIdForTrans(sess, contentId, clientId)
+	if len(componentInfo) == 0 {
+		Throw(1, "该用户未参加活动！")
 	}
 	return componentInfo[0]
 }

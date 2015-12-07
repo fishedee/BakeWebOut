@@ -136,7 +136,8 @@ export default Views.createClass({
 		
 		if(!this.props.isPuzzleClient && (this.props.state==1)){
 			alert('好友还没开始游戏呢,你也来制作一个蛋糕吧!');
-			this.changePage('rulePage');
+			this.go('/puzzleactivity/'+this.props.contentId+"/"+this.props.loginClient.get("clientId"));
+			//this.changePage('rulePage');
 		}
 		
 		
@@ -209,7 +210,7 @@ export default Views.createClass({
 		}
 		if(data.get("radio").size != 0){
 			var radioData = data.get("radio").map(function(e){
-				return (' 嘭～小伙伴'+e.clientName+'烘焙出了戚风蛋糕！！！ ')
+				return (' 嘭～小伙伴'+e.get("clientName")+'烘焙出了戚风蛋糕！！！ ')
 			});
 		}else{
 			var radioData = "";

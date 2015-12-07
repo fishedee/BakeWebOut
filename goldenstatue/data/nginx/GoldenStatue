@@ -3,11 +3,16 @@ server {
 	listen 80;
 	root /var/www/BakeWebOut/goldenstatue/;
 	server_name goldenstatue.hongbeibang.com goldenstatue.test2.hongbeibang.com;
+	rewrite ^/(.*\.(html|css|js|map|jpg|jpeg|png|gif|mp3|midi|swf|ico|json)) /static/build/$1 last;
+
+	location ~ \.(html|css|js|map|jpg|jpeg|png|gif|mp3|midi|swf|ico|json) {
+		try_files $uri /public/$uri =404;
+	}
 
 	location / {
 		proxy_set_header Host $host;
 		proxy_set_header X-Real-IP $remote_addr;
-		proxy_pass http://localhost:3000;
+		proxy_pass http://localhost:8081;
 	}
 }
 #后台端

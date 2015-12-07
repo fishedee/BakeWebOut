@@ -24,7 +24,7 @@ export default Views.createClass({
 	},
 	render(){
 		return (
-			<div className={style.dialogPage}>
+			<div className={style.dialogPage} onClick={this.props.changePage}>
 				<img className={style.imagePage} src='/img/scanningPage.png' />
 			</div>
 		);

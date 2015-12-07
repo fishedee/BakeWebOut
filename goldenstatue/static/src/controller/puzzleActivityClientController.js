@@ -74,10 +74,6 @@ export default Controllers.createClass({
 	render(){
 		var data = this.puzzleActivityModel.get(this.contentId,this.clientId);
 		var finishData = this.puzzleActivityFinishModel.get(this.contentId);
-		console.log(finishData);
-		if( finishData ){
-			console.log(finishData.toJS());
-		}
 		return {
 			checkHasPhone:this.checkHasPhone,
 			getPhoneCaptcha:this.getPhoneCaptcha,
@@ -87,6 +83,7 @@ export default Controllers.createClass({
 			setComponentAddress:this.setComponentAddress,
 			componentData:data,
 			finishData:finishData,
+			loginClient:this.loginModel.get()
 		};
 	}
 });

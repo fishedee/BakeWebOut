@@ -56,6 +56,15 @@ func (this *ClientController) Login_Json()(interface{}){
 	return ClientWxLoginAo.Login(this.Ctx,callback.Callback)
 }
 
+func (this *ClientController) Logout_Json()(interface{}){
+	var callback struct{
+		Callback string
+	}
+	this.CheckGet(&callback)
+
+	return ClientWxLoginAo.Login(this.Ctx,callback.Callback)
+}
+
 func (this *ClientController) CheckHasPhone_Json()(interface{}){
 	//检查登陆态
 	clientInfo := ClientLoginAo.CheckMustLogin(this.Ctx)

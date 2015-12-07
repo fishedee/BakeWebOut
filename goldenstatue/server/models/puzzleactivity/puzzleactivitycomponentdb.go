@@ -3,6 +3,7 @@ package puzzleactivity
 import (
 	. "github.com/fishedee/language"
 	. "github.com/fishedee/web"
+	"github.com/go-xorm/xorm"
 	. "goldenstatue/models/common"
 	"strconv"
 )
@@ -97,6 +98,25 @@ func (this *PuzzleActivityComponentDbModel) Add(puzzleActivityComponent ContentP
 
 func (this *PuzzleActivityComponentDbModel) Mod(id int, puzzleActivityComponent ContentPuzzleActivityComponent) {
 	_, err := DB.Where("contentPuzzleActivityComponentId=?", id).Update(&puzzleActivityComponent)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (this *PuzzleActivityComponentDbModel) GetByContentIdAndClientIdForTrans(sess *xorm.Session, contentId int, clientId int) []ContentPuzzleActivityComponent {
+	var components []ContentPuzzleActivityComponent
+	err := sess.Where("contentId = ? and clientId = ?", contentId, clientId).Find(&components)
+	if err != nil {
+		panic(err)
+	}
+	return components
+}
+
+func (this *PuzzleActivityComponentDbModel) SetStateForTrans(sess *xorm.Session, componentId int, state int) {
+	data := ContentPuzzleActivityComponent{
+		State: state,
+	}
+	_, err := sess.Where("contentPuzzleActivityComponentId=?", componentId).Update(&data)
 	if err != nil {
 		panic(err)
 	}

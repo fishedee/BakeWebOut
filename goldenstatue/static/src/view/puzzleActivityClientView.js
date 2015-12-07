@@ -128,7 +128,10 @@ export default Views.createClass({
 						<StyleSelectPage changePage={this.changePage} selectStyle={this.selectStyle} materialData={materialData} />
 						:this.state.isWinningPage ?
 							<WinningPage signInfo={this.signInfo} changePage={this.changePage} />
-							:<MaterialPage changePage={this.changePage} 
+							:<MaterialPage 
+								contentId={componentData.getIn(["component","contentId"])}
+								loginClient={this.props.loginClient}
+								changePage={this.changePage} 
 								materialData={materialData}
 								makeCakeClick={this.makeCakeClick}
 								state={materialData.getIn(["component","state"])}
@@ -152,7 +155,7 @@ export default Views.createClass({
 				}
 				
 				{this.state.isScanningCodePage ?
-					<ScanningPage />
+					<ScanningPage changePage={this.changePage} />
 					:null
 				}
 
