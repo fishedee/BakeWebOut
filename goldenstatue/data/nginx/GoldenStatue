@@ -1,7 +1,7 @@
 #手机端
 server {
 	listen 80;
-	root /var/www/BakeWebOut/goldenstatue/;
+	root /var/www/goldenstatue/;
 	server_name goldenstatue.hongbeibang.com goldenstatue.test2.hongbeibang.com;
 	rewrite ^/(.*\.(html|css|js|map|jpg|jpeg|png|gif|mp3|midi|swf|ico|json)) /static/build/$1 last;
 
@@ -18,7 +18,7 @@ server {
 #后台端
 server {
 	listen 80;
-	root /var/www/BakeWebOut/goldenstatue/;
+	root /var/www/goldenstatue/;
 	server_name backstage.goldenstatue.hongbeibang.com backstage.goldenstatue.test2.hongbeibang.com;
 	rewrite ^/(.*\.(html|css|js|map|jpg|jpeg|png|gif|mp3|midi|swf|ico|json)) /static/backbuild/$1 last;
 
@@ -39,7 +39,7 @@ server {
 #api端
 server {
 	listen 80;
-	root /var/www/BakeWebOut/;
+	root /var/www/goldenstatue/;
 	server_name api.goldenstatue.hongbeibang.com api.goldenstatue.test2.hongbeibang.com;
 
 	location ~ \.(html|css|js|map|jpg|jpeg|png|gif|mp3|midi|swf|ico|json) {

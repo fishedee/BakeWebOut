@@ -15,7 +15,7 @@ import (
 type ClientWxLoginAoModel struct {
 }
 
-var officalHost = "lamsoontest.solomochina.com"
+var officalHost = "lamsoon.solomochina.com"
 var ClientWxLoginAo = &ClientWxLoginAoModel{}
 
 func (this *ClientWxLoginAoModel) Login(context *context.Context,callback string) string {

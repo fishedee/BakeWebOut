@@ -10,7 +10,6 @@ export default Controllers.createClass({
 		this.isLoginData = await this.loginModel.isLogin();
 		if(this.isLoginData == null ){
 			var loginUrl = await this.loginModel.login();
-			alert(loginUrl);
 			location.href = loginUrl;
 		}
 	},

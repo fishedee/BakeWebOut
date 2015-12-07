@@ -1,10 +1,10 @@
 package weixin
 
 import (
-	. "github.com/fishedee/web"
+	//. "github.com/fishedee/web"
 	. "github.com/fishedee/weixin"
 	. "goldenstatue/models/config"
-	"time"
+	//"time"
 )
 
 type WeixinAoModel struct {
@@ -30,7 +30,9 @@ func (this *WeixinAoModel) RefreshConfig() {
 }
 
 func init() {
+	/*
 	StartTimerTask(time.Second*300, func() {
 		WeixinAo.RefreshConfig()
 	})
+	*/
 }
