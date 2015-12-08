@@ -33,6 +33,8 @@ func (this *PuzzleActivityAoModel) Mod(id int, puzzleActivity ContentPuzzleActiv
 
 func (this *PuzzleActivityAoModel) Del(id int) {
 	PuzzleActivityDb.Del(id)
+
+	PuzzleActivityComponentAo.DelByContentId(id)
 	//Throw(1, "u can not delete the activity now! ")
 }
 

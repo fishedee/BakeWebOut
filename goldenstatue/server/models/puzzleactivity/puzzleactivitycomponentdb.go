@@ -81,7 +81,7 @@ func (this *PuzzleActivityComponentDbModel) GetFinishByContentId(contentId int, 
 
 	var puzzleActivityComponents []ContentPuzzleActivityComponent
 	db = db.Where("contentId = ? and state = ? or state = ?", contentId, PuzzleActivityComponentStateEnum.FINISH_NO_ADDRESS, PuzzleActivityComponentStateEnum.FINISH_HAS_ADDRESS)
-	err := db.OrderBy("createTime asc").Limit(limit.PageSize, limit.PageIndex).Find(&puzzleActivityComponents)
+	err := db.OrderBy("createTime desc").Limit(limit.PageSize, limit.PageIndex).Find(&puzzleActivityComponents)
 	if err != nil {
 		panic(err)
 	}
@@ -120,4 +120,21 @@ func (this *PuzzleActivityComponentDbModel) SetStateForTrans(sess *xorm.Session,
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (this *PuzzleActivityComponentDbModel) DelByContentId(contentId int) {
+	var component ContentPuzzleActivityComponent
+	_, err := DB.Where("contentId = ?", contentId).Delete(&component)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (this *PuzzleActivityComponentDbModel) GetByContentId(contentId int) []ContentPuzzleActivityComponent {
+	var components []ContentPuzzleActivityComponent
+	err := DB.Where("contentId = ?", contentId).Find(&components)
+	if err != nil {
+		panic(err)
+	}
+	return components
 }

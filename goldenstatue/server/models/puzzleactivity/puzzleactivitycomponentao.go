@@ -164,7 +164,7 @@ func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId in
 	//检查是否已点亮
 	componentId := componentInfo.ContentPuzzleActivityComponentId
 	puzzles := this.getComponentPuzzle(sess, componentId)
-	puzzleIds := make([]int, 0)
+	puzzleIds := []int{}
 	isPuzzle := false
 	for _, value := range puzzles {
 		if value.Type == PuzzleActivityComponentPuzzleEnum.SUCCESS {
@@ -211,27 +211,58 @@ func (this *PuzzleActivityComponentAoModel) getComponentPuzzle(sess *xorm.Sessio
 	return PuzzleActivityComponentPuzzleDb.GetByComponentIdForTrans(sess, componentId)
 }
 
+func (this *PuzzleActivityComponentAoModel) getRate(num int) int {
+	result := 0
+	switch num {
+	case 1:
+		result = 10
+	case 2:
+		result = 8
+	case 3:
+		result = 7
+	case 4:
+		result = 6
+	case 5:
+		result = 5
+	case 6:
+		result = 4
+	}
+	return result
+}
+
 func (this *PuzzleActivityComponentAoModel) makePuzzle(puzzleIds []int) (int, int) {
 	var result int
 	isSuccess := PuzzleActivityComponentPuzzleEnum.FAIL
-	max := len(puzzleIds) + 1
-	num := rand.Intn(max)
-	switch num {
-	case 0:
-		result = 1
-	case 1:
-		result = 2
-	case 2:
-		result = 3
-	case 3:
-		result = 4
-	case 4:
-		result = 5
-	case 5:
-		result = 6
+	failPuzzleIds := []int{}
+	allPuzzles := []int{1, 2, 3, 4, 5, 6}
+
+	successNum := len(puzzleIds)
+	for i := 0; i < 6; i++ {
+		isFail := false
+		for j := 0; j < successNum; j++ {
+			if puzzleIds[j] == allPuzzles[i] {
+				isFail = true
+			}
+		}
+		if isFail == false {
+			failPuzzleIds = append(
+				failPuzzleIds,
+				allPuzzles[i],
+			)
+		}
 	}
-	if result == max {
+
+	nextRate := this.getRate(successNum + 1)
+	rate := rand.Intn(11)
+	num := 0
+	if rate <= nextRate {
+		num = rand.Intn(len(failPuzzleIds))
+		result = failPuzzleIds[num]
 		isSuccess = PuzzleActivityComponentPuzzleEnum.SUCCESS
+	} else {
+		num = rand.Intn(len(puzzleIds))
+		result = puzzleIds[num]
+		isSuccess = PuzzleActivityComponentPuzzleEnum.FAIL
 	}
 	return result, isSuccess
 }
@@ -290,4 +321,14 @@ func (this *PuzzleActivityComponentAoModel) GetByFinish(contentId int, limit Com
 		)
 	}
 	return result
+}
+
+func (this *PuzzleActivityComponentAoModel) DelByContentId(contentId int) {
+	components := PuzzleActivityComponentDb.GetByContentId(contentId)
+	PuzzleActivityComponentDb.DelByContentId(contentId)
+
+	for _, value := range components {
+		PuzzleActivityComponentPuzzleDb.DelByComponentId(value.ContentPuzzleActivityComponentId)
+		PuzzleActivityComponentAddressDb.DelByComponentId(value.ContentPuzzleActivityComponentId)
+	}
 }

@@ -46,3 +46,11 @@ func (this *PuzzleActivityComponentAddressDbModel) GetByComponentId(componentId 
 	}
 	return results[0]
 }
+
+func (this *PuzzleActivityComponentAddressDbModel) DelByComponentId(componentId int) {
+	var address ContentPuzzleActivityComponentAddress
+	_, err := DB.Where("contentPuzzleActivityComponentId = ?", componentId).Delete(&address)
+	if err != nil {
+		panic(err)
+	}
+}

@@ -113,3 +113,11 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) AddForTrans(sess *xorm.
 	}
 	return data
 }
+
+func (this *ContentPuzzleActivityComponentPuzzleDbModel) DelByComponentId(componentId int) {
+	var puzzle ContentPuzzleActivityComponentPuzzle
+	_, err := DB.Where("contentPuzzleActivityComponentId = ?", componentId).Delete(&puzzle)
+	if err != nil {
+		panic(err)
+	}
+}
