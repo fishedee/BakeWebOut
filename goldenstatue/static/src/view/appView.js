@@ -1,5 +1,6 @@
 import DocumentHead from 'fishfront/react/react-document-head';
 import Env from 'fishfront/runtime/env';
+import LoadingPage from './sections/loadingPageView';
 
 var style = StyleSheet.create({
 	body:{
@@ -10,7 +11,7 @@ var style = StyleSheet.create({
 		margin:'0 auto',
 		position:'relative',
 		overflow:'hidden',
-	}
+	},
 });
 
 export default Views.createClass({
@@ -29,7 +30,7 @@ export default Views.createClass({
 					meta={[
 						{charset:"utf-8"},
 						{name:"description",content:"Hacker News clone written in ReactJS, RefluxJS, and Firebase"},
-						{name:"viewport",content:"width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=3"},
+						{name:"viewport",content:"width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0"},
 					]}
 					link={[
 						{type:"text/css",rel:"stylesheet",href:"/index.css"}
@@ -38,7 +39,10 @@ export default Views.createClass({
 						{src:'http://res.wx.qq.com/open/js/jweixin-1.0.0.js'},
 						{src:entryJs}
 					]} />
-				{this.props.isLogin?this.props.children:null}
+				{this.props.isLogin ? 
+					this.props.children
+					: <LoadingPage />
+				}
 			</div>
 		);
 	}

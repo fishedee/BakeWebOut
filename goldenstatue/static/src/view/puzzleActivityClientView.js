@@ -1,17 +1,17 @@
 
-import MaterialPage from './materialPageView';
-import RulePage from './rulePageView';
-import StyleSelectPage from './styleSelectPageView';
-import LoginPage from './loginPageView';
-import CongratulationPage from './congratulationPageView';
-import SharePage from './sharePageView';
-import ScanningPage from './scanningPageView';
-import DetailInfoPage from './detailInfoPageView';
-import GetGiftPage from './getGiftPageView';
-import WinningPage from './winningPageView';
-import InvitationPage from './invitationPageView';
-import ThanksPage from './thanksPageView';
-import SorryPage from './sorryPageView';
+import MaterialPage from './sections/materialPageView';
+import RulePage from './sections/rulePageView';
+import StyleSelectPage from './sections/styleSelectPageView';
+import LoginPage from './sections/loginPageView';
+import CongratulationPage from './sections/congratulationPageView';
+import SharePage from './sections/sharePageView';
+import ScanningPage from './sections/scanningPageView';
+import DetailInfoPage from './sections/detailInfoPageView';
+import GetGiftPage from './sections/getGiftPageView';
+import WinningPage from './sections/winningPageView';
+import InvitationPage from './sections/invitationPageView';
+import ThanksPage from './sections/thanksPageView';
+import SorryPage from './sections/sorryPageView';
 
 export default Views.createClass({
 	getInitialState(){

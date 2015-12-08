@@ -40,6 +40,7 @@ var style = StyleSheet.create({
 		marginRight:'auto',
 		overflowX:'hidden',
 		overflowY:'auto',
+		WebkitOverflowScrolling:'touch',
 	},
 	headSculpture:{
 		width:'22.356%',

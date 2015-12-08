@@ -32,7 +32,15 @@ if (process.env.NODE_ENV === 'production'){
             extensions: ['','.js'],
             alias:webpackAlias
         },
-        plugins:[new webpack.optimize.UglifyJsPlugin(),new AssetsPlugin({path:__dirname+"/build2"})]
+        plugins:[
+            new webpack.optimize.UglifyJsPlugin(),
+            new AssetsPlugin({path:__dirname+"/build2"}),
+            new webpack.DefinePlugin({
+                  "process.env": {
+                    NODE_ENV: JSON.stringify("production")
+                  }
+                })
+            ]
     }
 }else{
     var moduleConfig = {

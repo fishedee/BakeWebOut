@@ -1,7 +1,9 @@
+import LoadingPage from './sections/loadingPageView';
+
 export default Views.createClass({
 	render(){
 		return (
-			<div>正在跳转中</div>
+			<LoadingPage />
 		);
 	}
 });
