@@ -73,7 +73,7 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetSuccessByComponentId
 
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentId(componentId int) []ContentPuzzleActivityComponentPuzzle {
 	var puzzleActivityComponentPuzzles []ContentPuzzleActivityComponentPuzzle
-	err := DB.Where("contentPuzzleActivityComponentId=?", componentId).Find(&puzzleActivityComponentPuzzles)
+	err := DB.Where("contentPuzzleActivityComponentId=?", componentId).OrderBy("createTime desc").Find(&puzzleActivityComponentPuzzles)
 	if err != nil {
 		panic(err)
 	}
