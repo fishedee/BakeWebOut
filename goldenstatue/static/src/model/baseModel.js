@@ -18,7 +18,7 @@ export default {
 	},
 	async fetchGet(url,data){
 		var value = new Date().valueOf();
-		var apiUrl = 'http://api.goldenstatue.test2.hongbeibang.com'+url+"/"+value+'?'+this.getDataUrlEncode(data);
+		var apiUrl = 'http://api.goldenstatue.hongbeibang.com'+url+"/"+value+'?'+this.getDataUrlEncode(data);
 		var result = await this.fetch(apiUrl,{credentials:'include'});
 		var resultJson = await result.json();
 		if( resultJson.code != 0 ){
@@ -28,7 +28,7 @@ export default {
 	},
 	async fetchPost(url,data){
 		var value = new Date().valueOf();
-		var apiUrl = 'http://api.goldenstatue.test2.hongbeibang.com'+url+"/"+value;
+		var apiUrl = 'http://api.goldenstatue.hongbeibang.com'+url+"/"+value;
 		var result = await this.fetch(apiUrl,{
 			credentials:'include',
 			method:'post',
