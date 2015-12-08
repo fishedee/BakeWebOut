@@ -1,13 +1,7 @@
 var webpack = require('webpack');
+var AssetsPlugin = require('assets-webpack-plugin');
 
-var webpackAlias = {}
-/*{
-    "babel-polyfill":"babel-polyfill/dist/polyfill.js",
-    "react":"react/dist/react.js",
-    "react-dom":"react-dom/dist/react-dom.js",
-    "immutable":"immutable/dist/immutable.js",
-    "react-router":"react-router/umd/ReactRouter.js"
-};*/
+var webpackAlias = {};
 var webpackNoParse = [];
 for( var i in webpackAlias ){
     if (process.env.NODE_ENV === 'production'){
@@ -25,7 +19,7 @@ if (process.env.NODE_ENV === 'production'){
         output: {
             path:__dirname+'/build2',
             publicPath: '/',
-            filename: 'bundle.js'       
+            filename: 'bundle-[hash].js'       
         },
         module:{
             loaders: [
@@ -38,7 +32,7 @@ if (process.env.NODE_ENV === 'production'){
             extensions: ['','.js'],
             alias:webpackAlias
         },
-        plugins:[new webpack.optimize.UglifyJsPlugin()]
+        plugins:[new webpack.optimize.UglifyJsPlugin(),new AssetsPlugin({path:__dirname+"/build2"})]
     }
 }else{
     var moduleConfig = {
@@ -53,7 +47,7 @@ if (process.env.NODE_ENV === 'production'){
             loaders: [
                 { test: /\.js$/ , exclude:/node_modules/,loader:"babel?cacheDirectory"},
                 { test: /\.css$/, loader: "style!css" },
-                { test: /Controller\.js$/, loader: "bundle?lazy!babel?cacheDirectory" }
+                { test: /Controller\.js$/, loader: "bundle?lazy&name=[hash]!babel?cacheDirectory" }
             ],
             noParse:webpackNoParse
         },

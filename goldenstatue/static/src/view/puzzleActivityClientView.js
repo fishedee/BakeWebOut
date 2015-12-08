@@ -113,6 +113,10 @@ export default Views.createClass({
 		await this.props.registerPhone(phone,captcha);
 		alert('注册成功！');
 	},
+	goNewClientPage(changePuzzleClientId){
+		var componentData = this.props.componentData;
+		this.go('/puzzleactivity/'+componentData.getIn(["component","contentId"])+'/'+changePuzzleClientId);
+	},
 	render(){
 		var componentData = this.props.componentData;
 		var finishData = this.props.finishData;
@@ -143,8 +147,8 @@ export default Views.createClass({
 				{this.state.isMakeCakeClick ? 
 					this.state.isPhoneLogin ? 
 						this.state.isSorryPage ?
-							<SorryPage changePage={this.changePage} />
-							:<CongratulationPage changePage={this.changePage} isPuzzleClient={isPuzzleClient} puzzleData={this.state.puzzleData} />
+							<SorryPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} puzzleData={this.state.puzzleData}  />
+							:<CongratulationPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} isPuzzleClient={isPuzzleClient} puzzleData={this.state.puzzleData} />
 						:<LoginPage changePage={this.changePage} getCode={this.getCode} registerPhone={this.registerPhone} />
 					:null
 				}

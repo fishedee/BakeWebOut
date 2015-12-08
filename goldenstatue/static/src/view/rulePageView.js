@@ -27,7 +27,7 @@ export default Views.createClass({
 		this.props.changePage(pageName);
 	},
 	render(){
-		if(this.props.isPuzzleClient && (this.props.state != 1)){
+		if(this.props.state != 1){
 			var clickLink = this.changePage;
 		}else{
 			var clickLink = this.changePage.bind(null,'styleSelectPage');

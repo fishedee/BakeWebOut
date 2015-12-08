@@ -1,4 +1,5 @@
 import DocumentHead from 'fishfront/react/react-document-head';
+import Env from 'fishfront/runtime/env';
 
 var style = StyleSheet.create({
 	body:{
@@ -14,6 +15,14 @@ var style = StyleSheet.create({
 
 export default Views.createClass({
 	render(){
+		if( Env.isInNode() && 
+			process.env.NODE_ENV === 'production' && 
+			this.props.webpackJson.main && 
+			this.props.webpackJson.main.js){
+			var entryJs = this.props.webpackJson.main.js;
+		}else{
+			var entryJs = '/bundle.js?t='+new Date().valueOf();
+		}
 		return (
 			<div className={style.body}>
 				<DocumentHead
@@ -26,7 +35,8 @@ export default Views.createClass({
 						{type:"text/css",rel:"stylesheet",href:"/index.css"}
 					]}
 					script={[
-						{src:"/bundle.js"}
+						{src:'http://res.wx.qq.com/open/js/jweixin-1.0.0.js'},
+						{src:entryJs}
 					]} />
 				{this.props.isLogin?this.props.children:null}
 			</div>

@@ -54,6 +54,10 @@ export default Views.createClass({
 	changePage(pageName){
 		this.props.changePage(pageName);
 	},
+	goNewClientPage(changePuzzleClientId){
+		this.props.changePage('rulePage');
+		this.props.goNewClientPage(changePuzzleClientId);
+	},
 	render(){
 		var puzzleData = this.props.puzzleData;
 
@@ -88,11 +92,11 @@ export default Views.createClass({
 
 		if(this.props.isPuzzleClient){
 			var backgroundImg = '/img/congratulationPageMine.png';
-			var pageName = 'sharePage';
+			var btnLink = this.changePage.bind(null,'sharePage');
 			var closeLink = this.changePage;
 		}else{
 			var backgroundImg = '/img/congratulationPageHelp.png';
-			var pageName = 'rulePage';
+			var btnLink = this.goNewClientPage.bind(null,puzzleData.get("puzzleClientId"));
 			var closeLink = this.changePage.bind(null,'scanningCodePage');
 		}
 		
@@ -103,7 +107,7 @@ export default Views.createClass({
 				<img className={style.congratulateText} src={text} />
 				<img className={style.gifImageWrap} src='/img/gifImageWrap.png' />
 				<img className={style.gifImageWrap} src={gifImage} />
-				<div className={style.btnAskHelp} onClick={this.changePage.bind(null,pageName)}></div>
+				<div className={style.btnAskHelp} onClick={btnLink}></div>
 			</div>
 		);
 	}

@@ -39,7 +39,7 @@ export default Controllers.createClass({
 		);
 	},
 	async addComponentPuzzle(){
-		return await this.puzzleActivityModel.addComponentPuzzle(
+		var data = await this.puzzleActivityModel.addComponentPuzzle(
 			this.contentId,
 			this.clientId
 		);
@@ -47,6 +47,7 @@ export default Controllers.createClass({
 			this.contentId,
 			this.clientId
 		);
+		return data;
 	},
 	async setComponentAddress(name,phoneNumber,address){
 		await this.puzzleActivityModel.setComponentAddress(

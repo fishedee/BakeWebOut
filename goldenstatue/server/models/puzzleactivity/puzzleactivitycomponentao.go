@@ -115,15 +115,7 @@ func (this *PuzzleActivityComponentAoModel) Get(contentId int, clientId int, log
 		allPuzzleWithClientInfo = append(
 			allPuzzleWithClientInfo,
 			PuzzleActivityComponentPuzzleWithClientInfo{
-				ContentPuzzleActivityComponentPuzzle{
-					value.ContentPuzzleActivityComponentPuzzleId,
-					value.ContentPuzzleActivityComponentId,
-					value.PuzzleClientId,
-					value.PuzzleId,
-					value.Type,
-					value.CreateTime,
-					value.ModifyTime,
-				},
+				value,
 				singleClient.Name,
 				singleClient.Image,
 			},

@@ -47,19 +47,37 @@ export default Views.createClass({
 	changePage(pageName){
 		this.props.changePage(pageName);
 	},
+	getInitialState(){
+		return {
+			image:'/gif/merge.gif'
+		};
+	},
+	componentDidMount(){
+		var self = this;
+		setTimeout(
+			function(){
+				self.setState({
+					image:'/img/getGiftPage.png',
+				});
+				setTimeout(function(){self.refs.show.style.display="block"},100);
+			}
+		,1000);
+	},
 	render(){
 		var lastIndex = this.props.lastPuzzle.size - 1;
 		var lastPuzzleName = this.props.lastPuzzle.getIn([lastIndex,"clientName"]);
 		return (
 			<div className={style.dialogPage}>
-				<img className={style.imagePage} src='/img/getGiftPage.png' />
-				<div className={style.text}>
-					<p>{'哇～'+lastPuzzleName}</p>
-					<p>帮你收集了最后一份原料</p>
-					<p>戚风蛋糕已新鲜出炉了！</p>
-					<p>快去领取你的礼物吧！</p>
+				<img className={style.imagePage} src={this.state.image} />
+				<div style={{display:'none'}} ref='show'>
+					<div className={style.text}>
+						<p>{'哇～'+lastPuzzleName}</p>
+						<p>帮你收集了最后一份原料</p>
+						<p>戚风蛋糕已新鲜出炉了！</p>
+						<p>快去领取你的礼物吧！</p>
+					</div>
+					<div className={style.btnGetGift} onClick={this.changePage.bind(null,'winningPage')}></div>
 				</div>
-				<div className={style.btnGetGift} onClick={this.changePage.bind(null,'winningPage')}></div>
 			</div>
 		);
 	}

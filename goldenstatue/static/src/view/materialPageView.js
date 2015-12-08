@@ -229,7 +229,7 @@ export default Views.createClass({
 					<img className={style.image} src={styleTitle} />
 				</div>
 				<div className={style.materialBox}>
-					{newData}
+					{this.props.state==4 ? null : newData}
 				</div>
 				<div className={style.btnMakeCakeOrHelpPeople}>
 					<img className={style.image} 
