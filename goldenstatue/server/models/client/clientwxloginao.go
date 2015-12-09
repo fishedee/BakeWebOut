@@ -107,7 +107,10 @@ func (this *ClientWxLoginAoModel) LoginCallback(context *context.Context) string
 }
 
 func (this *ClientWxLoginAoModel) CheckHasPhoneNumber(clientId int)bool{
-	return true
+	//FIMXE
+	//他们接口未能用，暂时return true
+	return true;
+
 	clientInfo := ClientAo.Get(clientId)
 
 	var userPhoneInfo struct{
@@ -118,6 +121,13 @@ func (this *ClientWxLoginAoModel) CheckHasPhoneNumber(clientId int)bool{
 	},&userPhoneInfo)
 
 	return userPhoneInfo.Registered;
+}
+
+func (this *ClientWxLoginAoModel) CheckMustHasPhone(clientId int){
+	hasPhone := this.CheckHasPhoneNumber(clientId)
+	if hasPhone == false{
+		Throw(1,"还没有注册手机号码噢")
+	}
 }
 
 func (this *ClientWxLoginAoModel) GetPhoneCaptcha(phoneNumber string){
@@ -153,6 +163,7 @@ func (this *ClientWxLoginAoModel) RegisterPhoneNumber(clientId int,phoneNumber s
 		Error int `json:error,omitempty`
 		Message string `json:message,omitempty`
 	}
+	Log.Debug("registerInfo %s",registerInfo)
 	this.callInterface("post","/api/user",url.Values{
 		"openid":{registerInfo.OpenId},
 		"mobile":{registerInfo.Mobile},

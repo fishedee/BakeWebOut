@@ -14,10 +14,10 @@ var style = StyleSheet.create({
 		border:'0'
 	},
 	congratulateText:{
-		width:'44.53%',
+		width:'48.438%',
 		border:'0',
 		position:'absolute',
-		top:'30%',
+		top:'23%',
 		left:'0',
 		right:'0',
 		marginLeft:'auto',
@@ -105,7 +105,6 @@ export default Views.createClass({
 				<img className={style.imagePage} src={backgroundImg} />
 				<img className={style.closeBtn} src='/img/closeBtn.png' onClick={closeLink} />
 				<img className={style.congratulateText} src={text} />
-				<img className={style.gifImageWrap} src='/img/gifImageWrap.png' />
 				<img className={style.gifImageWrap} src={gifImage} />
 				<div className={style.btnAskHelp} onClick={btnLink}></div>
 			</div>

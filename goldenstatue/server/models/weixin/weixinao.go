@@ -1,38 +1,49 @@
 package weixin
 
 import (
-	//. "github.com/fishedee/web"
-	. "github.com/fishedee/weixin"
+	. "github.com/fishedee/web"
+	. "github.com/fishedee/sdk"
 	. "goldenstatue/models/config"
-	//"time"
+	"time"
 )
 
 type WeixinAoModel struct {
-	appId     string
-	appSecret string
 }
 
-var WeixinAo = &WeixinAoModel{
-	appId:     ConfigAo.Get("wxAppId"),
-	appSecret: ConfigAo.Get("wxAppSecret"),
-}
+var WeixinAo WeixinAoModel
 
-func (this *WeixinAoModel) GetJsConfig(url string) JsConfig {
+func (this *WeixinAoModel) GetJsConfig(url string) WxSdkJsConfig {
+	wxSdk := WxSdk{
+		AppId:ConfigAo.Get("wxAppId"),
+		AppSecret:ConfigAo.Get("wxAppSecret"),
+	}
 	jsApiTicket := ConfigAo.Get("wxJsApiTicket")
-	return JsSdk.GetJsConfig(this.appId, jsApiTicket, url)
+	result,err := wxSdk.GetJsConfig(jsApiTicket, url)
+	if err != nil{
+		panic(err)
+	}
+	return result
 }
 
 func (this *WeixinAoModel) RefreshConfig() {
-	accessToken := JsSdk.GetAccessToken(this.appId, this.appSecret)
-	ConfigAo.Set("wxAccessToken", accessToken)
-	jsTicket := JsSdk.GetJsApiTicket(accessToken)
-	ConfigAo.Set("wxJsApiTicket", jsTicket)
+	wxSdk := WxSdk{
+		AppId:ConfigAo.Get("wxAppId"),
+		AppSecret:ConfigAo.Get("wxAppSecret"),
+	}
+	accessToken,err := wxSdk.GetAccessToken()
+	if err != nil{
+		panic(err)
+	}
+	ConfigAo.Set("wxAccessToken", accessToken.AccessToken)
+	jsTicket,err := wxSdk.GetJsApiTicket(accessToken.AccessToken)
+	if err != nil{
+		panic(err)
+	}
+	ConfigAo.Set("wxJsApiTicket", jsTicket.Ticket)
 }
 
 func init() {
-	/*
-		StartTimerTask(time.Second*300, func() {
-			WeixinAo.RefreshConfig()
-		})
-	*/
+	StartTimerTask(time.Second*300, func() {
+		WeixinAo.RefreshConfig()
+	})
 }

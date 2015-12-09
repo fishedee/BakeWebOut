@@ -60,9 +60,9 @@ func (this *PuzzleActivityAoModel) SetComponentTitle(contentId int, loginClientI
 	PuzzleActivityComponentAo.SetTitle(contentId, loginClientId, titleId)
 }
 
-func (this *PuzzleActivityAoModel) AddComponentPuzzle(contentId int, clientId int, loginClientId int) ContentPuzzleActivityComponentPuzzle {
+func (this *PuzzleActivityAoModel) AddComponentPuzzle(contentId int, clientId int, loginClientId int, inPuzzleId int) ContentPuzzleActivityComponentPuzzle {
 	this.checkJoinTime(contentId)
-	return PuzzleActivityComponentAo.AddPuzzle(contentId, clientId, loginClientId)
+	return PuzzleActivityComponentAo.AddPuzzle(contentId, clientId, loginClientId, inPuzzleId)
 }
 
 func (this *PuzzleActivityAoModel) SetComponentAddress(contentId int, clientId int, data ContentPuzzleActivityComponentAddress) {

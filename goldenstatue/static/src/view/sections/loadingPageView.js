@@ -1,7 +1,7 @@
 
 var style = StyleSheet.create({
 	loading:{
-		position:'absolute',
+		position:'relative',
 		top:'0',
 		left:'0',
 		bottom:'0',
@@ -10,7 +10,8 @@ var style = StyleSheet.create({
 		backgroundColor:'#fcd54a',
 	},
 	loadingImg:{
-		width:'100%',
+		width:'100%',		
+		height:'100%',
 		border:'0',
 	}
 });

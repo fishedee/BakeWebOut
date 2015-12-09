@@ -32,6 +32,7 @@ indexPage.use({
 				{name:'密码管理',url:'user/viewMyPassword.html'}
 			],
 			'活动管理':[
+				{name:'配置管理',url:'config/index.html'},
 				{name:'用户管理',url:'client/index.html'},
 				{name:'拼图活动',url:'puzzleactivity/index.html'}
 			]

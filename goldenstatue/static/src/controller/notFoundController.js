@@ -5,7 +5,6 @@ export default Controllers.createClass({
 		this.loadView(NotFoundView);
 	},
 	render(){
-		console.log("123");
 		return {};
 	}
 });

@@ -1,9 +1,17 @@
 package config
 
+import (
+	. "goldenstatue/models/common"
+)
+
 type ConfigAoModel struct {
 }
 
 var ConfigAo = &ConfigAoModel{}
+
+func (this *ConfigAoModel) Search(where Config,limit CommonPage) Configs {
+	return ConfigDb.Search(where,limit)
+}
 
 func (this *ConfigAoModel) Get(name string) string {
 	var result string

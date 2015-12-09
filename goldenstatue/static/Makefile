@@ -17,6 +17,6 @@ restart:stop
 	NODE_ENV=production forever start -a -l $(shell pwd)/../data/nodelog/server.log src2/server.js
 	tail -f $(shell pwd)/../data/nodelog/server.log
 backwatch:
-	webpack --config webpack.back.config.js --progress --color
+	webpack --config webpack.back.config.js --progress --color --watch
 backrelease:
 	NODE_ENV=production webpack --config webpack.back.config.js --progress --color

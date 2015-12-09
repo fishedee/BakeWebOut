@@ -17,15 +17,15 @@ export default Models.createClass({
 		})
 	},
 	async checkHasPhone(){
-		return this.fetchGet('/client/checkHasPhone',{})
+		return await this.fetchGet('/client/checkHasPhone',{})
 	},
 	async getPhoneCaptcha(phone){
-		this.fetchPost('/client/getPhoneCaptcha',{
+		await this.fetchPost('/client/getPhoneCaptcha',{
 			phone:phone
 		})
 	},
 	async registerPhone(phone,captcha){
-		this.fetchPost('/client/registerPhone',{
+		await this.fetchPost('/client/registerPhone',{
 			phone:phone,
 			captcha:captcha
 		})

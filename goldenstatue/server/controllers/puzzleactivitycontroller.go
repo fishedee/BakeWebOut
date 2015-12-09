@@ -186,14 +186,18 @@ func (this *PuzzleActivityController) AddComponentPuzzle_Json() ContentPuzzleAct
 	var where struct {
 		ContentId int
 		ClientId  int
+		PuzzleId  int
 	}
 	this.CheckPost(&where)
 
 	//检查权限
 	client := ClientLoginAo.CheckMustLogin(this.Ctx)
 
+	//FIXME
+	//ClientWxLoginAo.CheckMustHasPhone(client.ClientId)
+
 	//业务逻辑
-	return PuzzleActivityAo.AddComponentPuzzle(where.ContentId, where.ClientId, client.ClientId)
+	return PuzzleActivityAo.AddComponentPuzzle(where.ContentId, where.ClientId, client.ClientId, where.PuzzleId)
 }
 
 //记录收获信息

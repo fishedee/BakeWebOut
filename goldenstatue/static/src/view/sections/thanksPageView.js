@@ -34,12 +34,18 @@ export default Views.createClass({
 	changePage(pageName){
 		this.props.changePage(pageName);
 	},
+	goNewClientPage(){
+		this.props.changePage();
+		this.go('/puzzleactivity/'+this.props.contentId+"/"+this.props.loginClient.get("clientId"));
+	},
+
 	render(){
+		var puzzleData = this.props.puzzleData;
 		return (
 			<div className={style.dialogPage}>
 				<img className={style.imagePage} src='/img/thanksPage.png' />
 				<img className={style.closeBtn} src='/img/closeBtn.png' onClick={this.changePage.bind(null,'scanningCodePage')} />
-				<div className={style.btnLetsGo} onClick={this.changePage.bind(null,'scanningCodePage')}></div>
+				<div className={style.btnLetsGo} onClick={this.goNewClientPage}></div>
 			</div>
 		);
 	}

@@ -41,6 +41,17 @@ var style = StyleSheet.create({
 		overflowX:'hidden',
 		overflowY:'auto',
 		WebkitOverflowScrolling:'touch',
+
+		'::-webkit-scrollbar-thumb':{
+			backgroundColor:'#FFA711',
+		},
+		'::-webkit-scrollbar-track':{
+			background:'rgba(0,0,0,.6)',
+		},
+		'::-webkit-scrollbar':{
+			width:'5px',
+			height:'5px',
+		},
 	},
 	headSculpture:{
 		width:'22.356%',

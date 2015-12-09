@@ -18,3 +18,7 @@ func (this *WeixinController) GetJsConfig_Json() interface{} {
 	//业务逻辑
 	return WeixinAo.GetJsConfig(Data.Url)
 }
+
+func (this *WeixinController) Refresh_Json() {
+	WeixinAo.RefreshConfig()
+}

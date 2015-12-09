@@ -2,6 +2,7 @@ import PuzzleActivityClientView from '../view/puzzleActivityClientView';
 import PuzzleActivityModel from '../model/puzzleActivityModel';
 import PuzzleActivityFinishModel from '../model/puzzleActivityFinishModel';
 import LoginModel from '../model/loginModel';
+import WeixinModel from '../model/weixinModel';
 import ReactLocation from 'fishfront/react/react-location';
 
 export default Controllers.createClass({
@@ -11,6 +12,7 @@ export default Controllers.createClass({
 		this.loadModel(PuzzleActivityModel);
 		this.loadModel(PuzzleActivityFinishModel);
 		this.loadModel(LoginModel);
+		this.loadModel(WeixinModel);
 		this.contentId = this.getSegment(1);
 		this.clientId = this.getSegment(2);
 	},
@@ -38,10 +40,11 @@ export default Controllers.createClass({
 			this.clientId
 		);
 	},
-	async addComponentPuzzle(){
+	async addComponentPuzzle(puzzleId){
 		var data = await this.puzzleActivityModel.addComponentPuzzle(
 			this.contentId,
-			this.clientId
+			this.clientId,
+			puzzleId
 		);
 		await this.puzzleActivityModel.fetchComponentInfo(
 			this.contentId,
@@ -75,6 +78,16 @@ export default Controllers.createClass({
 	render(){
 		var data = this.puzzleActivityModel.get(this.contentId,this.clientId);
 		var finishData = this.puzzleActivityFinishModel.get(this.contentId);
+		//设置分享信息
+		if( data && data.getIn(["clientName"])){
+			var clientName = data.getIn(["clientName"]);
+			this.weixinModel.setShareMessage({
+				title:clientName+"要做蛋糕，就差你帮TA收集啦！快去~",
+				desc:"金像美玫免费礼物送啦！",
+				imgUrl:'http://goldenstatue.test2.hongbeibang.com/img/logo.jpg',
+				link:this.getLocation()
+			});
+		}
 		return {
 			checkHasPhone:this.checkHasPhone,
 			getPhoneCaptcha:this.getPhoneCaptcha,

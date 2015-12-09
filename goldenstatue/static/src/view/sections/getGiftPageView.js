@@ -64,14 +64,14 @@ export default Views.createClass({
 		,1000);
 	},
 	render(){
-		var lastIndex = this.props.lastPuzzle.size - 1;
-		var lastPuzzleName = this.props.lastPuzzle.getIn([lastIndex,"clientName"]);
+		//var lastIndex = this.props.lastPuzzle.size - 1;
+		var firstPuzzleName = this.props.lastPuzzle.getIn([0,"clientName"]);
 		return (
 			<div className={style.dialogPage}>
 				<img className={style.imagePage} src={this.state.image} />
 				<div style={{display:'none'}} ref='show'>
 					<div className={style.text}>
-						<p>{'哇～'+lastPuzzleName}</p>
+						<p>{'哇～'+firstPuzzleName}</p>
 						<p>帮你收集了最后一份原料</p>
 						<p>戚风蛋糕已新鲜出炉了！</p>
 						<p>快去领取你的礼物吧！</p>

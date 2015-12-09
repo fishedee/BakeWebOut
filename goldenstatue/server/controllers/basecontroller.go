@@ -35,6 +35,9 @@ func (this *BaseController) AutoRender(returnValue interface{}, viewname string)
 		result.Data = returnValue
 		result.Msg = ""
 	}
+	this.Ctx.Output.Header("Cache-Control","private, no-store, no-cache, must-revalidate, max-age=0")
+	this.Ctx.Output.Header("Cache-Control","post-check=0, pre-check=0")
+	this.Ctx.Output.Header("Pragma","no-cache")
 	this.Ctx.Output.Header("Access-Control-Allow-Origin", this.Ctx.Input.Header("Origin"))
 	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
 	if viewname == "json" {

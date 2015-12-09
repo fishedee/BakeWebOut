@@ -16,6 +16,8 @@ import SorryPage from './sections/sorryPageView';
 export default Views.createClass({
 	getInitialState(){
 		return {
+			brightImageIndex:null,
+			isMaterialPage:true,
 			isPhoneLogin:false,
 			isStyleSelectPage:false,
 			isMakeCakeClick:false,
@@ -71,47 +73,113 @@ export default Views.createClass({
 			this.setState({
 				isWinningPage:true
 			});
+		}else if(pageName=='materialPage'){
+			this.setState({
+				isMaterialPage:true
+			});
 		}
 	},
-	async makeCakeClick(){
+	async makeCakeClick(puzzleId){
 
 		var isPhoneLogin = await this.props.checkHasPhone();
+		var self = this;
 
 		if(isPhoneLogin){
-			var puzzleData = await this.props.addComponentPuzzle();
+			var puzzleData = await this.props.addComponentPuzzle(puzzleId);
 			if(puzzleData.get("type")==2){
 				this.setState({
 					isSorryPage:true,
+					isPhoneLogin:isPhoneLogin,
+					isMakeCakeClick:true,
 				});
+			}else{
+				if(puzzleId == 0){
+					this.setState({
+						isPhoneLogin:isPhoneLogin,
+						isMakeCakeClick:true,
+						puzzleData:puzzleData
+					});
+				}else{
+					this.setState({
+						brightImageIndex:puzzleId-1,
+					});
+					setTimeout(function(){
+						self.setState({
+							brightImageIndex:null,
+							isPhoneLogin:isPhoneLogin,
+							isMakeCakeClick:true,
+							puzzleData:puzzleData
+						});
+					},1000);
+				}
 			}
-			this.setState({
-				isPhoneLogin:isPhoneLogin,
-				isMakeCakeClick:true,
-				puzzleData:puzzleData
-			});
 		}else{
 			this.setState({
+				isMaterialPage:false,
 				isPhoneLogin:isPhoneLogin,
 				isMakeCakeClick:true,
 			});
 		}
+	},
+	async makeCakeSecondClick(){
+		var isPhoneLogin = await this.props.checkHasPhone();
+
+		if(this.props.componentData){
+			var allPuzzle = this.props.componentData.get("allPuzzle");
+			for(var i=0;i!=allPuzzle.size;++i){
+				if(allPuzzle.getIn([i,"puzzleClientId"]) == this.props.loginClient.get("clientId")){
+					var puzzleData = allPuzzle.get(i);
+				}
+			}
+		}
+		if(puzzleData.get("type")==2){
+			this.setState({
+				isSorryPage:true,
+			});
+		}
+		this.setState({
+			isPhoneLogin:isPhoneLogin,
+			isMakeCakeClick:true,
+			puzzleData:puzzleData
+		});
 	},
 	async selectStyle(titleId){
 		await this.props.setComponentTitle(titleId);
 	},
 	async signInfo(name,phoneNumber,address){
-		await this.props.setComponentAddress(name,phoneNumber,address);
-		this.setState({
-			isInvitationPage:true
-		});
+		if(name && phoneNumber && address){
+			await this.props.setComponentAddress(name,phoneNumber,address);
+			this.changePage();
+			this.setState({
+				isInvitationPage:true
+			});
+		}else{
+			alert('请把资料填写完整！');
+		}
+
 	},
 	async getCode(phone){
-		await this.props.getPhoneCaptcha(phone);
-		alert('发送验证码成功，请留意短信！');
+		if(phone){
+			await this.props.getPhoneCaptcha(phone);
+			alert('发送验证码成功，请留意短信！');
+		}else{
+			alert('请输入手机号！');
+		}
 	},
 	async registerPhone(phone,captcha){
-		await this.props.registerPhone(phone,captcha);
-		alert('注册成功！');
+		if(phone && captcha){
+			this.changePage('materialPage');
+			await this.props.registerPhone(phone,captcha);
+			alert('注册成功！');
+		}else{
+			if(phone&&!captcha){
+				alert('请输入验证码！');
+			}else if(!phone&&captcha){
+				alert('请输入手机号！');
+			}else if(!phone&&!captcha){
+				alert('请输入手机号和验证码！');
+			}
+		}
 	},
 	goNewClientPage(changePuzzleClientId){
 		var componentData = this.props.componentData;
@@ -131,15 +199,19 @@ export default Views.createClass({
 					this.state.isStyleSelectPage? 
 						<StyleSelectPage changePage={this.changePage} selectStyle={this.selectStyle} materialData={materialData} />
 						:this.state.isWinningPage ?
-							<WinningPage signInfo={this.signInfo} changePage={this.changePage} />
-							:<MaterialPage 
-								contentId={componentData.getIn(["component","contentId"])}
-								loginClient={this.props.loginClient}
-								changePage={this.changePage} 
-								materialData={materialData}
-								makeCakeClick={this.makeCakeClick}
-								state={materialData.getIn(["component","state"])}
-								isPuzzleClient={isPuzzleClient} />
+							<WinningPage signInfo={this.signInfo} />
+							:this.state.isMaterialPage ? 
+								<MaterialPage 
+									contentId={componentData.getIn(["component","contentId"])}
+									loginClient={this.props.loginClient}
+									changePage={this.changePage} 
+									materialData={materialData}
+									makeCakeClick={this.makeCakeClick}
+									makeCakeSecondClick={this.makeCakeSecondClick}
+									state={materialData.getIn(["component","state"])}
+									isPuzzleClient={isPuzzleClient}
+									brightImageIndex={this.state.brightImageIndex} />
+								:null
 					
 					:null
 				}
@@ -149,7 +221,7 @@ export default Views.createClass({
 						this.state.isSorryPage ?
 							<SorryPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} puzzleData={this.state.puzzleData}  />
 							:<CongratulationPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} isPuzzleClient={isPuzzleClient} puzzleData={this.state.puzzleData} />
-						:<LoginPage changePage={this.changePage} getCode={this.getCode} registerPhone={this.registerPhone} />
+						:<LoginPage getCode={this.getCode} registerPhone={this.registerPhone} />
 					:null
 				}
 
@@ -184,7 +256,9 @@ export default Views.createClass({
 				}
 
 				{!isPuzzleClient && this.state.isThanksPage && ((materialData.getIn(["component","state"])==4) || (materialData.getIn(["component","state"])==5)) ?
-					<ThanksPage changePage={this.changePage} />
+					<ThanksPage changePage={this.changePage} 
+								contentId={componentData.getIn(["component","contentId"])}
+								loginClient={this.props.loginClient} />
 					:null
 				}
 			</div>

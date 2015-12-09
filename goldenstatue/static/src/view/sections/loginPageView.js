@@ -1,57 +1,72 @@
 
 var style = StyleSheet.create({
 	dialogPage:{
-		position:'absolute',
-		top:'0',
-		right:'0',
-		bottom:'0',
-		left:'0',
+		position:'relative',
 		zIndex:'1',
 	},
 	imagePage:{
-		width:'100%',
-		height:'100%',
-		border:'0'
+		maxWidth:'500px',
+		backgroundImage:'url(/img/loginPage.png)',
+		backgroundRepeat:'no-repeat',
+		backgroundPosition:'center',
+		backgroundSize:'100% 100%',
 	},
 	btnEnsure:{
 		width:'89.22%',
-		height:'11.357%',
-		position:'absolute',
-		bottom:'6.5%',
-		left:'5.4%',
+		height:'37.857%',
 		cursor:'pointer',
+		marginLeft:'5.4%',
+		marginTop:'21%',
+	},
+	inputWrap:{
+		height:'50%',
+		width:'100%',
+		boxSizing:'border-box',
 	},
 	loginPhoneNum:{
 		width:'48.75%',
-		height:'3.85%',
+		height:'21.979%',
 		fontSize:'16px',
 		fontWeight:'bolder',
 		backgroundColor:'#fcd54a',
-		position:'absolute',
-		top:'39.3%',
-		left:'34.4%',
 		border:'none',
 		outline:'none',
+		marginTop:'7.3%',
+		marginLeft:'34.4%',
 	},
 	loginCode:{
 		width:'28.44%',
-		height:'3.85%',
+		height:'21.979%',
 		fontSize:'16px',
 		fontWeight:'bolder',
 		backgroundColor:'#fcd54a',
-		position:'absolute',
-		top:'55%',
-		left:'35.5%',
 		border:'none',
 		outline:'none',
+		marginTop:'4%',
+		marginLeft:'35.5%',
 	},
 	btnGetCode:{
-		width:'19.375%',
-		height:'4.75%',
-		position:'absolute',
-		top:'56%',
-		right:'15.6%',
+		width:'20%',
+		height:'27.118%',
 		cursor:'pointer',
+		marginTop:'6%',
+		marginRight:'15.4%',
+		float:'right',
+	},
+	top:{
+		width:'100%',
+		height:'35%',
+		float:'left',
+	},
+	middle:{
+		width:'100%',
+		height:'35%',
+		float:'left',
+	},
+	bottom:{
+		width:'100%',
+		height:'30%',
+		float:'left',
 	},
 });
 
@@ -74,20 +89,34 @@ export default Views.createClass({
 		}
 	},
 	registerPhone(){
-		this.props.changePage();
 		this.props.registerPhone(this.state.phone,this.state.captcha);
 	},
 	getCode(){
 		this.props.getCode(this.state.phone);
 	},
+	componentDidMount(){
+		var loginImage = this.refs.loginImage;
+		loginImage.style.width = document.body.offsetWidth;
+		loginImage.style.height = document.body.offsetHeight;
+	},
 	render(){
 		return (
 			<div className={style.dialogPage}>
-				<img className={style.imagePage} src='/img/loginPage.png' />
-				<input type='text' className={style.loginPhoneNum} onChange={this.onChange.bind(null,'phone')} autoFocus />
-				<input type='text' className={style.loginCode} onChange={this.onChange.bind(null,'captcha')} />
-				<div className={style.btnGetCode} onClick={this.getCode}></div>
-				<div className={style.btnEnsure} onClick={this.registerPhone}></div>
+				<div ref='loginImage' className={style.imagePage}>
+					<div className={style.top}></div>
+					<div className={style.middle}>
+						<div className={style.inputWrap}>
+							<input type='text' className={style.loginPhoneNum} onChange={this.onChange.bind(null,'phone')} autoFocus />
+						</div>
+						<div className={style.inputWrap}>
+							<div className={style.btnGetCode} onClick={this.getCode}></div>
+							<input type='text' className={style.loginCode} onChange={this.onChange.bind(null,'captcha')} />
+						</div>
+					</div>
+					<div className={style.bottom}>
+						<div className={style.btnEnsure} onClick={this.registerPhone}></div>
+					</div>
+				</div>
 			</div>
 		);
 	}

@@ -22,10 +22,11 @@ export default Models.createClass({
 			titleId:titleId
 		});
 	},
-	async addComponentPuzzle(contentId,clientId){
+	async addComponentPuzzle(contentId,clientId,puzzleId){
 		return await this.fetchPost('/puzzleactivity/addComponentPuzzle',{
 			contentId:contentId,
-			clientId:clientId
+			clientId:clientId,
+			puzzleId:puzzleId
 		});
 	},
 	async setComponentAddress(contentId,clientId,name,phoneNumber,address){

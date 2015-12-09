@@ -35,7 +35,7 @@ export default Views.createClass({
 		this.props.changePage(pageName);
 	},
 	goNewClientPage(changePuzzleClientId){
-		this.props.changePage('rulePage');
+		this.props.changePage();
 		this.props.goNewClientPage(changePuzzleClientId);
 	},
 	render(){

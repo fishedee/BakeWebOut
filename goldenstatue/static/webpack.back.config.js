@@ -24,8 +24,7 @@ module.exports = webpackHtml({
                 name: "commons",
                 minChunks:2,
                 filename: "backbuild/commons.js"
-            }),
-            process.env.NODE_ENV === 'production'?new webpack.optimize.UglifyJsPlugin():null
+            })
         ]
     }
 })

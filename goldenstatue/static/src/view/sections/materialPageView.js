@@ -11,6 +11,13 @@ var style = StyleSheet.create({
 		width:'100%',
 		border:'0'
 	},
+	flag:{
+		width:'26.25%',
+		position:'absolute',
+		top:'17%',
+		left:'0',
+		border:'0'
+	},
 	btnActivityRule:{
 		width:'23%',
 		height:'3.7%',
@@ -26,10 +33,14 @@ var style = StyleSheet.create({
 		left:'36.3%',
 	},
 	name:{
-		width:'17.2%',
+		width:'25%',
 		position:'absolute',
 		top:'35%',
-		left:'7%',
+		left:'6%',
+	},
+	imageName:{
+		width:'68.75%',
+		border:'0'
 	},
 	nameTitle:{
 		width:'29.53%',
@@ -51,6 +62,35 @@ var style = StyleSheet.create({
 		position:'absolute',
 		bottom:'23%',
 		left:'0',
+	},
+	gifBrightImage:{
+		width:'30%',
+		position:'absolute',
+		border:'0'
+	},
+	gifStyleFlour:{
+		bottom:'35%',
+		left:'7.5%',
+	},
+	gifStyleEggs:{
+		bottom:'35%',
+		left:'36%',
+	},
+	gifStyleMilk:{
+		bottom:'35%',
+		left:'63%',
+	},
+	gifStyleSugar:{
+		bottom:'-2%',
+		left:'7.5%',
+	},
+	gifStyleOil:{
+		bottom:'-2%',
+		left:'36%',
+	},
+	gifStyleMicrowaveOven:{
+		bottom:'-4%',
+		left:'64%',
 	},
 	materialImage:{
 		position:'absolute',
@@ -111,12 +151,12 @@ var style = StyleSheet.create({
 });
 
 var materialData = Immutable.fromJS([
-	{key:'jigsawFlour', className:style.jigsawFlour, ordinaryImage:'jigsawFlour', selectImage:'jigsawFlour1'},
-	{key:'jigsawEgg', className:style.jigsawEgg, ordinaryImage:'jigsawEgg', selectImage:'jigsawEgg1'},
-	{key:'jigsawMilk', className:style.jigsawMilk, ordinaryImage:'jigsawMilk', selectImage:'jigsawMilk1'},
-	{key:'jigsawSugar', className:style.jigsawSugar, ordinaryImage:'jigsawSugar', selectImage:'jigsawSugar1'},
-	{key:'jigsawOil', className:style.jigsawOil, ordinaryImage:'jigsawOil', selectImage:'jigsawOil1'},
-	{key:'jigsawMicrowaveOven', className:style.jigsawMicrowaveOven, ordinaryImage:'jigsawMicrowaveOven', selectImage:'jigsawMicrowaveOven1'},
+	{key:'jigsawFlour', className:style.jigsawFlour, ordinaryImage:'/img/jigsawFlour.png', selectImage:'/img/jigsawFlour1.png',gifImage:'/gif/gifFlour.gif',gifStyle:style.gifStyleFlour},
+	{key:'jigsawEgg', className:style.jigsawEgg, ordinaryImage:'/img/jigsawEgg.png', selectImage:'/img/jigsawEgg1.png',gifImage:'/gif/gifEggs.gif',gifStyle:style.gifStyleEggs},
+	{key:'jigsawMilk', className:style.jigsawMilk, ordinaryImage:'/img/jigsawMilk.png', selectImage:'/img/jigsawMilk1.png',gifImage:'/gif/gifMilk.gif',gifStyle:style.gifStyleMilk},
+	{key:'jigsawSugar', className:style.jigsawSugar, ordinaryImage:'/img/jigsawSugar.png', selectImage:'/img/jigsawSugar1.png',gifImage:'/gif/gifSugar.gif',gifStyle:style.gifStyleSugar},
+	{key:'jigsawOil', className:style.jigsawOil, ordinaryImage:'/img/jigsawOil.png', selectImage:'/img/jigsawOil1.png',gifImage:'/gif/gifOil.gif',gifStyle:style.gifStyleOil},
+	{key:'jigsawMicrowaveOven', className:style.jigsawMicrowaveOven, ordinaryImage:'/img/jigsawMicrowaveOven.png', selectImage:'/img/jigsawMicrowaveOven1.png',gifImage:'/gif/gifMicrowaveOven.gif',gifStyle:style.gifStyleMicrowaveOven},
 ]);
 
 export default Views.createClass({
@@ -145,15 +185,36 @@ export default Views.createClass({
 	componentWillUnMount(){
 		clearInterval(this.timer);
 	},
+	getInitialState(){
+		return {
+			index:null,
+		};
+	},
 	changePage(pageName){
 		this.props.changePage(pageName);
 	},
-	makeCakeClick(){
+	makeCakeClick(puzzleId){
 		this.props.changePage();
-		this.props.makeCakeClick();
+		this.props.makeCakeClick(puzzleId);
+	},
+	makeCakeSecondClick(){
+		this.props.changePage();
+		this.props.makeCakeSecondClick();
+	},
+	selectClick(index){
+		var self = this;
+		this.setState({
+			index:index,
+		});
+		setTimeout(function(){
+			self.setState({
+				index:null,
+			});
+		},2000);
 	},
 	render(){
 		var data = this.props.materialData;
+		var self = this;
 
 		switch(data.getIn(["component","titleId"])){
 			case 0 : 
@@ -188,25 +249,40 @@ export default Views.createClass({
 				break;
 		}
 		var newData = materialData.map(function(e,i){
+
 			var puzzle = data.getIn(["puzzle",i]);
 			if(!puzzle){
 				var image = e.get("ordinaryImage");
 			}else{
 				var image = e.get("selectImage");
 			}
+			if(self.state.index != null){
+				var gifImage = materialData.getIn([self.state.index,"gifImage"]);
+			}
+			if(data.get("isPuzzle")){
+				var makeCakeClickLink = image==e.get("ordinaryImage") ? self.makeCakeSecondClick : self.selectClick.bind(self,i);
+			}else{
+				var makeCakeClickLink = image==e.get("ordinaryImage") ? self.makeCakeClick.bind(self,i+1) : self.selectClick.bind(self,i);
+			}
 			return (
-				<img key={e.get("key")} 
-					className={classnames(style.materialImage,e.get("className"))} 
-					src={'/img/'+image+'.png'} />
+				<div key={e.get("key")}>
+					<img className={classnames(style.materialImage,e.get("className"))} 
+						src={self.state.index==i ? gifImage : image}
+						onClick={makeCakeClickLink} />
+					{(self.props.brightImageIndex != null) && (self.props.brightImageIndex == i) ?
+						<img className={classnames(style.gifBrightImage,e.get("gifStyle"))} src='/gif/gifLine.gif' />
+						:null
+					}
+				</div>
 			);
 		});
 		if(data.get("isPuzzle")){
 
 			var makeCakeClickLink = this.props.isPuzzleClient ? 
 				this.changePage.bind(null,'sharePage')
-				:this.changePage.bind(null,'scanningCodePage');
+				:this.makeCakeSecondClick;
 		}else{
-			var makeCakeClickLink = this.makeCakeClick;
+			var makeCakeClickLink = this.makeCakeClick.bind(null,0);
 		}
 		if(data.get("radio").size != 0){
 			var radioData = data.get("radio").map(function(e){
@@ -219,10 +295,11 @@ export default Views.createClass({
 			<div>
 
 				<img className={style.imagePage} src='/img/materialPage.png' />
+				<img className={style.flag} src='/gif/flag.gif' />
 				<div className={style.btnActivityRule} onClick={this.changePage.bind(null,'rulePage')}></div>
 				<ClientImage className={style.headSculpture} src={data.get("clientImage")!=""?data.get("clientImage"):null} />
 				<div className={style.name}>
-					<img className={style.image} src={styleName} />
+					<img className={style.imageName} src={styleName} />
 					<div className={style.clientName}>{data.get("clientName")!=""?data.get("clientName"):null}</div>
 				</div>
 				<div className={style.nameTitle}>

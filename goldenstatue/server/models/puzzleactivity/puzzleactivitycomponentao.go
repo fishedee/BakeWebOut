@@ -142,7 +142,7 @@ func (this *PuzzleActivityComponentAoModel) SetTitle(contentId int, clientId int
 	PuzzleActivityComponentDb.Mod(componentId, puzzleActivityComponent)
 }
 
-func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId int, loginClientId int) ContentPuzzleActivityComponentPuzzle {
+func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId int, loginClientId int, inPuzzleId int) ContentPuzzleActivityComponentPuzzle {
 	sess := DB.NewSession()
 	defer sess.Close()
 	sess.Begin()
@@ -153,7 +153,7 @@ func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId in
 	state := componentInfo.State
 	if clientId != loginClientId {
 		if state != PuzzleActivityComponentStateEnum.HAVE_BEGIN {
-			Throw(1, "现在不能为该用户点亮！")
+			Throw(1, "用户尚未开始！")
 		}
 	} else {
 		if state != PuzzleActivityComponentStateEnum.NO_BEGIN {
@@ -166,8 +166,12 @@ func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId in
 	puzzles := this.getComponentPuzzle(sess, componentId)
 	puzzleIds := []int{}
 	isPuzzle := false
+	isSuccessPuzzle := false
 	for _, value := range puzzles {
 		if value.Type == PuzzleActivityComponentPuzzleEnum.SUCCESS {
+			if value.PuzzleId == inPuzzleId {
+				isSuccessPuzzle = true
+			}
 			puzzleIds = append(
 				puzzleIds,
 				value.PuzzleId,
@@ -182,6 +186,11 @@ func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId in
 	}
 
 	puzzleId, isSuccess := this.makePuzzle(puzzleIds)
+	if inPuzzleId != 0 &&
+		isSuccessPuzzle != true &&
+		isSuccess == PuzzleActivityComponentPuzzleEnum.SUCCESS {
+		puzzleId = inPuzzleId
+	}
 	data := ContentPuzzleActivityComponentPuzzle{
 		ContentPuzzleActivityComponentId: componentId,
 		PuzzleClientId:                   loginClientId,
@@ -211,21 +220,21 @@ func (this *PuzzleActivityComponentAoModel) getComponentPuzzle(sess *xorm.Sessio
 	return PuzzleActivityComponentPuzzleDb.GetByComponentIdForTrans(sess, componentId)
 }
 
-func (this *PuzzleActivityComponentAoModel) getRate(num int) int {
-	result := 0
+func (this *PuzzleActivityComponentAoModel) getRate(num int) float64 {
+	var result float64
 	switch num {
 	case 1:
-		result = 10
+		result = 1
 	case 2:
-		result = 8
+		result = 0.8
 	case 3:
-		result = 7
+		result = 0.7
 	case 4:
-		result = 6
+		result = 0.6
 	case 5:
-		result = 5
+		result = 0.5
 	case 6:
-		result = 4
+		result = 0.4
 	}
 	return result
 }
@@ -253,7 +262,7 @@ func (this *PuzzleActivityComponentAoModel) makePuzzle(puzzleIds []int) (int, in
 	}
 
 	nextRate := this.getRate(successNum + 1)
-	rate := rand.Intn(11)
+	rate := rand.Float64()
 	num := 0
 	if rate <= nextRate {
 		num = rand.Intn(len(failPuzzleIds))
@@ -298,7 +307,7 @@ func (this *PuzzleActivityComponentAoModel) SetAddress(contentId int, clientId i
 
 	//检查是否已完成
 	if componentInfo.State != PuzzleActivityComponentStateEnum.FINISH_NO_ADDRESS {
-		Throw(1, "尚未收集完6块材料，请继续加油哦～～")
+		Throw(1, "你尚未收集完6块材料，请继续加油哦～～")
 	}
 
 	//添加地址信息
