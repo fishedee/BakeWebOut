@@ -80,7 +80,7 @@ func (this *PuzzleActivityComponentDbModel) GetFinishByContentId(contentId int, 
 	db := DB.NewSession()
 
 	var puzzleActivityComponents []ContentPuzzleActivityComponent
-	db = db.Where("contentId = ? and state = ? or state = ?", contentId, PuzzleActivityComponentStateEnum.FINISH_NO_ADDRESS, PuzzleActivityComponentStateEnum.FINISH_HAS_ADDRESS)
+	db = db.Where("contentId = ? and (state = ?  or state = ?)", contentId, PuzzleActivityComponentStateEnum.FINISH_NO_ADDRESS, PuzzleActivityComponentStateEnum.FINISH_HAS_ADDRESS)
 	err := db.OrderBy("createTime desc").Limit(limit.PageSize, limit.PageIndex).Find(&puzzleActivityComponents)
 	if err != nil {
 		panic(err)
@@ -104,12 +104,12 @@ func (this *PuzzleActivityComponentDbModel) Mod(id int, puzzleActivityComponent 
 }
 
 func (this *PuzzleActivityComponentDbModel) GetByContentIdAndClientIdForTrans(sess *xorm.Session, contentId int, clientId int) []ContentPuzzleActivityComponent {
-	var components []ContentPuzzleActivityComponent
-	err := sess.Where("contentId = ? and clientId = ?", contentId, clientId).Find(&components)
+	sql := "select * from t_content_puzzle_activity_component where contentId = " + contentId + " and clientId = " + clientId + " for update "
+	result, err := sess.Query(sql)
 	if err != nil {
 		panic(err)
 	}
-	return components
+	return result
 }
 
 func (this *PuzzleActivityComponentDbModel) SetStateForTrans(sess *xorm.Session, componentId int, state int) {

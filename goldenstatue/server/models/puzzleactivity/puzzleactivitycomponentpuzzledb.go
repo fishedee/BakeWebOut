@@ -90,12 +90,12 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentIdAndPuzz
 }
 
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentIdForTrans(sess *xorm.Session, componentId int) []ContentPuzzleActivityComponentPuzzle {
-	var puzzles []ContentPuzzleActivityComponentPuzzle
-	err := sess.Where("contentPuzzleActivityComponentId = ?", componentId).Find(&puzzles)
+	sql := "select * from t_content_puzzle_activity_component_puzzle where contentPuzzleActivityComponentId = " + componentId + " for update "
+	result, err := sess.Query(sql)
 	if err != nil {
 		panic(err)
 	}
-	return puzzles
+	return result
 }
 
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) Add(data ContentPuzzleActivityComponentPuzzle) ContentPuzzleActivityComponentPuzzle {
