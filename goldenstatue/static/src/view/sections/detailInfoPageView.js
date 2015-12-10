@@ -89,7 +89,13 @@ export default Views.createClass({
 		this.props.changePage();
 	},
 	render(){
-		var data = this.props.materialData.get("allPuzzle").map(function(e,i){
+		var newMaterialData = this.props.materialData.get("allPuzzle").filter(function(e){
+			return e.get("isRead") == 1;
+		});
+		if( newMaterialData.size == 0 ){
+			return null;
+		}
+		var data = newMaterialData.map(function(e,i){
 			switch(e.get("puzzleId")){
 				case 1 : 
 					var materialName = '面粉';

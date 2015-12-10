@@ -39,9 +39,16 @@ var PuzzleActivityComponentPuzzleEnum struct {
 	FAIL    int `enum:"2,失败"`
 }
 
+var PuzzleActivityComponentPuzzleStateEnum struct {
+	EnumStruct
+	NO_READ   int `enum:"1,未读"`
+	HAVE_READ int `enum:"2,已读"`
+}
+
 func init() {
 	InitEnumStruct(&PuzzleActivityTitleEnum)
 	InitEnumStruct(&PuzzleActivityPuzzleEnum)
 	InitEnumStruct(&PuzzleActivityComponentStateEnum)
 	InitEnumStruct(&PuzzleActivityComponentPuzzleEnum)
+	InitEnumStruct(&PuzzleActivityComponentPuzzleStateEnum)
 }

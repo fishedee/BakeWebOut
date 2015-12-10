@@ -10,7 +10,7 @@ var style = StyleSheet.create({
 		background:'rgba(0,0,0,.6)',
 	},
 	shareImage:{
-		width:'30%',
+		width:'80%',
 		border:'0',
 		position:'absolute',
 		top:'0',
@@ -33,11 +33,7 @@ export default Views.createClass({
 	render(){
 		return (
 			<div className={style.dialogPage} onClick={this.changePage.bind(null,'scanningCodePage')}>
-				<img className={style.shareImage} src='/img/shareImage.png' />
-				<div className={style.shareTip} >
-					<p>咦,</p>
-					<p>这里有个按钮</p>
-				</div>
+				<img className={style.shareImage} src='/gif/share.gif' />
 			</div>
 		);
 	}

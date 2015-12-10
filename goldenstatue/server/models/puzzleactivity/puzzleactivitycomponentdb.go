@@ -105,7 +105,7 @@ func (this *PuzzleActivityComponentDbModel) Mod(id int, puzzleActivityComponent 
 
 func (this *PuzzleActivityComponentDbModel) GetByContentIdAndClientIdForTrans(sess *xorm.Session, contentId int, clientId int) []ContentPuzzleActivityComponent {
 	result := []ContentPuzzleActivityComponent{}
-	err := sess.Where("contentId = ? and clientId = ? for update",contentId,clientId).Find(&result)
+	err := sess.Sql("select * from t_content_puzzle_activity_component where contentId = ? and clientId = ? for update", contentId, clientId).Find(&result)
 	if err != nil {
 		panic(err)
 	}

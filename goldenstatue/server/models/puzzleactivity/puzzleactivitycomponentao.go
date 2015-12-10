@@ -108,7 +108,7 @@ func (this *PuzzleActivityComponentAoModel) Get(contentId int, clientId int, log
 	result.Puzzle = puzzle
 
 	//参赛者到目前为止所有点亮记录
-	allPuzzleWithClientInfo := make([]PuzzleActivityComponentPuzzleWithClientInfo, 0)
+	allPuzzleWithClientInfo := []PuzzleActivityComponentPuzzleWithClientInfo{}
 	allPuzzle := PuzzleActivityComponentPuzzleDb.GetByComponentId(componentId)
 	for _, value := range allPuzzle {
 		singleClient := ClientAo.Get(value.PuzzleClientId)
@@ -120,10 +120,21 @@ func (this *PuzzleActivityComponentAoModel) Get(contentId int, clientId int, log
 				singleClient.Image,
 			},
 		)
+		//设置已读
+		if clientId == loginClientId {
+			this.setPuzzleHaveRead(value.ContentPuzzleActivityComponentPuzzleId)
+		}
 	}
 	result.AllPuzzle = allPuzzleWithClientInfo
 
 	return result
+}
+
+func (this *PuzzleActivityComponentAoModel) setPuzzleHaveRead(componentPuzzleId int) {
+	puzzle := ContentPuzzleActivityComponentPuzzle{
+		IsRead: PuzzleActivityComponentPuzzleStateEnum.HAVE_READ,
+	}
+	PuzzleActivityComponentPuzzleDb.Mod(componentPuzzleId, puzzle)
 }
 
 func (this *PuzzleActivityComponentAoModel) SetTitle(contentId int, clientId int, titleId int) {
@@ -196,6 +207,7 @@ func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId in
 		PuzzleClientId:                   loginClientId,
 		PuzzleId:                         puzzleId,
 		Type:                             isSuccess,
+		IsRead:                           PuzzleActivityComponentPuzzleStateEnum.NO_READ,
 	}
 	result := PuzzleActivityComponentPuzzleDb.AddForTrans(sess, data)
 

@@ -65,6 +65,7 @@ create table t_content_puzzle_activity_component_puzzle(
 	puzzleClientId integer not null,
 	puzzleId integer not null,
 	type integer not null,
+	isRead integer not null,
 	createTime timestamp not null default CURRENT_TIMESTAMP,
 	modifyTime timestamp not null default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
 	primary key( contentPuzzleActivityComponentPuzzleId )

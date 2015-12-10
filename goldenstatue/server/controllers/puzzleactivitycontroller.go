@@ -193,7 +193,7 @@ func (this *PuzzleActivityController) AddComponentPuzzle_Json() ContentPuzzleAct
 	//检查权限
 	client := ClientLoginAo.CheckMustLogin(this.Ctx)
 
-	ClientWxLoginAo.CheckMustHasPhone(client.ClientId)
+	ClientWxLoginAo.CheckMustHasPhone(this.Ctx,client.ClientId)
 
 	//业务逻辑
 	return PuzzleActivityAo.AddComponentPuzzle(where.ContentId, where.ClientId, client.ClientId, where.PuzzleId)

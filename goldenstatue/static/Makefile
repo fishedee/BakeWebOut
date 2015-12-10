@@ -12,10 +12,10 @@ release:
 	-rm -rf build2
 	$(MAKE) restart
 stop:
-	-forever stop src2/server.js
-restart:stop
-	NODE_ENV=production forever start -a -l $(shell pwd)/../data/nodelog/server.log src2/server.js
-	tail -f $(shell pwd)/../data/nodelog/server.log
+	sudo supervisorctl stop goldenstatue_static
+restart:
+	sudo supervisorctl restart goldenstatue_static
+	tail -f $(shell pwd)/../data/log/static-std.log
 backwatch:
 	webpack --config webpack.back.config.js --progress --color --watch
 backrelease:

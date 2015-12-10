@@ -53,6 +53,7 @@ type ContentPuzzleActivityComponentPuzzle struct {
 	PuzzleClientId                         int
 	PuzzleId                               int
 	Type                                   int
+	IsRead                                 int
 	CreateTime                             time.Time `xorm:"created"`
 	ModifyTime                             time.Time `xorm:"updated"`
 }

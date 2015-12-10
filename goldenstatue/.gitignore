@@ -1,7 +1,6 @@
 /server/server
-/data/golog/*
-/data/nodelog/*
-!/data/nodelog/.gitignore
+/data/log/*
+!/data/log/.gitignore
 /server/nohup.out
 /server/goldenstatue
 /static/build

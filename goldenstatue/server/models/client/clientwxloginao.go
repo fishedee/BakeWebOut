@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+	"strings"
 )
 
 type ClientWxLoginAoModel struct {
@@ -38,16 +39,32 @@ func (this *ClientWxLoginAoModel) Login(context *context.Context,callback string
 	return "http://"+officalHost+"/weixin/oauth2?"+queryEncode
 }
 
-func (this *ClientWxLoginAoModel) callInterface(method string,url string,urlInfo url.Values,result interface{}){
+func (this *ClientWxLoginAoModel) callInterface(context *context.Context,method string,url string,urlInfo url.Values,result interface{}){
+	//提取request的cookie
+	requestCookies := context.Request.Cookies()
+
+	//请求url
+	httpClient := &http.Client{}
+	var request *http.Request
 	var resp *http.Response
 	var err error
 	url = "http://" + officalHost + url
 	if method == "get"{
-		url = url + "?" + urlInfo.Encode()
-		resp,err = http.DefaultClient.Get(url)
+		request,err = http.NewRequest("GET",url + "?" + urlInfo.Encode(),nil)
+		if err != nil{
+			panic(err)
+		}
 	}else{
-		resp,err = http.DefaultClient.PostForm(url,urlInfo)
+		request,err = http.NewRequest("POST",url,strings.NewReader(urlInfo.Encode()))
+		if err != nil{
+			panic(err)
+		}
 	}
+	for _,value := range requestCookies{
+		Log.Debug("cookie",value)
+		request.AddCookie(value)
+	}
+	resp,err = httpClient.Do(request)
 	
 	if err != nil{
 		Throw(1,"调用金象官方系统接口失败:"+err.Error())
@@ -63,6 +80,13 @@ func (this *ClientWxLoginAoModel) callInterface(method string,url string,urlInfo
 	err = json.Unmarshal(respString,result)
 	if err != nil{
 		Throw(1,"获取金象官方系统接口的json解析失败："+string(respString))
+	}
+
+	//写入cookie
+	responseCookies := resp.Cookies()
+	for _,value := range responseCookies{
+		http.SetCookie(context.ResponseWriter,value)
+		context.Request.AddCookie(value)
 	}
 }
 
@@ -87,7 +111,7 @@ func (this *ClientWxLoginAoModel) LoginCallback(context *context.Context) string
 	}
 
 	openid := context.Input.Query("openid")
-	this.callInterface("get","/weixin/user",url.Values{
+	this.callInterface(context,"get","/weixin/user",url.Values{
 		"openid":{openid},
 	},&clientInfo)
 
@@ -106,36 +130,35 @@ func (this *ClientWxLoginAoModel) LoginCallback(context *context.Context) string
 	return clientCallback
 }
 
-func (this *ClientWxLoginAoModel) CheckHasPhoneNumber(clientId int)bool{
-	//FIMXE
-	//他们接口未能用，暂时return true
+func (this *ClientWxLoginAoModel) CheckHasPhoneNumber(context *context.Context,clientId int)bool{
+	//FIXME
 	return true;
-
+	
 	clientInfo := ClientAo.Get(clientId)
 
 	var userPhoneInfo struct{
 		Registered bool `json:registered`
 	}
-	this.callInterface("get","/api/user/query",url.Values{
+	this.callInterface(context,"get","/api/user/query",url.Values{
 		"openid":{clientInfo.OpenId},
 	},&userPhoneInfo)
 
 	return userPhoneInfo.Registered;
 }
 
-func (this *ClientWxLoginAoModel) CheckMustHasPhone(clientId int){
-	hasPhone := this.CheckHasPhoneNumber(clientId)
+func (this *ClientWxLoginAoModel) CheckMustHasPhone(context *context.Context,clientId int){
+	hasPhone := this.CheckHasPhoneNumber(context,clientId)
 	if hasPhone == false{
 		Throw(1,"还没有注册手机号码噢")
 	}
 }
 
-func (this *ClientWxLoginAoModel) GetPhoneCaptcha(phoneNumber string){
+func (this *ClientWxLoginAoModel) GetPhoneCaptcha(context *context.Context,phoneNumber string){
 	var sendResult struct{
 		Error int `json:error,omitempty`
 		Message string `json:message,omitempty`
 	}
-	this.callInterface("get","/api/sms_captcha",url.Values{
+	this.callInterface(context,"get","/api/sms_captcha",url.Values{
 		"mobile":{phoneNumber},
 	},&sendResult)
 	if sendResult.Error != 0{
@@ -143,7 +166,7 @@ func (this *ClientWxLoginAoModel) GetPhoneCaptcha(phoneNumber string){
 	}
 }
 
-func (this *ClientWxLoginAoModel) RegisterPhoneNumber(clientId int,phoneNumber string,phoneCaptcha string){
+func (this *ClientWxLoginAoModel) RegisterPhoneNumber(context *context.Context,clientId int,phoneNumber string,phoneCaptcha string){
 	clientInfo := ClientAo.Get(clientId)
 
 	var registerInfo struct{
@@ -164,7 +187,7 @@ func (this *ClientWxLoginAoModel) RegisterPhoneNumber(clientId int,phoneNumber s
 		Message string `json:message,omitempty`
 	}
 	Log.Debug("registerInfo %s",registerInfo)
-	this.callInterface("post","/api/user",url.Values{
+	this.callInterface(context,"post","/api/user",url.Values{
 		"openid":{registerInfo.OpenId},
 		"mobile":{registerInfo.Mobile},
 		"sms_captcha":{registerInfo.Captcha},
