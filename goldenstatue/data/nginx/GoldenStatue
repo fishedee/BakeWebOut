@@ -2,7 +2,7 @@
 server {
 	listen 80;
 	root /var/www/goldenstatue/;
-	server_name goldenstatue.hongbeibang.com goldenstatue.test2.hongbeibang.com;
+	server_name goldenstatue.solomochina.com goldenstatue.hongbeibang.com goldenstatue.test2.hongbeibang.com goldenstatue.test3.hongbeibang.com;
 	rewrite ^/(.*\.(html|css|js|map|jpg|jpeg|png|gif|mp3|midi|swf|ico|json)) /static/build/$1 last;
 
 	location ~ \.(html|css|js|map|jpg|jpeg|png|gif|mp3|midi|swf|ico|json) {
@@ -19,7 +19,7 @@ server {
 server {
 	listen 80;
 	root /var/www/goldenstatue/;
-	server_name backstage.goldenstatue.hongbeibang.com backstage.goldenstatue.test2.hongbeibang.com;
+	server_name backstage.goldenstatue.solomochina.com backstage.goldenstatue.hongbeibang.com backstage.goldenstatue.test2.hongbeibang.com backstage.goldenstatue.test3.hongbeibang.com;
 	rewrite ^/(.*\.(html|css|js|map|jpg|jpeg|png|gif|mp3|midi|swf|ico|json)) /static/backbuild/$1 last;
 
 	location ~ \.(html|css|js|map|jpg|jpeg|png|gif|mp3|midi|swf|ico|json) {
@@ -40,7 +40,7 @@ server {
 server {
 	listen 80;
 	root /var/www/goldenstatue/;
-	server_name api.goldenstatue.hongbeibang.com api.goldenstatue.test2.hongbeibang.com;
+	server_name api.goldenstatue.solomochina.com api.goldenstatue.hongbeibang.com api.goldenstatue.test2.hongbeibang.com api.goldenstatue.test3.hongbeibang.com;
 
 	location ~ \.(html|css|js|map|jpg|jpeg|png|gif|mp3|midi|swf|ico|json) {
 		try_files $uri =404;
