@@ -214,6 +214,12 @@ func (this *PuzzleActivityController) SetComponentAddress_Json() {
 
 	//业务逻辑
 	PuzzleActivityAo.SetComponentAddress(where.ContentId, client.ClientId, address)
+
+	ClientWxLoginAo.AddAddress(this.Ctx,client.ClientId,ClientAddress{
+		Name:address.Name,
+		Address:address.Address,
+		Phone:address.Phone,
+	})
 }
 
 //获得活动获奖名单

@@ -1,8 +1,8 @@
 package main
 
 import (
-	_ "goldenstatue/routers"
 	"github.com/astaxie/beego"
+	_ "goldenstatue/routers"
 )
 
 func main() {

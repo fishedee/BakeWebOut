@@ -42,7 +42,7 @@ func (this *ClientWxLoginAoModel) Login(context *context.Context,callback string
 func (this *ClientWxLoginAoModel) callInterface(context *context.Context,method string,url string,urlInfo url.Values,result interface{}){
 	//提取request的cookie
 	requestCookies := context.Request.Cookies()
-
+	Log.Debug("test urlInfo",urlInfo)
 	//请求url
 	httpClient := &http.Client{}
 	var request *http.Request
@@ -130,7 +130,7 @@ func (this *ClientWxLoginAoModel) LoginCallback(context *context.Context) string
 	return clientCallback
 }
 
-func (this *ClientWxLoginAoModel) CheckHasPhoneNumber(context *context.Context,clientId int)bool{	
+func (this *ClientWxLoginAoModel) CheckHasPhoneNumber(context *context.Context,clientId int)bool{
 	clientInfo := ClientAo.Get(clientId)
 
 	var userPhoneInfo struct{
@@ -193,5 +193,24 @@ func (this *ClientWxLoginAoModel) RegisterPhoneNumber(context *context.Context,c
 	},&sendResult)
 	if sendResult.Error != 0{
 		Throw(1,"注册手机信息失败："+sendResult.Message)
+	}
+}
+
+func (this *ClientWxLoginAoModel) AddAddress(context *context.Context,clientId int,address ClientAddress){
+	clientInfo := ClientAo.Get(clientId)
+
+	var sendResult struct{
+		Error int `json:error,omitempty`
+		Message string `json:message,omitempty`
+	}
+
+	this.callInterface(context,"post","/api/user/address",url.Values{
+		"openid":{clientInfo.OpenId},
+		"mobile":{address.Phone},
+		"name":{address.Name},
+		"address":{address.Address},
+	},&sendResult)
+	if sendResult.Error != 0{
+		Throw(1,"保存用户收货地址失败："+sendResult.Message)
 	}
 }

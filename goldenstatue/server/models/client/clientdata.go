@@ -13,6 +13,12 @@ type Client struct {
 	ModifyTime time.Time `xorm:"updated"`
 }
 
+type ClientAddress struct{
+	Name string
+	Phone string
+	Address string
+}
+
 type Clients struct {
 	Count int
 	Data  []Client

@@ -60,7 +60,7 @@ func (this *ClientController) Logout_Json(){
 	ClientLoginAo.Logout(this.Ctx)
 }
 
-func (this *ClientController) CheckHasPhone_Json()(interface{}){
+func (this *ClientController) CheckHasPhone_Json()(interface{}){	
 	//检查登陆态
 	clientInfo := ClientLoginAo.CheckMustLogin(this.Ctx)
 

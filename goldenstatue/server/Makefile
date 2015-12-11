@@ -8,7 +8,7 @@ release:
 	rm -rf goldenstatue
 	cp ${GOPATH}/bin/goldenstatue .
 	sudo supervisorctl restart goldenstatue_server
-	tail -f ../data/log/server-std.log
+	tail -f ../data/log/access.log
 stop:
 	sudo supervisorctl stop goldenstatue_server 
 	-pkill -9 bee
