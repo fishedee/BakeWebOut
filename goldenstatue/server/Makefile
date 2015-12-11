@@ -6,7 +6,7 @@ watch:
 release:
 	go install goldenstatue
 	rm -rf goldenstatue
-	cp ${GOPATH}bin/goldenstatue .
+	cp ${GOPATH}/bin/goldenstatue .
 	sudo supervisorctl restart goldenstatue_server
 	tail -f ../data/log/server-std.log
 stop:
