@@ -12,6 +12,7 @@ import WinningPage from './sections/winningPageView';
 import InvitationPage from './sections/invitationPageView';
 import ThanksPage from './sections/thanksPageView';
 import SorryPage from './sections/sorryPageView';
+import SorryRepeatPage from './sections/sorryRepeatPageView';
 
 export default Views.createClass({
 	getInitialState(){
@@ -27,6 +28,7 @@ export default Views.createClass({
 			isInvitationPage:false,
 			clickRulePage:false,
 			isSorryPage:false,
+			isSorryRepeatPage:false,
 			isRulePage:true,
 			isDonePage:true,
 			isDetailInfoPage:true,
@@ -50,6 +52,7 @@ export default Views.createClass({
 			isGetGiftPage:false,
 			isThanksPage:false,
 			isSorryPage:false,
+			isSorryRepeatPage:false,
 			isPhoneLogin:false,
 		});
 
@@ -122,8 +125,6 @@ export default Views.createClass({
 		}
 	},
 	async makeCakeSecondClick(){
-		var isPhoneLogin = await this.props.checkHasPhone();
-
 		if(this.props.componentData){
 			var allPuzzle = this.props.componentData.get("allPuzzle");
 			for(var i=0;i!=allPuzzle.size;++i){
@@ -132,15 +133,9 @@ export default Views.createClass({
 				}
 			}
 		}
-		if(puzzleData.get("type")==2){
-			this.setState({
-				isSorryPage:true,
-			});
-		}
 		this.setState({
-			isPhoneLogin:isPhoneLogin,
-			isMakeCakeClick:true,
-			puzzleData:puzzleData
+			puzzleData:puzzleData,
+			isSorryRepeatPage:true,
 		});
 	},
 	async selectStyle(titleId){
@@ -195,7 +190,7 @@ export default Views.createClass({
 		var isPuzzleClient = componentData.get("isLoginClient");
 		return (
 			<div>
-				{(materialData.getIn(["component","state"])!=undefined) ? 
+				{(materialData.getIn(["component","state"])!=undefined) ?
 					this.state.isStyleSelectPage? 
 						<StyleSelectPage changePage={this.changePage} selectStyle={this.selectStyle} materialData={materialData} />
 						:this.state.isWinningPage ?
@@ -219,9 +214,14 @@ export default Views.createClass({
 				{this.state.isMakeCakeClick ? 
 					this.state.isPhoneLogin ? 
 						this.state.isSorryPage ?
-							<SorryPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} puzzleData={this.state.puzzleData}  />
+							<SorryPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} puzzleData={this.state.puzzleData}/>
 							:<CongratulationPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} isPuzzleClient={isPuzzleClient} puzzleData={this.state.puzzleData} />
 						:<LoginPage getCode={this.getCode} registerPhone={this.registerPhone} />
+					:null
+				}
+
+				{this.state.isSorryRepeatPage ?
+					<SorryRepeatPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} puzzleData={this.state.puzzleData}/>
 					:null
 				}
 

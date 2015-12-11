@@ -310,7 +310,7 @@ export default Views.createClass({
 				</div>
 				<div className={style.btnMakeCakeOrHelpPeople}>
 					<img className={style.image} 
-						src={this.props.isPuzzleClient ? '/img/btnMakeCake.png' : '/img/btnHelpPeople.png'} 
+						src={this.props.isPuzzleClient ? (this.props.state == 2 ? '/img/btnMakeCake2.png':'/img/btnMakeCake3.png'): '/img/btnHelpPeople2.png'} 
 						onClick={makeCakeClickLink} />
 				</div>
 				<div className={style.radioWrap} ref='radioWrap'>
