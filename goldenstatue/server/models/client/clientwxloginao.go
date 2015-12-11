@@ -7,10 +7,10 @@ import (
 	"net/url"
 	"net/http"
 	"io/ioutil"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
-	"strings"
 )
 
 type ClientWxLoginAoModel struct {
@@ -55,13 +55,13 @@ func (this *ClientWxLoginAoModel) callInterface(context *context.Context,method 
 			panic(err)
 		}
 	}else{
-		request,err = http.NewRequest("POST",url,strings.NewReader(urlInfo.Encode()))
+		request,err = http.NewRequest("POST",url,bytes.NewReader([]byte(urlInfo.Encode())))
+		request.Header.Set("Content-Type","application/x-www-form-urlencoded; charset=UTF-8")
 		if err != nil{
 			panic(err)
 		}
 	}
 	for _,value := range requestCookies{
-		Log.Debug("cookie",value)
 		request.AddCookie(value)
 	}
 	resp,err = httpClient.Do(request)
@@ -70,12 +70,12 @@ func (this *ClientWxLoginAoModel) callInterface(context *context.Context,method 
 		Throw(1,"调用金象官方系统接口失败:"+err.Error())
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != 200{
-		Throw(1,"调用金象官方系统接口,状态码为:"+resp.Status)
-	}
 	respString,err := ioutil.ReadAll(resp.Body)
 	if err != nil{
 		Throw(1,"获取金象官方系统接口的body失败")
+	}
+	if resp.StatusCode != 200{
+		Throw(1,"调用金象官方系统接口,状态码为:"+resp.Status)
 	}
 	err = json.Unmarshal(respString,result)
 	if err != nil{
@@ -130,10 +130,7 @@ func (this *ClientWxLoginAoModel) LoginCallback(context *context.Context) string
 	return clientCallback
 }
 
-func (this *ClientWxLoginAoModel) CheckHasPhoneNumber(context *context.Context,clientId int)bool{
-	//FIXME
-	return true;
-	
+func (this *ClientWxLoginAoModel) CheckHasPhoneNumber(context *context.Context,clientId int)bool{	
 	clientInfo := ClientAo.Get(clientId)
 
 	var userPhoneInfo struct{
@@ -186,7 +183,7 @@ func (this *ClientWxLoginAoModel) RegisterPhoneNumber(context *context.Context,c
 		Error int `json:error,omitempty`
 		Message string `json:message,omitempty`
 	}
-	Log.Debug("registerInfo %s",registerInfo)
+
 	this.callInterface(context,"post","/api/user",url.Values{
 		"openid":{registerInfo.OpenId},
 		"mobile":{registerInfo.Mobile},

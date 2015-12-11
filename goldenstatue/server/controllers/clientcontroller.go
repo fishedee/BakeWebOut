@@ -73,7 +73,7 @@ func (this *ClientController) GetPhoneCaptcha_Json(){
 	var phoneInfo struct{
 		Phone string
 	}
-	this.CheckGet(&phoneInfo)
+	this.CheckPost(&phoneInfo)
 
 	//检查登陆态
 	ClientLoginAo.CheckMustLogin(this.Ctx)
@@ -88,7 +88,7 @@ func (this *ClientController) RegisterPhone_Json(){
 		Phone string
 		Captcha string
 	}
-	this.CheckGet(&phoneInfo)
+	this.CheckPost(&phoneInfo)
 
 	//检查登陆态
 	clientInfo := ClientLoginAo.CheckMustLogin(this.Ctx)
