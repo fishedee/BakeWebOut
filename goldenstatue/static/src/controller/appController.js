@@ -18,6 +18,7 @@ export default Controllers.createClass({
 	render(){
 		//每次切换页面都进行微信签名
 		this.weixinModel.sign();
+		this.weixinModel.setShareUrl(this.getLocation());
 		return {
 			webpackJson:this.getWebpackJson(),
 			isLogin:this.loginModel.get() != null,

@@ -84,8 +84,7 @@ export default Controllers.createClass({
 			this.weixinModel.setShareMessage({
 				title:clientName+"要做蛋糕，就差你帮TA收集啦！快去~",
 				desc:"金像美玫3,000份面粉“壕”礼相送",
-				imgUrl:'http://goldenstatue.test2.hongbeibang.com/img/logo.jpg',
-				link:this.getLocation()
+				imgUrl:'http://goldenstatue.solomochina.com/img/logo.jpg'
 			});
 		}
 		return {

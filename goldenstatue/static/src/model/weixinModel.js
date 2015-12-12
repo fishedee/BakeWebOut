@@ -25,19 +25,47 @@ export default Models.createClass({
 		];
 		window.wx.config(config);
 	},
-	setShareMessage(shareMessage){
-		shareMessage.link = "http://"+location.host+shareMessage.link;
-		var link = shareMessage.link;
-		if( this.lastShareUrl == link ){
-			return;
-		}
-		this.lastShareUrl = link;
+	setShareUrl(url){
+		this.lastShareUrl = "http://"+location.host+url;
+	},
+	setShareMessageInner(shareMessage){
+		shareMessage.link = DS.linkChange(this.lastShareUrl);
 		window.wx.ready(function(){
-			window.wx.onMenuShareTimeline(shareMessage);
-			window.wx.onMenuShareAppMessage(shareMessage);
-			window.wx.onMenuShareQQ(shareMessage);
-			window.wx.onMenuShareWeibo(shareMessage);
-			window.wx.onMenuShareQZone(shareMessage);
+			window.DS.ready(function(){			
+				window.wx.onMenuShareTimeline({
+					shareMessage,
+					success:function(){
+						DS.sendRepost("timeline")
+					}
+				});
+				window.wx.onMenuShareAppMessage({
+					shareMessage,
+					success:function(){
+						DS.sendRepost("appMessage")
+					}
+				});
+				window.wx.onMenuShareQQ({
+					shareMessage,
+					success:function(){
+						DS.sendRepost("qq")
+					}
+				});
+				window.wx.onMenuShareWeibo({
+					shareMessage,
+					success:function(){
+						DS.sendRepost("weibo")
+					}
+				});
+				window.wx.onMenuShareQZone({
+					shareMessage,
+					success:function(){
+						DS.sendRepost("qzone")
+					}
+				});
+			});
 		});
 	},
+	setShareMessage(shareMessage){
+		setTimeout(this.setShareMessageInner(this,shareMessage),0);
+	}
 });
