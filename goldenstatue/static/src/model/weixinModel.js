@@ -34,33 +34,33 @@ export default Models.createClass({
 	setShareMessageInner(shareMessage){
 		shareMessage.link = DS.linkChange(this.lastShareUrl);
 		window.wx.ready(function(){
-			window.DS.ready(function(){			
+			window.DS.ready(function(){	
 				window.wx.onMenuShareTimeline({
-					shareMessage,
+					...shareMessage,
 					success:function(){
 						DS.sendRepost("timeline")
 					}
 				});
 				window.wx.onMenuShareAppMessage({
-					shareMessage,
+					...shareMessage,
 					success:function(){
 						DS.sendRepost("appMessage")
 					}
 				});
 				window.wx.onMenuShareQQ({
-					shareMessage,
+					...shareMessage,
 					success:function(){
 						DS.sendRepost("qq")
 					}
 				});
 				window.wx.onMenuShareWeibo({
-					shareMessage,
+					...shareMessage,
 					success:function(){
 						DS.sendRepost("weibo")
 					}
 				});
 				window.wx.onMenuShareQZone({
-					shareMessage,
+					...shareMessage,
 					success:function(){
 						DS.sendRepost("qzone")
 					}
@@ -70,7 +70,7 @@ export default Models.createClass({
 	},
 	setShareMessage(shareMessage){
 		if( Env.isInBrowser() ){
-			setTimeout(this.setShareMessageInner(this,shareMessage),0);
+			setTimeout(this.setShareMessageInner.bind(this,shareMessage),0);
 		}
 	}
 });
