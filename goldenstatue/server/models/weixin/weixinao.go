@@ -43,7 +43,7 @@ func (this *WeixinAoModel) RefreshConfig() {
 }
 
 func init() {
-	StartTimerTask(time.Second*300, func() {
+	StartTimerTask(time.Second*3600, func() {
 		WeixinAo.RefreshConfig()
 	})
 }
