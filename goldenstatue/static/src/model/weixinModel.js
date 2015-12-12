@@ -1,4 +1,5 @@
 import BaseModel from './baseModel';
+import Env from 'fishfront/runtime/env';
 
 export default Models.createClass({
 	mixins:[BaseModel],
@@ -26,7 +27,9 @@ export default Models.createClass({
 		window.wx.config(config);
 	},
 	setShareUrl(url){
-		this.lastShareUrl = "http://"+location.host+url;
+		if( Env.isInBrowser() ){
+			this.lastShareUrl = "http://"+location.host+url;
+		}
 	},
 	setShareMessageInner(shareMessage){
 		shareMessage.link = DS.linkChange(this.lastShareUrl);
@@ -66,6 +69,8 @@ export default Models.createClass({
 		});
 	},
 	setShareMessage(shareMessage){
-		setTimeout(this.setShareMessageInner(this,shareMessage),0);
+		if( Env.isInBrowser() ){
+			setTimeout(this.setShareMessageInner(this,shareMessage),0);
+		}
 	}
 });
