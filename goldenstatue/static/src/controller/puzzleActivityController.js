@@ -7,15 +7,12 @@ export default Controllers.createClass({
 	initialize(){
 		this.loadView(PuzzleActivityView);
 		this.loadModel(LoginModel);
-	},
-	async onCreate(){
-		var contentId = this.getSegment(1);
-		this.loginInfo = await this.loginModel.get();
-		if(this.loginInfo != null ){
-			this.go('/puzzleactivity/'+contentId+'/'+this.loginInfo.get("clientId"));
-		}
+		this.contentId = this.getSegment(1);
 	},
 	render(){
-		return {};
+		return {
+			loginClient:this.loginModel.get(),
+			contentId:this.contentId
+		};
 	}
 });

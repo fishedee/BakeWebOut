@@ -82,6 +82,13 @@ export default Views.createClass({
 			});
 		}
 	},
+	async componentDidMount(){
+		if(this.props.loginClient == null){
+			return;
+		}
+		await this.props.fetchComponentInfo();
+		await this.props.fetchFinishComponentInfo();
+	},
 	async makeCakeClick(puzzleId){
 
 		var isPhoneLogin = await this.props.checkHasPhone();
@@ -130,16 +137,7 @@ export default Views.createClass({
 			this.changePage('sharePage');
 		}else{
 			//提示已经点亮过了
-			if(this.props.componentData){
-				var allPuzzle = this.props.componentData.get("allPuzzle");
-				for(var i=0;i!=allPuzzle.size;++i){
-					if(allPuzzle.getIn([i,"puzzleClientId"]) == this.props.loginClient.get("clientId")){
-						var puzzleData = allPuzzle.get(i);
-					}
-				}
-			}
 			this.setState({
-				puzzleData:puzzleData,
 				isSorryRepeatPage:true,
 			});
 		}
@@ -235,14 +233,14 @@ export default Views.createClass({
 				{this.state.isMakeCakeClick ? 
 					this.state.isPhoneLogin ? 
 						this.state.isSorryPage ?
-							<SorryPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} puzzleData={this.state.puzzleData}/>
+							<SorryPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} loginClient={this.props.loginClient}/>
 							:<CongratulationPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} isPuzzleClient={isPuzzleClient} puzzleData={this.state.puzzleData} />
 						:<LoginPage getCode={this.getCode} registerPhone={this.registerPhone} />
 					:null
 				}
 
 				{this.state.isSorryRepeatPage ?
-					<SorryRepeatPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} puzzleData={this.state.puzzleData}/>
+					<SorryRepeatPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} loginClient={this.props.loginClient}/>
 					:null
 				}
 

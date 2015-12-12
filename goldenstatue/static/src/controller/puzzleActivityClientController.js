@@ -16,15 +16,13 @@ export default Controllers.createClass({
 		this.contentId = this.getSegment(1);
 		this.clientId = this.getSegment(2);
 	},
-	async onCreate(){
-		var loginInfo = await this.loginModel.get();
-		if(loginInfo == null){
-			return;
-		}
+	async fetchComponentInfo(){
 		await this.puzzleActivityModel.fetchComponentInfo(
 			this.contentId,
 			this.clientId
 		);
+	},
+	async fetchFinishComponentInfo(){
 		await this.puzzleActivityFinishModel.fetchFinishComponentInfo(
 			this.contentId
 		);
@@ -88,6 +86,8 @@ export default Controllers.createClass({
 			setComponentTitle:this.setComponentTitle,
 			addComponentPuzzle:this.addComponentPuzzle,
 			setComponentAddress:this.setComponentAddress,
+			fetchComponentInfo:this.fetchComponentInfo,
+			fetchFinishComponentInfo:this.fetchFinishComponentInfo,
 			setShareMessage:this.setShareMessage,
 			componentData:data,
 			finishData:finishData,

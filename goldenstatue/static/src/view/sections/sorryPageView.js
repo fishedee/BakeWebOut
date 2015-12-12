@@ -39,12 +39,11 @@ export default Views.createClass({
 		this.props.goNewClientPage(changePuzzleClientId);
 	},
 	render(){
-		var puzzleData = this.props.puzzleData;
 		return (
 			<div className={style.dialogPage}>
 				<img className={style.imagePage} src='/img/sorryPage.png' />
 				<img className={style.closeBtn} src='/img/closeBtn.png' onClick={this.changePage.bind(null,'scanningCodePage')} />
-				<div className={style.btnMakeCake} onClick={this.goNewClientPage.bind(null,puzzleData.get("puzzleClientId"))}></div>
+				<div className={style.btnMakeCake} onClick={this.goNewClientPage.bind(null,this.props.loginClient.get("clientId"))}></div>
 			</div>
 		);
 	}

@@ -8,12 +8,11 @@ export default Controllers.createClass({
 		this.loadModel(LoginModel);
 		this.loadModel(WeixinModel);
 	},
-	async onCreate(){
-		this.isLoginData = await this.loginModel.isLogin();
-		if(this.isLoginData == null ){
-			var loginUrl = await this.loginModel.login();
-			location.href = loginUrl;
-		}
+	async getLoginUrl(){
+		return await this.loginModel.login();
+	},
+	async checkIsLogin(){
+		await this.loginModel.isLogin();
 	},
 	render(){
 		//每次切换页面都进行微信签名
@@ -21,6 +20,8 @@ export default Controllers.createClass({
 		this.weixinModel.setShareUrl(this.getLocation());
 		return {
 			webpackJson:this.getWebpackJson(),
+			checkIsLogin:this.checkIsLogin,
+			getLoginUrl:this.getLoginUrl,
 			isLogin:this.loginModel.get() != null,
 		};
 	}

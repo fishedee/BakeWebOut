@@ -15,6 +15,13 @@ var style = StyleSheet.create({
 });
 
 export default Views.createClass({
+	async componentDidMount(){
+		await this.props.checkIsLogin();
+		if( this.props.isLogin == false ){
+			var loginUrl = await this.props.getLoginUrl();
+			location.href = loginUrl;
+		}
+	},
 	render(){
 		if( Env.isInNode() && 
 			process.env.NODE_ENV === 'production' && 
