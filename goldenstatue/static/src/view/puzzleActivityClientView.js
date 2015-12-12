@@ -125,18 +125,24 @@ export default Views.createClass({
 		}
 	},
 	async makeCakeSecondClick(){
-		if(this.props.componentData){
-			var allPuzzle = this.props.componentData.get("allPuzzle");
-			for(var i=0;i!=allPuzzle.size;++i){
-				if(allPuzzle.getIn([i,"puzzleClientId"]) == this.props.loginClient.get("clientId")){
-					var puzzleData = allPuzzle.get(i);
+		if( this.props.componentData.get("isLoginClient") ){	
+			//提示分享
+			this.changePage('sharePage');
+		}else{
+			//提示已经点亮过了
+			if(this.props.componentData){
+				var allPuzzle = this.props.componentData.get("allPuzzle");
+				for(var i=0;i!=allPuzzle.size;++i){
+					if(allPuzzle.getIn([i,"puzzleClientId"]) == this.props.loginClient.get("clientId")){
+						var puzzleData = allPuzzle.get(i);
+					}
 				}
 			}
+			this.setState({
+				puzzleData:puzzleData,
+				isSorryRepeatPage:true,
+			});
 		}
-		this.setState({
-			puzzleData:puzzleData,
-			isSorryRepeatPage:true,
-		});
 	},
 	async selectStyle(titleId){
 		await this.props.setComponentTitle(titleId);
@@ -185,6 +191,21 @@ export default Views.createClass({
 		var finishData = this.props.finishData;
 		if( !componentData || !finishData ){
 			return null;
+		}
+		//设置分享信息
+		if( componentData.getIn(["clientName"])){
+			var clientName = componentData.getIn(["clientName"]);
+			var self = this;
+			this.props.setShareMessage({
+				title:clientName+"要做蛋糕，就差你帮TA收集啦！快去~",
+				desc:"金像美玫3,000份面粉“壕”礼相送",
+				imgUrl:'http://goldenstatue.solomochina.com/img/logo.jpg',
+				success:function(){
+					if( self.state.isSharePage ){
+						self.changePage("scanningCodePage");
+					}
+				}
+			});
 		}
 		var materialData = componentData.setIn(["radio"],finishData);
 		var isPuzzleClient = componentData.get("isLoginClient");

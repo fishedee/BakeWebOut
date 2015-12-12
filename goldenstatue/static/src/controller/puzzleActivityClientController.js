@@ -75,18 +75,12 @@ export default Controllers.createClass({
 	async registerPhone(phone,captcha){
 		await this.loginModel.registerPhone(phone,captcha);
 	},
+	setShareMessage(shareMessage){
+		this.weixinModel.setShareMessage(shareMessage);
+	},
 	render(){
 		var data = this.puzzleActivityModel.get(this.contentId,this.clientId);
 		var finishData = this.puzzleActivityFinishModel.get(this.contentId);
-		//设置分享信息
-		if( data && data.getIn(["clientName"])){
-			var clientName = data.getIn(["clientName"]);
-			this.weixinModel.setShareMessage({
-				title:clientName+"要做蛋糕，就差你帮TA收集啦！快去~",
-				desc:"金像美玫3,000份面粉“壕”礼相送",
-				imgUrl:'http://goldenstatue.solomochina.com/img/logo.jpg'
-			});
-		}
 		return {
 			checkHasPhone:this.checkHasPhone,
 			getPhoneCaptcha:this.getPhoneCaptcha,
@@ -94,6 +88,7 @@ export default Controllers.createClass({
 			setComponentTitle:this.setComponentTitle,
 			addComponentPuzzle:this.addComponentPuzzle,
 			setComponentAddress:this.setComponentAddress,
+			setShareMessage:this.setShareMessage,
 			componentData:data,
 			finishData:finishData,
 			loginClient:this.loginModel.get()

@@ -38,31 +38,46 @@ export default Models.createClass({
 				window.wx.onMenuShareTimeline({
 					...shareMessage,
 					success:function(){
-						DS.sendRepost("timeline")
+						DS.sendRepost("timeline");
+						if( shareMessage.success ){
+							shareMessage.success();
+						}
 					}
 				});
 				window.wx.onMenuShareAppMessage({
 					...shareMessage,
 					success:function(){
-						DS.sendRepost("appMessage")
+						DS.sendRepost("appMessage");
+						if( shareMessage.success ){
+							shareMessage.success();
+						}
 					}
 				});
 				window.wx.onMenuShareQQ({
 					...shareMessage,
 					success:function(){
-						DS.sendRepost("qq")
+						DS.sendRepost("qq");
+						if( shareMessage.success ){
+							shareMessage.success();
+						}
 					}
 				});
 				window.wx.onMenuShareWeibo({
 					...shareMessage,
 					success:function(){
-						DS.sendRepost("weibo")
+						DS.sendRepost("weibo");
+						if( shareMessage.success ){
+							shareMessage.success();
+						}
 					}
 				});
 				window.wx.onMenuShareQZone({
 					...shareMessage,
 					success:function(){
-						DS.sendRepost("qzone")
+						DS.sendRepost("qzone");
+						if( shareMessage.success ){
+							shareMessage.success();
+						}
 					}
 				});
 			});
