@@ -42,7 +42,7 @@ export default Views.createClass({
 					link={[
 						{type:"text/css",rel:"stylesheet",href:"/index.css"}
 					]}
-					title={"金象美玫烘焙馆"}
+					title={"金像美玫烘焙馆"}
 					script={[
 						{src:"http://cdn.datastory.com.cn/js/pre-ds-min.js?dsTid=1d8c8877-3f8c-4670-9fdd-2796b92bfc86",id:"DS_PRE_JS"},
 						{src:'http://res.wx.qq.com/open/js/jweixin-1.0.0.js'},
