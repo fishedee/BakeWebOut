@@ -51,13 +51,6 @@ var style = StyleSheet.create({
 });
 
 export default Views.createClass({
-	changePage(pageName){
-		this.props.changePage(pageName);
-	},
-	goNewClientPage(changePuzzleClientId){
-		this.props.changePage('rulePage');
-		this.props.goNewClientPage(changePuzzleClientId);
-	},
 	render(){
 		var puzzleData = this.props.puzzleData;
 
@@ -92,21 +85,18 @@ export default Views.createClass({
 
 		if(this.props.isPuzzleClient){
 			var backgroundImg = '/img/congratulationPageMine.png';
-			var btnLink = this.changePage.bind(null,'sharePage');
-			var closeLink = this.changePage;
 		}else{
 			var backgroundImg = '/img/congratulationPageHelp.png';
-			var btnLink = this.goNewClientPage.bind(null,puzzleData.get("puzzleClientId"));
-			var closeLink = this.changePage.bind(null,'scanningCodePage');
 		}
+
 		
 		return (
 			<div className={style.dialogPage}>
 				<img className={style.imagePage} src={backgroundImg} />
-				<img className={style.closeBtn} src='/img/closeBtn.png' onClick={closeLink} />
+				<img className={style.closeBtn} src='/img/closeBtn.png' onClick={this.props.closeClick} />
 				<img className={style.congratulateText} src={text} />
 				<img className={style.gifImageWrap} src={gifImage} />
-				<div className={style.btnAskHelp} onClick={btnLink}></div>
+				<div className={style.btnAskHelp} onClick={this.props.onClick}></div>
 			</div>
 		);
 	}

@@ -93,38 +93,33 @@ var style = StyleSheet.create({
 		left:'64%',
 	},
 	materialImage:{
+		width:'20%',
 		position:'absolute',
 		border:'0'
 	},
 	jigsawFlour:{
-		width:'13.5%',
-		bottom:'49.9%',
-		left:'15.5%',
+		bottom:'50%',
+		left:'13%',
 	},
 	jigsawEgg:{
-		width:'13.8%',
-		bottom:'56.5%',
-		left:'44%',
+		bottom:'50%',
+		left:'41%',
 	},
 	jigsawMilk:{
-		width:'11.156%',
-		bottom:'51.5%',
-		left:'72%',
+		bottom:'50%',
+		left:'67%',
 	},
 	jigsawSugar:{
-		width:'15.06%',
-		bottom:'15%',
-		left:'15%',
+		bottom:'10%',
+		left:'13%',
 	},
 	jigsawOil:{
-		width:'12.84%',
-		bottom:'16%',
-		left:'44%',
+		bottom:'10%',
+		left:'41%',
 	},
 	jigsawMicrowaveOven:{
-		width:'17.4%',
-		bottom:'17%',
-		left:'70%',
+		bottom:'10%',
+		left:'67%',
 	},
 	btnMakeCakeOrHelpPeople:{
 		width:'89.22%',
@@ -172,13 +167,6 @@ export default Views.createClass({
 				radioWrap.scrollLeft++;
 			}
 		},30);
-
-		
-		if(!this.props.isPuzzleClient && (this.props.state==1)){
-			alert('好友还没开始游戏呢,你也来制作一个蛋糕吧!');
-			this.go('/puzzleactivity/'+this.props.contentId+"/"+this.props.loginClient.get("clientId"));
-			//this.changePage('rulePage');
-		}
 		
 		
 	},
@@ -190,16 +178,8 @@ export default Views.createClass({
 			index:null,
 		};
 	},
-	changePage(pageName){
-		this.props.changePage(pageName);
-	},
 	makeCakeClick(puzzleId){
-		this.props.changePage();
-		this.props.makeCakeClick(puzzleId);
-	},
-	makeCakeSecondClick(){
-		this.props.changePage();
-		this.props.makeCakeSecondClick();
+		this.props.onClick(puzzleId);
 	},
 	selectClick(index){
 		var self = this;
@@ -259,16 +239,11 @@ export default Views.createClass({
 			if(self.state.index != null){
 				var gifImage = materialData.getIn([self.state.index,"gifImage"]);
 			}
-			if(data.get("isPuzzle")){
-				var makeCakeClickLink = image==e.get("ordinaryImage") ? self.makeCakeSecondClick : self.selectClick.bind(self,i);
-			}else{
-				var makeCakeClickLink = image==e.get("ordinaryImage") ? self.makeCakeClick.bind(self,i+1) : self.selectClick.bind(self,i);
-			}
 			return (
 				<div key={e.get("key")}>
 					<img className={classnames(style.materialImage,e.get("className"))} 
 						src={self.state.index==i ? gifImage : image}
-						onClick={makeCakeClickLink} />
+						onClick={image==e.get("ordinaryImage") ? self.makeCakeClick.bind(self,i+1) : self.selectClick.bind(self,i)} />
 					{(self.props.brightImageIndex != null) && (self.props.brightImageIndex == i) ?
 						<img className={classnames(style.gifBrightImage,e.get("gifStyle"))} src='/gif/gifLine.gif' />
 						:null
@@ -276,14 +251,6 @@ export default Views.createClass({
 				</div>
 			);
 		});
-		if(data.get("isPuzzle")){
-
-			var makeCakeClickLink = this.props.isPuzzleClient ? 
-				this.changePage.bind(null,'sharePage')
-				:this.makeCakeSecondClick;
-		}else{
-			var makeCakeClickLink = this.makeCakeClick.bind(null,0);
-		}
 		if(data.get("radio").size != 0){
 			var radioData = data.get("radio").map(function(e){
 				return (' 嘭～小伙伴'+e.get("clientName")+'烘焙出了戚风蛋糕！！！ ')
@@ -296,7 +263,7 @@ export default Views.createClass({
 
 				<img className={style.imagePage} src='/img/materialPage.png' />
 				<img className={style.flag} src='/gif/flag.gif' />
-				<div className={style.btnActivityRule} onClick={this.changePage.bind(null,'rulePage')}></div>
+				<div className={style.btnActivityRule} onClick={this.props.rulePageClick}></div>
 				<ClientImage className={style.headSculpture} src={data.get("clientImage")!=""?data.get("clientImage"):null} />
 				<div className={style.name}>
 					<img className={style.imageName} src={styleName} />
@@ -311,7 +278,7 @@ export default Views.createClass({
 				<div className={style.btnMakeCakeOrHelpPeople}>
 					<img className={style.image} 
 						src={this.props.isPuzzleClient ? (this.props.state == 2 ? '/img/btnMakeCake2.png':'/img/btnMakeCake3.png'): '/img/btnHelpPeople2.png'} 
-						onClick={makeCakeClickLink} />
+						onClick={this.makeCakeClick.bind(null,0)} />
 				</div>
 				<div className={style.radioWrap} ref='radioWrap'>
 					<span className={style.radio} ref='radio'>{radioData}</span>

@@ -85,9 +85,6 @@ var style = StyleSheet.create({
 });
 
 export default Views.createClass({
-	changePage(){
-		this.props.changePage();
-	},
 	render(){
 		var newMaterialData = this.props.materialData.get("allPuzzle").filter(function(e){
 			return e.get("isRead") == 1;
@@ -136,9 +133,9 @@ export default Views.createClass({
 		return (
 			<div className={style.dialogPage}>
 				<img className={style.imagePage} src='/img/detailPage.png' />
-				<img className={style.closeBtn} src='/img/closeBtn.png' onClick={this.changePage} />
+				<img className={style.closeBtn} src='/img/closeBtn.png' onClick={this.props.onClick} />
 				<div className={style.detailScoll}>{data}</div>
-				<div className={style.btnIKnow} onClick={this.changePage}></div>
+				<div className={style.btnIKnow} onClick={this.props.onClick}></div>
 			</div>
 		);
 	}

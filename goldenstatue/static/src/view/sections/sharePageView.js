@@ -27,12 +27,9 @@ var style = StyleSheet.create({
 });
 
 export default Views.createClass({
-	changePage(pageName){
-		this.props.changePage(pageName);
-	},
 	render(){
 		return (
-			<div className={style.dialogPage} onClick={this.changePage.bind(null,'scanningCodePage')}>
+			<div className={style.dialogPage} onClick={this.props.onClick}>
 				<img className={style.shareImage} src='/gif/share.gif' />
 			</div>
 		);

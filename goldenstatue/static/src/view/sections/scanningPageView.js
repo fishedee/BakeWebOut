@@ -16,15 +16,9 @@ var style = StyleSheet.create({
 });
 
 export default Views.createClass({
-	askHelpPage(){
-		this.props.askHelpPage();
-	},
-	congratulationPageHide(){
-		this.props.congratulationPageHide();
-	},
 	render(){
 		return (
-			<div className={style.dialogPage} onClick={this.props.changePage}>
+			<div className={style.dialogPage} onClick={this.props.onClick}>
 				<img className={style.imagePage} src='/img/scanningPage.png' />
 			</div>
 		);

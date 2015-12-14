@@ -105,7 +105,7 @@ export default Views.createClass({
 		}
 	},
 	signInfo(){
-		this.props.signInfo(this.state.name,this.state.phoneNumber,this.state.address);
+		this.props.onClick(this.state.name,this.state.phoneNumber,this.state.address);
 	},
 	componentDidMount(){
 		var winningImage = this.refs.winningImage;

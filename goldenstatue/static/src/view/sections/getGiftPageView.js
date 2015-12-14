@@ -76,7 +76,7 @@ export default Views.createClass({
 						<p>戚风蛋糕已新鲜出炉了！</p>
 						<p>快去领取你的礼物吧！</p>
 					</div>
-					<div className={style.btnGetGift} onClick={this.changePage.bind(null,'winningPage')}></div>
+					<div className={style.btnGetGift} onClick={this.props.onClick}></div>
 				</div>
 			</div>
 		);

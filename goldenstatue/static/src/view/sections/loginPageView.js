@@ -88,11 +88,11 @@ export default Views.createClass({
 			});
 		}
 	},
-	registerPhone(){
-		this.props.registerPhone(this.state.phone,this.state.captcha);
+	registerOnClick(){
+		this.props.registerOnClick(this.state.phone,this.state.captcha);
 	},
-	getCode(){
-		this.props.getCode(this.state.phone);
+	codeClick(){
+		this.props.codeClick(this.state.phone);
 	},
 	componentDidMount(){
 		var loginImage = this.refs.loginImage;
@@ -109,12 +109,12 @@ export default Views.createClass({
 							<input type='text' className={style.loginPhoneNum} onChange={this.onChange.bind(null,'phone')} autoFocus />
 						</div>
 						<div className={style.inputWrap}>
-							<div className={style.btnGetCode} onClick={this.getCode}></div>
+							<div className={style.btnGetCode} onClick={this.codeClick}></div>
 							<input type='text' className={style.loginCode} onChange={this.onChange.bind(null,'captcha')} />
 						</div>
 					</div>
 					<div className={style.bottom}>
-						<div className={style.btnEnsure} onClick={this.registerPhone}></div>
+						<div className={style.btnEnsure} onClick={this.registerOnClick}></div>
 					</div>
 				</div>
 			</div>

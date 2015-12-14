@@ -13,74 +13,33 @@ import InvitationPage from './sections/invitationPageView';
 import ThanksPage from './sections/thanksPageView';
 import SorryPage from './sections/sorryPageView';
 import SorryRepeatPage from './sections/sorryRepeatPageView';
+import LoadingPage from './sections/loadingPageView';
+
+function wait(time){
+	return new Promise(function(resolve,reject){
+		setTimeout(resolve,time);
+	});
+}
 
 export default Views.createClass({
 	getInitialState(){
 		return {
 			brightImageIndex:null,
-			isMaterialPage:true,
-			isPhoneLogin:false,
+			isMaterialPage:false,
+			isPhoneLogin:true,
 			isStyleSelectPage:false,
-			isMakeCakeClick:false,
 			isSharePage:false,
 			isScanningCodePage:false,
 			isWinningPage:false,
 			isInvitationPage:false,
-			clickRulePage:false,
 			isSorryPage:false,
+			isCongratulationPage:false,
 			isSorryRepeatPage:false,
-			isRulePage:true,
-			isDonePage:true,
-			isDetailInfoPage:true,
-			isGetGiftPage:true,
-			isThanksPage:true,
-			puzzleData:Immutable.fromJS({}),
-		};
-	},
-	changePage(pageName){
-		this.setState({
-			isStyleSelectPage:false,
-			isMakeCakeClick:false,
-			isSharePage:false,
-			isScanningCodePage:false,
-			isWinningPage:false,
-			isInvitationPage:false,
-			clickRulePage:false,
 			isRulePage:false,
-			isDonePage:false,
 			isDetailInfoPage:false,
 			isGetGiftPage:false,
 			isThanksPage:false,
-			isSorryPage:false,
-			isSorryRepeatPage:false,
-			isPhoneLogin:false,
-		});
-
-		if(pageName=='rulePage'){
-			this.setState({
-				clickRulePage:true,
-			});
-		}else if(pageName=='styleSelectPage'){
-			this.setState({
-				isStyleSelectPage:true
-			});
-		}else if(pageName=='sharePage'){
-			this.setState({
-				isSharePage:true
-			});
-		}else if(pageName=='scanningCodePage'){
-			this.setState({
-				isScanningCodePage:true
-			});
-		}else if(pageName=='winningPage'){
-			this.setState({
-				isWinningPage:true
-			});
-		}else if(pageName=='materialPage'){
-			this.setState({
-				isMaterialPage:true
-			});
-		}
+		};
 	},
 	async componentDidMount(){
 		if(this.props.loginClient == null){
@@ -88,68 +47,153 @@ export default Views.createClass({
 		}
 		await this.props.fetchComponentInfo();
 		await this.props.fetchFinishComponentInfo();
+
+		var isPuzzleClient = this.props.componentData.get("isLoginClient");
+		var state = this.props.componentData.getIn(["component","state"]);
+		if(isPuzzleClient){
+			if(state == 1){
+				this.setState({
+					isMaterialPage:true,
+					isRulePage:true
+				});
+			}else if(state == 2){
+				this.setState({
+					isMaterialPage:true
+				});
+			}else if(state == 3){
+				this.setState({
+					isMaterialPage:true,
+					isDetailInfoPage:true
+				});
+			}else if(state == 4){
+				this.setState({
+					isMaterialPage:true,
+					isGetGiftPage:true
+				});
+			}else if(state == 5){
+				this.setState({
+					isMaterialPage:true,
+					isInvitationPage:true
+				});
+			}else{
+				throw new Error( '状态异常！' );
+			}
+		}else{
+			if(state == 1){
+				alert('好友还没开始游戏呢,你也来制作一个蛋糕吧!');
+				this.go('/puzzleactivity/'+this.props.componentData.getIn(["component","contentId"])+"/"+this.props.loginClient.get("clientId"));
+			}else if(state == 2 || state == 3){
+				this.setState({
+					isMaterialPage:true
+				});
+			}else if(state == 4 || state == 5){
+				this.setState({
+					isMaterialPage:true,
+					isThanksPage:true
+				});
+			}else{
+				throw new Error( '状态异常！' );
+			}
+		}
+
+	},
+	changePage(pageName){
+		var state = {
+			isMaterialPage:true,
+			isPhoneLogin:true,
+			isStyleSelectPage:false,
+			isSharePage:false,
+			isScanningCodePage:false,
+			isWinningPage:false,
+			isInvitationPage:false,
+			isSorryPage:false,
+			isCongratulationPage:false,
+			isSorryRepeatPage:false,
+			isRulePage:false,
+			isDetailInfoPage:false,
+			isGetGiftPage:false,
+			isThanksPage:false,
+		};
+		if(pageName == 'isStyleSelectPage' || pageName == 'isWinningPage'){
+			state['isMaterialPage'] = false;
+		}
+		state[pageName] = true;
+
+		this.setState(state);
 	},
 	async makeCakeClick(puzzleId){
 
 		var isPhoneLogin = await this.props.checkHasPhone();
-		var self = this;
+		var isPuzzle =  this.props.componentData.get("isPuzzle");
+		var isPuzzleClient = this.props.componentData.get("isLoginClient");
 
+		var self = this;
 		if(isPhoneLogin){
-			var puzzleData = await this.props.addComponentPuzzle(puzzleId);
-			if(puzzleData.get("type")==2){
-				this.setState({
-					isSorryPage:true,
-					isPhoneLogin:isPhoneLogin,
-					isMakeCakeClick:true,
-				});
-			}else{
-				if(puzzleId == 0){
+			this.setState({
+				isPhoneLogin:isPhoneLogin,
+			});
+			if(isPuzzle){
+				if( isPuzzleClient ){	
+					//提示分享
 					this.setState({
-						isPhoneLogin:isPhoneLogin,
-						isMakeCakeClick:true,
-						puzzleData:puzzleData
+						isSharePage:true,
 					});
 				}else{
+					//提示已经点亮过了
 					this.setState({
-						brightImageIndex:puzzleId-1,
+						isSorryRepeatPage:true,
 					});
-					setTimeout(function(){
-						self.setState({
-							brightImageIndex:null,
-							isPhoneLogin:isPhoneLogin,
-							isMakeCakeClick:true,
-							puzzleData:puzzleData
+				}
+			}else{
+				await this.props.addComponentPuzzle(puzzleId);
+				var puzzleData = Immutable.fromJS({});
+				var allPuzzle = this.props.componentData.get("allPuzzle");
+				for(var i=0;i!=allPuzzle.size;++i){
+					if(allPuzzle.getIn([i,"puzzleClientId"])==this.props.loginClient.get("clientId")){
+						puzzleData = allPuzzle.getIn([i]);
+						break;
+					}
+				}
+				if(puzzleData.get("type")==2){
+					this.setState({
+						isSorryPage:true,
+					});
+				}else{
+					if(puzzleId == 0){
+						this.setState({
+							isCongratulationPage:true
 						});
-					},1000);
+					}else{
+						this.setState({
+							brightImageIndex:puzzleId-1,
+						});
+						await wait(1000);
+						this.setState({
+							brightImageIndex:null,
+							isCongratulationPage:true
+						});
+					}
 				}
 			}
 		}else{
 			this.setState({
 				isMaterialPage:false,
 				isPhoneLogin:isPhoneLogin,
-				isMakeCakeClick:true,
 			});
 		}
 	},
-	async makeCakeSecondClick(){
-		if( this.props.componentData.get("isLoginClient") ){	
-			//提示分享
-			this.changePage('sharePage');
-		}else{
-			//提示已经点亮过了
-			this.setState({
-				isSorryRepeatPage:true,
-			});
-		}
-	},
-	async selectStyle(titleId){
+	async setTitleClick(titleId){
 		await this.props.setComponentTitle(titleId);
+		this.setState({
+			isStyleSelectPage:false,
+			isMaterialPage:true,
+		});
 	},
 	async signInfo(name,phoneNumber,address){
 		if(name && phoneNumber && address){
 			await this.props.setComponentAddress(name,phoneNumber,address);
-			this.changePage();
 			this.setState({
+				isWinningPage:false,
 				isInvitationPage:true
 			});
 		}else{
@@ -157,7 +201,7 @@ export default Views.createClass({
 		}
 
 	},
-	async getCode(phone){
+	async codeClick(phone){
 		if(phone){
 			await this.props.getPhoneCaptcha(phone);
 			alert('发送验证码成功，请留意短信！');
@@ -165,9 +209,12 @@ export default Views.createClass({
 			alert('请输入手机号！');
 		}
 	},
-	async registerPhone(phone,captcha){
+	async registerOnClick(phone,captcha){
 		if(phone && captcha){
-			this.changePage('materialPage');
+			this.setState({
+				isPhoneLogin:true,
+				isMaterialPage:true
+			});
 			await this.props.registerPhone(phone,captcha);
 			alert('注册成功！');
 		}else{
@@ -188,7 +235,7 @@ export default Views.createClass({
 		var componentData = this.props.componentData;
 		var finishData = this.props.finishData;
 		if( !componentData || !finishData ){
-			return null;
+			return <LoadingPage />;
 		}
 		//设置分享信息
 		if( componentData.getIn(["clientName"])){
@@ -200,84 +247,100 @@ export default Views.createClass({
 				imgUrl:'http://goldenstatue.solomochina.com/img/logo.jpg',
 				success:function(){
 					if( self.state.isSharePage ){
-						self.changePage("scanningCodePage");
+						self.changePage("isScanningCodePage");
 					}
 				}
 			});
 		}
 		var materialData = componentData.setIn(["radio"],finishData);
 		var isPuzzleClient = componentData.get("isLoginClient");
+		var puzzleData = Immutable.fromJS({});
+		var allPuzzle = componentData.get("allPuzzle");
+		for(var i=0;i!=allPuzzle.size;++i){
+			if(allPuzzle.getIn([i,"puzzleClientId"])==this.props.loginClient.get("clientId")){
+				puzzleData = allPuzzle.getIn([i]);
+				break;
+			}
+		}
 		return (
 			<div>
-				{(materialData.getIn(["component","state"])!=undefined) ?
-					this.state.isStyleSelectPage? 
-						<StyleSelectPage changePage={this.changePage} selectStyle={this.selectStyle} materialData={materialData} />
-						:this.state.isWinningPage ?
-							<WinningPage signInfo={this.signInfo} />
-							:this.state.isMaterialPage ? 
-								<MaterialPage 
-									contentId={componentData.getIn(["component","contentId"])}
-									loginClient={this.props.loginClient}
-									changePage={this.changePage} 
-									materialData={materialData}
-									makeCakeClick={this.makeCakeClick}
-									makeCakeSecondClick={this.makeCakeSecondClick}
-									state={materialData.getIn(["component","state"])}
-									isPuzzleClient={isPuzzleClient}
-									brightImageIndex={this.state.brightImageIndex} />
-								:null
-					
+				{this.state.isStyleSelectPage? 
+					<StyleSelectPage onClick={this.setTitleClick} materialData={materialData} />
+					:null
+				}
+				{this.state.isWinningPage? 
+					<WinningPage onClick={this.signInfo} />
+					:null
+				}
+				{(materialData.getIn(["component","state"])!=undefined) && this.state.isMaterialPage ?
+					<MaterialPage 
+						rulePageClick={this.changePage.bind(null,'isRulePage')}
+						onClick={this.makeCakeClick}
+						materialData={materialData}
+						state={materialData.getIn(["component","state"])}
+						isPuzzleClient={isPuzzleClient}
+						brightImageIndex={this.state.brightImageIndex} />
 					:null
 				}
 
-				{this.state.isMakeCakeClick ? 
-					this.state.isPhoneLogin ? 
-						this.state.isSorryPage ?
-							<SorryPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} loginClient={this.props.loginClient}/>
-							:<CongratulationPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} isPuzzleClient={isPuzzleClient} puzzleData={this.state.puzzleData} />
-						:<LoginPage getCode={this.getCode} registerPhone={this.registerPhone} />
+				{!this.state.isPhoneLogin? 
+					<LoginPage codeClick={this.codeClick} registerOnClick={this.registerOnClick} />
+					:null
+				}
+
+				{this.state.isSorryPage? 
+					<SorryPage closeClick={this.changePage.bind(null,'isScanningCodePage')}
+						onClick={this.goNewClientPage.bind(null,this.props.loginClient.get("clientId"))} />
+					:null
+				}
+
+				{this.state.isCongratulationPage? 
+					<CongratulationPage closeClick={isPuzzleClient ? this.changePage.bind(null,'isMaterialPage') : this.changePage.bind(null,'isScanningCodePage')} 
+						onClick={isPuzzleClient ? this.changePage.bind(null,'isSharePage') : this.goNewClientPage.bind(null,this.props.loginClient.get("clientId"))} 
+							isPuzzleClient={isPuzzleClient} 
+							puzzleData={puzzleData} />
 					:null
 				}
 
 				{this.state.isSorryRepeatPage ?
-					<SorryRepeatPage changePage={this.changePage} goNewClientPage={this.goNewClientPage} loginClient={this.props.loginClient}/>
+					<SorryRepeatPage closeClick={this.changePage.bind(null,'isScanningCodePage')}
+						onClick={this.goNewClientPage.bind(null,this.props.loginClient.get("clientId"))} />
 					:null
 				}
 
 				{this.state.isSharePage ?
-					<SharePage changePage={this.changePage} />
+					<SharePage onClick={this.changePage.bind(null,'isScanningCodePage')} />
 					:null
 				}
 				
 				{this.state.isScanningCodePage ?
-					<ScanningPage changePage={this.changePage} />
+					<ScanningPage onClick={this.changePage.bind(null,'isMaterialPage')} />
 					:null
 				}
 
-				{this.state.clickRulePage || (isPuzzleClient && this.state.isRulePage && (materialData.getIn(["component","state"])==1)) ?
-					<RulePage changePage={this.changePage} state={materialData.getIn(["component","state"])} isPuzzleClient={isPuzzleClient} />
+				{this.state.isRulePage ?
+					<RulePage onClick={(materialData.getIn(["component","state"])!=1) ? this.changePage.bind(null,'isMaterialPage') : this.changePage.bind(null,'isStyleSelectPage') } />
 					:null
 				}
 
-				{isPuzzleClient && this.state.isDetailInfoPage && (materialData.getIn(["component","state"])==3) ?
-					<DetailInfoPage changePage={this.changePage} materialData={materialData} />
+				{this.state.isDetailInfoPage ?
+					<DetailInfoPage onClick={this.changePage.bind(null,'isMaterialPage')} materialData={materialData} />
 					:null
 				}
 
-				{isPuzzleClient && this.state.isGetGiftPage && (materialData.getIn(["component","state"])==4) ?
-					<GetGiftPage changePage={this.changePage} lastPuzzle={materialData.get("allPuzzle")} />
+				{this.state.isGetGiftPage ?
+					<GetGiftPage onClick={this.changePage.bind(null,'isWinningPage')} lastPuzzle={materialData.get("allPuzzle")} />
 					:null
 				}
 
-				{this.state.isInvitationPage || (isPuzzleClient && this.state.isDonePage && (materialData.getIn(["component","state"])==5)) ?
-					<InvitationPage changePage={this.changePage} />
+				{this.state.isInvitationPage ?
+					<InvitationPage onClick={this.changePage.bind(null,'isSharePage')} />
 					:null
 				}
 
-				{!isPuzzleClient && this.state.isThanksPage && ((materialData.getIn(["component","state"])==4) || (materialData.getIn(["component","state"])==5)) ?
-					<ThanksPage changePage={this.changePage} 
-								contentId={componentData.getIn(["component","contentId"])}
-								loginClient={this.props.loginClient} />
+				{this.state.isThanksPage ?
+					<ThanksPage closeClick={this.changePage.bind(null,'isScanningCodePage')}
+						onClick={this.goNewClientPage.bind(null,this.props.loginClient.get("clientId"))} />
 					:null
 				}
 			</div>

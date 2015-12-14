@@ -31,7 +31,7 @@ export default Views.createClass({
 		return (
 			<div className={style.dialogPage}>
 				<img className={style.imagePage} src='/img/invitationPage.png' />
-				<div className={style.btnInvitation} onClick={this.changePage.bind(null,'sharePage')}></div>
+				<div className={style.btnInvitation} onClick={this.props.onClick}></div>
 			</div>
 		);
 	}
