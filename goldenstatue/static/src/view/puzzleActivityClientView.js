@@ -193,6 +193,7 @@ export default Views.createClass({
 		if(name && phoneNumber && address){
 			await this.props.setComponentAddress(name,phoneNumber,address);
 			this.setState({
+				isMaterialPage:true,
 				isWinningPage:false,
 				isInvitationPage:true
 			});
