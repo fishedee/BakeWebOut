@@ -32,10 +32,11 @@ func (this *PuzzleActivityAoModel) Mod(id int, puzzleActivity ContentPuzzleActiv
 }
 
 func (this *PuzzleActivityAoModel) Del(id int) {
+	Throw(1, "删除活动十分危险，如需使用请联系开发人员")
+
 	PuzzleActivityDb.Del(id)
 
 	PuzzleActivityComponentAo.DelByContentId(id)
-	//Throw(1, "u can not delete the activity now! ")
 }
 
 func (this *PuzzleActivityAoModel) SearchComponent(where ContentPuzzleActivityComponent, limit CommonPage) PuzzleActivityComponentWithClientInfos {
