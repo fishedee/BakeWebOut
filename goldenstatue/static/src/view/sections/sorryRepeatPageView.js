@@ -40,12 +40,26 @@ var style = StyleSheet.create({
 });
 
 export default Views.createClass({
+	getInitialState(){
+		return {
+			imageTop:'',
+			closeHeight:'',
+		};
+	},
+	componentDidMount(){
+		var sorryRepeatImage = this.refs.sorryRepeatImage;
+		var closeImage = this.refs.closeImage;
+		this.setState({
+			imageTop:(document.body.offsetHeight - sorryRepeatImage.offsetWidth * 1.2622)/2,
+			closeHeight:closeImage.offsetWidth/2,
+		})
+	},
 	render(){
 		return (
 			<div className={style.dialogPage}>
 				<img className={style.background} src='/img/background.png'/>
-				<img className={style.imagePage} src='/img/sorryRepeatPage.png'/>
-				<img className={style.closeBtn} src='/img/closeBtn.png' onClick={this.props.closeClick} />
+				<img className={style.imagePage} ref="sorryRepeatImage" src='/img/sorryRepeatPage.png'/>
+				<img className={style.closeBtn} style={{top:this.state.imageTop - this.state.closeHeight + 'px'}} ref="closeImage" src='/img/closeBtn.png' onClick={this.props.closeClick} />
 				<div className={style.btnMakeCake} onClick={this.props.onClick}></div>
 			</div>
 		);
