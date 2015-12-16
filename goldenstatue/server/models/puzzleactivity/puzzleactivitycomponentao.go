@@ -196,7 +196,7 @@ func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId in
 		Throw(1, "你已为TA点亮过了！")
 	}
 
-	puzzleId, isSuccess := this.makePuzzle(loginClientId,puzzleIds)
+	puzzleId, isSuccess := this.makePuzzle(clientId,loginClientId,puzzleIds)
 	if inPuzzleId != 0 &&
 		isSuccessPuzzle != true &&
 		isSuccess == PuzzleActivityComponentPuzzleEnum.SUCCESS {
@@ -251,7 +251,7 @@ func (this *PuzzleActivityComponentAoModel) getRate(num int) float64 {
 	return result
 }
 
-func (this *PuzzleActivityComponentAoModel) makePuzzle(loginClientId int,puzzleIds []int) (int, int) {
+func (this *PuzzleActivityComponentAoModel) makePuzzle(clientId int,loginClientId int,puzzleIds []int) (int, int) {
 	var result int
 	isSuccess := PuzzleActivityComponentPuzzleEnum.FAIL
 	failPuzzleIds := []int{}
@@ -276,12 +276,14 @@ func (this *PuzzleActivityComponentAoModel) makePuzzle(loginClientId int,puzzleI
 	nextRate := this.getRate(successNum + 1)
 	var rate float64
 
-	if PuzzleActivityComponentPuzzleDb.GetCountByClientIdAndType(loginClientId,PuzzleActivityComponentPuzzleEnum.SUCCESS) >= 3{
-		//整场活动中点亮超过3次就不能再点亮了
-		rate = 1.0
-	}else{
-		//否则，按照随机数点亮
-		rate = rand.Float64()
+	if clientId != loginClientId {
+		if PuzzleActivityComponentPuzzleDb.GetCountByClientIdAndType(loginClientId,PuzzleActivityComponentPuzzleEnum.SUCCESS) >= 2{
+			//整场活动中点亮超过3次就不能再点亮了
+			rate = 1.0
+		}else{
+			//否则，按照随机数点亮
+			rate = rand.Float64()
+		}
 	}
 	
 	num := 0
