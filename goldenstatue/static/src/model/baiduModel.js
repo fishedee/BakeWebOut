@@ -9,7 +9,7 @@ export default Models.createClass({
 			window._hmt = window._hmt || [];
 			window._hmt.push(['_setAutoPageview', false]);
 			var hm = document.createElement("script");
-			hm.src = "//hm.baidu.com/hm.js?4b1818add6bb2a385bee7862f62eeea3";
+			hm.src = "//hm.baidu.com/hm.js?33246539f95ebb9097b2aa92a8eddbad";
 			var s = document.getElementsByTagName("script")[0]; 
 			s.parentNode.insertBefore(hm, s);
 		}
