@@ -31,6 +31,7 @@ var style = StyleSheet.create({
 	input:{
 		width:'56%',
 		height:'45.33%',
+		minHeight:'20px',
 		fontSize:'16px',
 		fontWeight:'bolder',
 		backgroundColor:'#fcd54a',
@@ -39,6 +40,8 @@ var style = StyleSheet.create({
 		//marginLeft:'31%',
 		position:'absolute',
 		left:'31%',
+		padding:'0',
+		margin:'0',
 	},
 	winningName:{
 		//marginTop:'5%',
