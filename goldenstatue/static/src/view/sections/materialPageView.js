@@ -167,7 +167,7 @@ export default Views.createClass({
 				radioWrap.scrollLeft++;
 			}
 		},30);
-		
+		this.refs.imageMaterial.style.height = document.body.clientHeight;
 		
 	},
 	componentWillUnMount(){
@@ -261,7 +261,7 @@ export default Views.createClass({
 		return (
 			<div>
 
-				<img className={style.imagePage} src='/img/materialPage.png' />
+				<img ref='imageMaterial' className={style.imagePage} src='/img/materialPage.png' />
 				<img className={style.flag} src='/gif/flag.gif' />
 				<div className={style.btnActivityRule} onClick={this.props.rulePageClick}></div>
 				<ClientImage className={style.headSculpture} src={data.get("clientImage")!=""?data.get("clientImage"):null} />
