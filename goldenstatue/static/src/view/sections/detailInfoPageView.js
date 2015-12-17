@@ -104,7 +104,7 @@ export default Views.createClass({
 					var materialName = '牛奶';
 					break;
 				case 4 :
-					var materialName = '糖分';
+					var materialName = '细砂糖';
 					break;
 				case 5 :
 					var materialName = '油';

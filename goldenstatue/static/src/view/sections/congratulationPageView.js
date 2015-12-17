@@ -14,7 +14,7 @@ var style = StyleSheet.create({
 		border:'0'
 	},
 	congratulateText:{
-		width:'48.438%',
+		width:'58.125%',
 		border:'0',
 		position:'absolute',
 		top:'23%',
