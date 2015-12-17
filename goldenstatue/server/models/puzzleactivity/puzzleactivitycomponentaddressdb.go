@@ -35,6 +35,18 @@ func (this *PuzzleActivityComponentAddressDbModel) Add(data ContentPuzzleActivit
 	}
 }
 
+func (this *PuzzleActivityComponentAddressDbModel) GetByComponentIds(componentIds []int) []ContentPuzzleActivityComponentAddress {
+	if len(componentIds) == 0{
+		return []ContentPuzzleActivityComponentAddress{}
+	}
+	var results []ContentPuzzleActivityComponentAddress
+	err := DB.In("contentPuzzleActivityComponentId", componentIds).Find(&results)
+	if err != nil {
+		panic(err)
+	}
+	return results
+}
+
 func (this *PuzzleActivityComponentAddressDbModel) GetByComponentId(componentId int) ContentPuzzleActivityComponentAddress {
 	var results []ContentPuzzleActivityComponentAddress
 	err := DB.Where("contentPuzzleActivityComponentId = ?", componentId).Find(&results)

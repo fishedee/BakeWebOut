@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/astaxie/beego"
 	. "github.com/fishedee/encoding"
 	. "github.com/fishedee/language"
 	. "github.com/fishedee/web"
+	"reflect"
 )
 
 type BaseController struct {
@@ -19,6 +21,52 @@ type baseControllerResult struct {
 	Code int
 	Data interface{}
 	Msg  string
+}
+
+func (this *BaseController) jsonRender(result baseControllerResult){
+	resultString, err := EncodeJson(result)
+	if err != nil {
+		panic(err)
+	}
+	this.Ctx.WriteString(string(resultString))
+}
+
+func (this *BaseController) redirectRender(result baseControllerResult){
+	//FIXME 没有做更多的容错尝试
+	if result.Code == 0 {
+		url := result.Data.(string)
+		this.Ctx.Redirect(302,url)
+	} else {
+		this.Ctx.WriteString("跳转不成功 " + result.Msg)
+	}
+}
+
+func (this *BaseController) excelRender(result baseControllerResult){
+	//获取excel的导出配置
+	var excelArgs struct{
+		ViewTitle string `validate:"_viewTitle"`
+		ViewFormat string `validate:"_viewFormat"`
+	}
+	this.Check(&excelArgs)
+
+	excelTitle := excelArgs.ViewTitle
+	jsonFormat := map[string]string{}
+	err := json.Unmarshal([]byte(excelArgs.ViewFormat),&jsonFormat)
+	if err != nil{
+		panic(err)
+	}
+	jsonData := reflect.ValueOf(result.Data).FieldByName("Data").Interface()
+	tableData := Table(jsonFormat,jsonData)	
+
+	//写入数据
+	err = EncodeXlsxToRespnseWriter(
+		tableData,
+		this.Ctx.ResponseWriter,
+		excelTitle,
+	)
+	if err != nil{
+		panic(err)
+	}
 }
 
 func (this *BaseController) AutoRender(returnValue interface{}, viewname string) {
@@ -40,20 +88,18 @@ func (this *BaseController) AutoRender(returnValue interface{}, viewname string)
 	this.Ctx.Output.Header("Pragma","no-cache")
 	this.Ctx.Output.Header("Access-Control-Allow-Origin", this.Ctx.Input.Header("Origin"))
 	this.Ctx.Output.Header("Access-Control-Allow-Credentials", "true")
-	if viewname == "json" {
-		resultString, err := EncodeJson(result)
-		if err != nil {
-			panic(err)
-		}
-		this.Ctx.WriteString(string(resultString))
+
+	var inputViewName struct{
+		View string `validate:"_view"`
+	}
+	this.Check(&inputViewName)	
+
+	if inputViewName.View == "excel"{
+		this.excelRender(result)
+	}else if viewname == "json" {
+		this.jsonRender(result)
 	} else if viewname == "redirect" {
-		//FIXME 没有做更多的容错尝试
-		if result.Code == 0 {
-			url := result.Data.(string)
-			this.Ctx.Redirect(302,url)
-		} else {
-			this.Ctx.WriteString("跳转不成功 " + result.Msg)
-		}
+		this.redirectRender(result)
 	} else {
 		panic("不合法的viewName " + viewname)
 	}

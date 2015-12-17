@@ -3,6 +3,8 @@ import classnames from 'classnames';
 var style = StyleSheet.create({
 	dialogPage:{
 		position:'relative',
+		width:'100%',
+		//height:'100%',
 		zIndex:'1',
 	},
 	imagePage:{
@@ -15,11 +17,18 @@ var style = StyleSheet.create({
 	btnEnsure:{
 		width:'75.625%',
 		height:'32.0833%',
+		position:'absolute',
+		//height:'9.625%',
 		cursor:'pointer',
-		marginLeft:'12.2%',
-		marginTop:'21%',
+		//marginLeft:'12.2%',
+		//marginTop:'21%',
+		left:'12.2%',
+		//bottom:'8.5%',
+		top:'37%',
+		backgroundColor:'#ccc'
 	},
 	inputWrap:{
+		position:'relative',
 		height:'33.333%',
 		width:'100%',
 		boxSizing:'border-box',
@@ -27,21 +36,30 @@ var style = StyleSheet.create({
 	input:{
 		width:'56%',
 		height:'45.33%',
+		//height:'5.29%',
 		fontSize:'16px',
 		fontWeight:'bolder',
 		backgroundColor:'#fcd54a',
 		border:'none',
 		outline:'none',
-		marginLeft:'31%',
+		//marginLeft:'31%',
+		position:'absolute',
+		left:'31%',
 	},
 	winningName:{
-		marginTop:'5%',
+		//marginTop:'5%',
+		//top:'38%',
+		top:'5%',
 	},
 	winningPhoneNum:{
-		marginTop:'6.3%',
+		//marginTop:'6.3%',
+		//top:'50.8%',
+		top:'6.3%',
 	},
 	winningAddress:{
-		marginTop:'8.3%',
+		//marginTop:'8.3%',
+		//top:'63.6%',
+		top:'8.3%',
 	},
 	top:{
 		width:'100%',
@@ -54,6 +72,8 @@ var style = StyleSheet.create({
 		float:'left',
 	},
 	bottom:{
+
+		position:'relative',
 		width:'100%',
 		height:'30%',
 		float:'left',

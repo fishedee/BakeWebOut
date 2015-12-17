@@ -13,6 +13,15 @@ var style = StyleSheet.create({
 		height:'100%',
 		border:'0'
 	},
+	cryImage:{
+		width:'20%',
+		position:'absolute',
+		top:'43%',
+		left:'0',
+		right:'0',
+		marginLeft:'auto',
+		marginRight:'auto',
+	},
 	closeBtn:{
 		width:'11.875%',
 		border:'0',
@@ -35,6 +44,7 @@ export default Views.createClass({
 		return (
 			<div className={style.dialogPage}>
 				<img className={style.imagePage} src='/img/sorryPage.png' />
+				<img className={style.cryImage} src='/gif/cry.gif' />
 				<img className={style.closeBtn} src='/img/closeBtn.png' onClick={this.props.closeClick} />
 				<div className={style.btnMakeCake} onClick={this.props.onClick}></div>
 			</div>

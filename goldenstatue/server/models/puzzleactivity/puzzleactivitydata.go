@@ -35,7 +35,8 @@ type PuzzleActivityComponents struct {
 	Data  []ContentPuzzleActivityComponent
 }
 
-type ContentPuzzleActivityComponentWithClientInfo struct {
+type ContentPuzzleActivityComponentWithClientInfo struct {	
+	ContentPuzzleActivityComponentAddress
 	ContentPuzzleActivityComponent
 	ClientName  string
 	ClientImage string

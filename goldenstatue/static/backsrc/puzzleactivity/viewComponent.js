@@ -27,7 +27,7 @@ function getStates(next){
 	});
 }
 function go(){
-	query.simpleQuery({
+	var tableOperation = query.simpleQuery({
 		id:'container',
 		url:'/puzzleactivity/searchComponent',
 		column:[
@@ -37,21 +37,14 @@ function go(){
 			{id:'clientImage',type:'image',name:'用户头像'},
 			{id:'titleId',type:'enum',name:'头衔', map:titles},
 			{id:'state',type:'enum',name:'状态', map:states},
+			{id:'name',type:'text',name:'收货人'},
+			{id:'phone',type:'text',name:'收货电话'},
+			{id:'address',type:'text',name:'收货地址'},
 			{id:'createTime',type:'text',name:'创建时间'},
 			{id:'modifyTime',type:'text',name:'修改时间'},
 		],
 		queryColumn:['clientId', 'titleId', 'state'],
 		operate:[
-		{
-			name:'查看收货地址',
-			click:function(data){
-				if(data.state == "完成并已填写收货地址"){
-					location.href = 'viewAddress.html?contentPuzzleActivityComponentId='+data.contentPuzzleActivityComponentId;
-				}else{
-					dialog.message("该用户未填写收货地址！");
-				}
-			}
-		},
 		{
 			name:'查看点亮记录',
 			click:function(data){
@@ -59,6 +52,12 @@ function go(){
 			}
 		}
 		],
+		button:[{
+			name:'导出到excel',
+			click:function(){
+				tableOperation.exportDataToExcel("拼图游戏活动");
+			}
+		}]
 	});
 }
 getTitles(function(){

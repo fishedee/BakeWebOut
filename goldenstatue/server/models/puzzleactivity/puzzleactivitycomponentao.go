@@ -16,21 +16,34 @@ type PuzzleActivityComponentAoModel struct {
 var PuzzleActivityComponentAo = &PuzzleActivityComponentAoModel{}
 
 func (this *PuzzleActivityComponentAoModel) Search(where ContentPuzzleActivityComponent, limit CommonPage) PuzzleActivityComponentWithClientInfos {
-	result := PuzzleActivityComponentWithClientInfos{}
 	data := PuzzleActivityComponentDb.Search(where, limit)
+
+	//提取addressId
+	componentIds := ArrayColumnKey(data.Data,"ContentPuzzleActivityComponentId").([]int)
+	addresses := PuzzleActivityComponentAddressDb.GetByComponentIds(componentIds)
+	mapIdToAddress := ArrayColumnMap(addresses,"ContentPuzzleActivityComponentId").(map[int]ContentPuzzleActivityComponentAddress)
+
+	//提取clientId
+	clientIds := ArrayColumnKey(data.Data,"ClientId").([]int)
+	clients := ClientAo.GetByIds(clientIds)
+	mapIdToClient := ArrayColumnMap(clients,"ClientId").(map[int]Client)
+	
+	//合并信息
+	result := PuzzleActivityComponentWithClientInfos{}
 	result.Count = data.Count
 	for _, value := range data.Data {
-		singleClient := ClientAo.Get(value.ClientId)
+		singleClient,_ := mapIdToClient[value.ClientId]
+		address,_ := mapIdToAddress[value.ContentPuzzleActivityComponentId]
 		result.Data = append(
 			result.Data,
 			ContentPuzzleActivityComponentWithClientInfo{
+				address,
 				value,
 				singleClient.Name,
 				singleClient.Image,
 			},
 		)
 	}
-
 	return result
 }
 
@@ -346,6 +359,7 @@ func (this *PuzzleActivityComponentAoModel) GetByFinish(contentId int, limit Com
 		result = append(
 			result,
 			ContentPuzzleActivityComponentWithClientInfo{
+				ContentPuzzleActivityComponentAddress{},
 				value,
 				singleClient.Name,
 				singleClient.Image,
