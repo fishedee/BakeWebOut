@@ -38,6 +38,7 @@ type PuzzleActivityComponents struct {
 type ContentPuzzleActivityComponentWithClientInfo struct {	
 	ContentPuzzleActivityComponentAddress
 	ContentPuzzleActivityComponent
+	AddressModifyTime time.Time `xorm:"created"`
 	ClientName  string
 	ClientImage string
 }

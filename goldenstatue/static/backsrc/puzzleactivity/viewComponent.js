@@ -42,6 +42,7 @@ function go(){
 			{id:'address',type:'text',name:'收货地址'},
 			{id:'createTime',type:'text',name:'创建时间'},
 			{id:'modifyTime',type:'text',name:'修改时间'},
+			{id:'addressModifyTime',type:'text',name:'完成时间'},
 		],
 		queryColumn:['clientId', 'titleId', 'state'],
 		operate:[
