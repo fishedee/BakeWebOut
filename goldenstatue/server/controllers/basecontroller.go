@@ -56,17 +56,15 @@ func (this *BaseController) excelRender(result baseControllerResult){
 		panic(err)
 	}
 	jsonData := reflect.ValueOf(result.Data).FieldByName("Data").Interface()
-	tableData := Table(jsonFormat,jsonData)	
+	tableData := ArrayColumnTable(jsonFormat,jsonData)	
 
 	//写入数据
-	err = EncodeXlsxToRespnseWriter(
-		tableData,
-		this.Ctx.ResponseWriter,
-		excelTitle,
-	)
+	resultByte,err := EncodeXlsx(tableData)
 	if err != nil{
 		panic(err)
 	}
+	this.WriteMimeHeader("xlsx",excelTitle)
+	this.Write(resultByte)
 }
 
 func (this *BaseController) AutoRender(returnValue interface{}, viewname string) {
