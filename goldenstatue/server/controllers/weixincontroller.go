@@ -9,7 +9,6 @@ type WeixinController struct {
 	WeixinAo WeixinAoModel
 }
 
-/*
 func (this *WeixinController) GetJsConfig_Json() interface{} {
 	//检查输入
 	var Data struct {
@@ -23,9 +22,4 @@ func (this *WeixinController) GetJsConfig_Json() interface{} {
 
 func (this *WeixinController) Refresh_Json() {
 	this.WeixinAo.RefreshConfig()
-}
-*/
-
-func (this *WeixinController) Test_Json()(interface{}){
-	return "Hello World"
 }
