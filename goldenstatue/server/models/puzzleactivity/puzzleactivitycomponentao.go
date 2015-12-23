@@ -2,31 +2,33 @@ package puzzleactivity
 
 import (
 	. "github.com/fishedee/language"
-	. "github.com/fishedee/web"
-	"github.com/go-xorm/xorm"
 	. "goldenstatue/models/client"
 	. "goldenstatue/models/common"
+	"github.com/go-xorm/xorm"
 	"math/rand"
 	"strconv"
 	"time"
 )
 
 type PuzzleActivityComponentAoModel struct {
+	BaseModel
+	PuzzleActivityComponentDb PuzzleActivityComponentDbModel
+	PuzzleActivityComponentPuzzleDb ContentPuzzleActivityComponentPuzzleDbModel
+	PuzzleActivityComponentAddressDb PuzzleActivityComponentAddressDbModel
+	ClientAo ClientAoModel
 }
 
-var PuzzleActivityComponentAo = &PuzzleActivityComponentAoModel{}
-
 func (this *PuzzleActivityComponentAoModel) Search(where ContentPuzzleActivityComponent, limit CommonPage) PuzzleActivityComponentWithClientInfos {
-	data := PuzzleActivityComponentDb.Search(where, limit)
+	data := this.PuzzleActivityComponentDb.Search(where, limit)
 
 	//提取addressId
 	componentIds := ArrayColumnKey(data.Data,"ContentPuzzleActivityComponentId").([]int)
-	addresses := PuzzleActivityComponentAddressDb.GetByComponentIds(componentIds)
+	addresses := this.PuzzleActivityComponentAddressDb.GetByComponentIds(componentIds)
 	mapIdToAddress := ArrayColumnMap(addresses,"ContentPuzzleActivityComponentId").(map[int]ContentPuzzleActivityComponentAddress)
 
 	//提取clientId
 	clientIds := ArrayColumnKey(data.Data,"ClientId").([]int)
-	clients := ClientAo.GetByIds(clientIds)
+	clients := this.ClientAo.GetByIds(clientIds)
 	mapIdToClient := ArrayColumnMap(clients,"ClientId").(map[int]Client)
 	
 	//合并信息
@@ -50,15 +52,15 @@ func (this *PuzzleActivityComponentAoModel) Search(where ContentPuzzleActivityCo
 }
 
 func (this *PuzzleActivityComponentAoModel) GetAddress(componentId int) ContentPuzzleActivityComponentAddress {
-	return PuzzleActivityComponentAddressDb.GetByComponentId(componentId)
+	return this.PuzzleActivityComponentAddressDb.GetByComponentId(componentId)
 }
 
 func (this *PuzzleActivityComponentAoModel) SearchPuzzle(where ContentPuzzleActivityComponentPuzzle, limit CommonPage) PuzzleActivityComponentPuzzleWithClientInfos {
 	result := PuzzleActivityComponentPuzzleWithClientInfos{}
-	data := PuzzleActivityComponentPuzzleDb.Search(where, limit)
+	data := this.PuzzleActivityComponentPuzzleDb.Search(where, limit)
 	result.Count = data.Count
 	for _, value := range data.Data {
-		singleClient := ClientAo.Get(value.PuzzleClientId)
+		singleClient := this.ClientAo.Get(value.PuzzleClientId)
 		result.Data = append(
 			result.Data,
 			ContentPuzzleActivityComponentPuzzleWithClientInfo{
@@ -76,12 +78,12 @@ func (this *PuzzleActivityComponentAoModel) Get(contentId int, clientId int, log
 	result := PuzzleActivityComponentInfo{}
 
 	//用户信息
-	client := ClientAo.Get(clientId)
+	client := this.ClientAo.Get(clientId)
 	result.ClientName = client.Name
 	result.ClientImage = client.Image
 
 	//参赛信息
-	componentInfo := PuzzleActivityComponentDb.GetByContentIdAndClientId(contentId, clientId)
+	componentInfo := this.PuzzleActivityComponentDb.GetByContentIdAndClientId(contentId, clientId)
 	if len(componentInfo) == 0 {
 		data := ContentPuzzleActivityComponent{
 			ContentId: contentId,
@@ -89,7 +91,7 @@ func (this *PuzzleActivityComponentAoModel) Get(contentId int, clientId int, log
 			TitleId:   0,
 			State:     PuzzleActivityComponentStateEnum.WALK,
 		}
-		data = PuzzleActivityComponentDb.Add(data)
+		data = this.PuzzleActivityComponentDb.Add(data)
 		result.Component = data
 		result.IsPuzzle = false
 		return result
@@ -103,7 +105,7 @@ func (this *PuzzleActivityComponentAoModel) Get(contentId int, clientId int, log
 
 	//参赛者已成功获得的材料
 	var puzzle [6]bool
-	successPuzzleInfo := PuzzleActivityComponentPuzzleDb.GetSuccessByComponentId(componentId)
+	successPuzzleInfo := this.PuzzleActivityComponentPuzzleDb.GetSuccessByComponentId(componentId)
 	for _, value := range successPuzzleInfo {
 		switch value.PuzzleId {
 		case 1:
@@ -124,9 +126,9 @@ func (this *PuzzleActivityComponentAoModel) Get(contentId int, clientId int, log
 
 	//参赛者到目前为止所有点亮记录
 	allPuzzleWithClientInfo := []PuzzleActivityComponentPuzzleWithClientInfo{}
-	allPuzzle := PuzzleActivityComponentPuzzleDb.GetByComponentId(componentId)
+	allPuzzle := this.PuzzleActivityComponentPuzzleDb.GetByComponentId(componentId)
 	for _, value := range allPuzzle {
-		singleClient := ClientAo.Get(value.PuzzleClientId)
+		singleClient := this.ClientAo.Get(value.PuzzleClientId)
 		allPuzzleWithClientInfo = append(
 			allPuzzleWithClientInfo,
 			PuzzleActivityComponentPuzzleWithClientInfo{
@@ -149,7 +151,7 @@ func (this *PuzzleActivityComponentAoModel) setPuzzleHaveRead(componentPuzzleId 
 	puzzle := ContentPuzzleActivityComponentPuzzle{
 		IsRead: PuzzleActivityComponentPuzzleStateEnum.HAVE_READ,
 	}
-	PuzzleActivityComponentPuzzleDb.Mod(componentPuzzleId, puzzle)
+	this.PuzzleActivityComponentPuzzleDb.Mod(componentPuzzleId, puzzle)
 }
 
 func (this *PuzzleActivityComponentAoModel) SetTitle(contentId int, clientId int, titleId int) {
@@ -165,11 +167,11 @@ func (this *PuzzleActivityComponentAoModel) SetTitle(contentId int, clientId int
 		TitleId: titleId,
 		State:   PuzzleActivityComponentStateEnum.NO_BEGIN,
 	}
-	PuzzleActivityComponentDb.Mod(componentId, puzzleActivityComponent)
+	this.PuzzleActivityComponentDb.Mod(componentId, puzzleActivityComponent)
 }
 
 func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId int, loginClientId int, inPuzzleId int) ContentPuzzleActivityComponentPuzzle {
-	sess := DB.NewSession()
+	sess := this.DB.NewSession()
 	defer sess.Close()
 	sess.Begin()
 
@@ -224,7 +226,7 @@ func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId in
 		Type:                             isSuccess,
 		IsRead:                           PuzzleActivityComponentPuzzleStateEnum.NO_READ,
 	}
-	result := PuzzleActivityComponentPuzzleDb.AddForTrans(sess, data)
+	result := this.PuzzleActivityComponentPuzzleDb.AddForTrans(sess, data)
 
 	//扭转状态
 	if len(puzzles) == 0 {
@@ -240,11 +242,11 @@ func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId in
 }
 
 func (this *PuzzleActivityComponentAoModel) setComponentState(sess *xorm.Session, componentId int, state int) {
-	PuzzleActivityComponentDb.SetStateForTrans(sess, componentId, state)
+	this.PuzzleActivityComponentDb.SetStateForTrans(sess, componentId, state)
 }
 
 func (this *PuzzleActivityComponentAoModel) getComponentPuzzle(sess *xorm.Session, componentId int) []ContentPuzzleActivityComponentPuzzle {
-	return PuzzleActivityComponentPuzzleDb.GetByComponentIdForTrans(sess, componentId)
+	return this.PuzzleActivityComponentPuzzleDb.GetByComponentIdForTrans(sess, componentId)
 }
 
 func (this *PuzzleActivityComponentAoModel) getRate(num int) float64 {
@@ -315,7 +317,7 @@ func (this *PuzzleActivityComponentAoModel) makePuzzle(clientId int,loginClientI
 }
 
 func (this *PuzzleActivityComponentAoModel) checkPuzzle(componentId int, clientId int) bool {
-	data := PuzzleActivityComponentPuzzleDb.GetByComponentIdAndClientId(componentId, clientId)
+	data := this.PuzzleActivityComponentPuzzleDb.GetByComponentIdAndClientId(componentId, clientId)
 	if len(data) != 0 {
 		return true
 	}
@@ -323,7 +325,7 @@ func (this *PuzzleActivityComponentAoModel) checkPuzzle(componentId int, clientI
 }
 
 func (this *PuzzleActivityComponentAoModel) getComponent(contentId int, clientId int) ContentPuzzleActivityComponent {
-	componentInfo := PuzzleActivityComponentDb.GetByContentIdAndClientId(contentId, clientId)
+	componentInfo := this.PuzzleActivityComponentDb.GetByContentIdAndClientId(contentId, clientId)
 	if len(componentInfo) == 0 {
 		Throw(1, "该用户未参加活动!"+strconv.Itoa(clientId))
 	}
@@ -331,7 +333,7 @@ func (this *PuzzleActivityComponentAoModel) getComponent(contentId int, clientId
 }
 
 func (this *PuzzleActivityComponentAoModel) getComponentState(sess *xorm.Session, contentId int, clientId int) ContentPuzzleActivityComponent {
-	componentInfo := PuzzleActivityComponentDb.GetByContentIdAndClientIdForTrans(sess, contentId, clientId)
+	componentInfo := this.PuzzleActivityComponentDb.GetByContentIdAndClientIdForTrans(sess, contentId, clientId)
 	if len(componentInfo) == 0 {
 		Throw(1, "该用户未参加活动！")
 	}
@@ -350,14 +352,14 @@ func (this *PuzzleActivityComponentAoModel) SetAddress(contentId int, clientId i
 
 	//添加地址信息
 	data.ContentPuzzleActivityComponentId = componentId
-	PuzzleActivityComponentAddressDb.Add(data)
+	this.PuzzleActivityComponentAddressDb.Add(data)
 }
 
 func (this *PuzzleActivityComponentAoModel) GetByFinish(contentId int, limit CommonPage) []ContentPuzzleActivityComponentWithClientInfo {
 	result := []ContentPuzzleActivityComponentWithClientInfo{}
-	data := PuzzleActivityComponentDb.GetFinishByContentId(contentId, limit)
+	data := this.PuzzleActivityComponentDb.GetFinishByContentId(contentId, limit)
 	for _, value := range data {
-		singleClient := ClientAo.Get(value.ClientId)
+		singleClient := this.ClientAo.Get(value.ClientId)
 		result = append(
 			result,
 			ContentPuzzleActivityComponentWithClientInfo{
@@ -373,11 +375,11 @@ func (this *PuzzleActivityComponentAoModel) GetByFinish(contentId int, limit Com
 }
 
 func (this *PuzzleActivityComponentAoModel) DelByContentId(contentId int) {
-	components := PuzzleActivityComponentDb.GetByContentId(contentId)
-	PuzzleActivityComponentDb.DelByContentId(contentId)
+	components := this.PuzzleActivityComponentDb.GetByContentId(contentId)
+	this.PuzzleActivityComponentDb.DelByContentId(contentId)
 
 	for _, value := range components {
-		PuzzleActivityComponentPuzzleDb.DelByComponentId(value.ContentPuzzleActivityComponentId)
-		PuzzleActivityComponentAddressDb.DelByComponentId(value.ContentPuzzleActivityComponentId)
+		this.PuzzleActivityComponentPuzzleDb.DelByComponentId(value.ContentPuzzleActivityComponentId)
+		this.PuzzleActivityComponentAddressDb.DelByComponentId(value.ContentPuzzleActivityComponentId)
 	}
 }

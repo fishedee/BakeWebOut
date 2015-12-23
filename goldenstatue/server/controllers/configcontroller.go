@@ -8,6 +8,8 @@ import (
 
 type ConfigController struct {
 	BaseController
+	UserLoginAo UserLoginAoModel
+	ConfigAo ConfigAoModel
 }
 
 func (this *ConfigController) Search_Json() (interface{}) {
@@ -19,10 +21,10 @@ func (this *ConfigController) Search_Json() (interface{}) {
 	this.CheckGet(&limit)
 
 	//校验权限
-	UserLoginAo.CheckMustLogin(this.Ctx)
+	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	return ConfigAo.Search(where,limit)
+	return this.ConfigAo.Search(where,limit)
 }
 
 func (this *ConfigController) Get_Json() (interface{}) {
@@ -31,10 +33,10 @@ func (this *ConfigController) Get_Json() (interface{}) {
 	this.CheckGet(&config)
 
 	//校验权限
-	UserLoginAo.CheckMustLogin(this.Ctx)
+	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	return ConfigAo.Get(config.Name)
+	return this.ConfigAo.Get(config.Name)
 }
 
 func (this *ConfigController) Set_Json(){
@@ -43,8 +45,8 @@ func (this *ConfigController) Set_Json(){
 	this.CheckPost(&config)
 
 	//校验权限
-	UserLoginAo.CheckMustLogin(this.Ctx)
+	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	ConfigAo.Set(config.Name,config.Value)
+	this.ConfigAo.Set(config.Name,config.Value)
 }

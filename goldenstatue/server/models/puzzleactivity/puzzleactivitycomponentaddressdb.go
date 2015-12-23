@@ -2,16 +2,15 @@ package puzzleactivity
 
 import (
 	. "github.com/fishedee/language"
-	. "github.com/fishedee/web"
+	. "goldenstatue/models/common"
 )
 
 type PuzzleActivityComponentAddressDbModel struct {
+	BaseModel
 }
 
-var PuzzleActivityComponentAddressDb = &PuzzleActivityComponentAddressDbModel{}
-
 func (this *PuzzleActivityComponentAddressDbModel) Add(data ContentPuzzleActivityComponentAddress) {
-	db := DB.NewSession()
+	db := this.DB.NewSession()
 	defer db.Close()
 
 	db.Begin()
@@ -40,7 +39,7 @@ func (this *PuzzleActivityComponentAddressDbModel) GetByComponentIds(componentId
 		return []ContentPuzzleActivityComponentAddress{}
 	}
 	var results []ContentPuzzleActivityComponentAddress
-	err := DB.In("contentPuzzleActivityComponentId", componentIds).Find(&results)
+	err := this.DB.In("contentPuzzleActivityComponentId", componentIds).Find(&results)
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +48,7 @@ func (this *PuzzleActivityComponentAddressDbModel) GetByComponentIds(componentId
 
 func (this *PuzzleActivityComponentAddressDbModel) GetByComponentId(componentId int) ContentPuzzleActivityComponentAddress {
 	var results []ContentPuzzleActivityComponentAddress
-	err := DB.Where("contentPuzzleActivityComponentId = ?", componentId).Find(&results)
+	err := this.DB.Where("contentPuzzleActivityComponentId = ?", componentId).Find(&results)
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +60,7 @@ func (this *PuzzleActivityComponentAddressDbModel) GetByComponentId(componentId 
 
 func (this *PuzzleActivityComponentAddressDbModel) DelByComponentId(componentId int) {
 	var address ContentPuzzleActivityComponentAddress
-	_, err := DB.Where("contentPuzzleActivityComponentId = ?", componentId).Delete(&address)
+	_, err := this.DB.Where("contentPuzzleActivityComponentId = ?", componentId).Delete(&address)
 	if err != nil {
 		panic(err)
 	}

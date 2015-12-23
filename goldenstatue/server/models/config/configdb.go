@@ -1,18 +1,15 @@
 package config
 
 import (
-	. "github.com/fishedee/web"
 	. "goldenstatue/models/common"
 )
 
 type ConfigDbModel struct {
+	BaseModel
 }
 
-var ConfigDb = &ConfigDbModel{}
-
-
 func (this *ConfigDbModel) Search(where Config,limit CommonPage) Configs {
-	db := DB.NewSession()
+	db := this.DB.NewSession()
 	defer db.Close()
 
 	if limit.PageIndex == 0 && limit.PageSize == 0 {
@@ -45,14 +42,14 @@ func (this *ConfigDbModel) Search(where Config,limit CommonPage) Configs {
 }
 
 func (this *ConfigDbModel) Add(data Config) {
-	_, err := DB.Insert(&data)
+	_, err := this.DB.Insert(&data)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func (this *ConfigDbModel) Mod(configId int, data Config) {
-	_, err := DB.Where("configId = ?", configId).Update(&data)
+	_, err := this.DB.Where("configId = ?", configId).Update(&data)
 	if err != nil {
 		panic(err)
 	}
@@ -60,7 +57,7 @@ func (this *ConfigDbModel) Mod(configId int, data Config) {
 
 func (this *ConfigDbModel) GetByName(name string) []Config {
 	var configs []Config
-	err := DB.Where("name=?", name).Find(&configs)
+	err := this.DB.Where("name=?", name).Find(&configs)
 	if err != nil {
 		panic(err)
 	}

@@ -3,15 +3,17 @@ package controllers
 import (
 	. "goldenstatue/models/common"
 	. "goldenstatue/models/user"
-	//. "github.com/fishedee/web"
 )
 
 type UserController struct {
 	BaseController
+	UserLoginAo UserLoginAoModel
+	UserAo UserAoModel
+	UserDb UserDbModel
 }
 
 func (this *UserController) Islogin_Json()(interface{}){
-	user := UserLoginAo.IsLogin(this.Ctx)
+	user := this.UserLoginAo.IsLogin()
 	if user.UserId != 0{
 		return user
 	}else{
@@ -24,11 +26,11 @@ func (this *UserController) Login_Json(){
 	var user User
 	this.CheckPost(&user)
 	
-	UserLoginAo.Login(this.Ctx,user.Name,user.Password)
+	this.UserLoginAo.Login(user.Name,user.Password)
 }
 
 func (this *UserController) Logout_Json(){
-	UserLoginAo.Logout(this.Ctx)
+	this.UserLoginAo.Logout()
 }
 
 func (this *UserController) GetType_Json()(interface{}){
@@ -44,10 +46,10 @@ func (this *UserController) Search_Json()(interface{}){
 	this.CheckGet(&limit)
 
 	//检查权限
-	UserLoginAo.CheckMustAdmin(this.Ctx)
+	this.UserLoginAo.CheckMustAdmin()
 
 	//执行业务逻辑
-	return UserAo.Search(where,limit)
+	return this.UserAo.Search(where,limit)
 }
 
 func (this *UserController) Get_Json()(interface{}){
@@ -56,10 +58,10 @@ func (this *UserController) Get_Json()(interface{}){
 	this.CheckGet(&user)
 
 	//检查权限
-	UserLoginAo.CheckMustAdmin(this.Ctx)
+	this.UserLoginAo.CheckMustAdmin()
 
 	//执行业务逻辑
-	return UserAo.Get(user.UserId)
+	return this.UserAo.Get(user.UserId)
 }
 
 func (this *UserController) Add_Json(){
@@ -68,10 +70,10 @@ func (this *UserController) Add_Json(){
 	this.CheckPost(&user)
 
 	//检查权限
-	UserLoginAo.CheckMustAdmin(this.Ctx)
+	this.UserLoginAo.CheckMustAdmin()
 
 	//执行业务逻辑
-	UserAo.Add(user)
+	this.UserAo.Add(user)
 }
 
 func (this *UserController) Del_Json(){
@@ -80,10 +82,10 @@ func (this *UserController) Del_Json(){
 	this.CheckPost(&user)
 
 	//检查权限
-	UserLoginAo.CheckMustAdmin(this.Ctx)
+	this.UserLoginAo.CheckMustAdmin()
 
 	//执行业务逻辑
-	UserAo.Del(user.UserId)
+	this.UserAo.Del(user.UserId)
 }
 
 func (this *UserController) ModType_Json(){
@@ -92,10 +94,10 @@ func (this *UserController) ModType_Json(){
 	this.CheckPost( &user )
 
 	//检查权限
-	UserLoginAo.CheckMustAdmin(this.Ctx)
+	this.UserLoginAo.CheckMustAdmin()
 
 	//执行业务逻辑
-	UserAo.ModType( user.UserId , user.Type)
+	this.UserAo.ModType( user.UserId , user.Type)
 }
 
 func (this *UserController) ModPassword_Json(){
@@ -104,10 +106,10 @@ func (this *UserController) ModPassword_Json(){
 	this.CheckPost(&user)
 
 	//检查权限
-	UserLoginAo.CheckMustAdmin( this.Ctx )
+	this.UserLoginAo.CheckMustAdmin()
 
 	//执行业务逻辑
-	UserAo.ModPassword( user.UserId , user.Password )
+	this.UserAo.ModPassword( user.UserId , user.Password )
 }
 
 func (this *UserController) ModMyPassword_Json(){
@@ -119,8 +121,8 @@ func (this *UserController) ModMyPassword_Json(){
 	this.CheckPost(&input)
 
 	//检查权限
-	loginUser := UserLoginAo.CheckMustLogin( this.Ctx )
+	loginUser := this.UserLoginAo.CheckMustLogin()
 
 	//执行业务逻辑
-	UserAo.ModPasswordByOld( loginUser.UserId , input.OldPassword , input.NewPassword )
+	this.UserAo.ModPasswordByOld( loginUser.UserId , input.OldPassword , input.NewPassword )
 }

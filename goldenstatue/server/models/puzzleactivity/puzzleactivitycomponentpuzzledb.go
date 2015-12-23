@@ -1,18 +1,16 @@
 package puzzleactivity
 
 import (
-	. "github.com/fishedee/web"
 	"github.com/go-xorm/xorm"
 	. "goldenstatue/models/common"
 )
 
 type ContentPuzzleActivityComponentPuzzleDbModel struct {
+	BaseModel
 }
 
-var PuzzleActivityComponentPuzzleDb = &ContentPuzzleActivityComponentPuzzleDbModel{}
-
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) Search(where ContentPuzzleActivityComponentPuzzle, limit CommonPage) PuzzleActivityComponentPuzzles {
-	db := DB.NewSession()
+	db := this.DB.NewSession()
 	defer db.Close()
 
 	if limit.PageSize == 0 && limit.PageIndex == 0 {
@@ -54,7 +52,7 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) Search(where ContentPuz
 }
 
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetCountByClientIdAndType(clientId int,puzzleType int) int{
-	count,err := DB.Where("puzzleClientId = ? and type = ?",clientId,puzzleType).Count(&ContentPuzzleActivityComponentPuzzle{})
+	count,err := this.DB.Where("puzzleClientId = ? and type = ?",clientId,puzzleType).Count(&ContentPuzzleActivityComponentPuzzle{})
 	if err != nil{
 		panic(err)
 	}
@@ -63,7 +61,7 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetCountByClientIdAndTy
 
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentIdAndClientId(componentId int, clientId int) []ContentPuzzleActivityComponentPuzzle {
 	var puzzleActivityComponentPuzzles []ContentPuzzleActivityComponentPuzzle
-	err := DB.Where("contentPuzzleActivityComponentId =? and puzzleClientId =?", componentId, clientId).Find(&puzzleActivityComponentPuzzles)
+	err := this.DB.Where("contentPuzzleActivityComponentId =? and puzzleClientId =?", componentId, clientId).Find(&puzzleActivityComponentPuzzles)
 	if err != nil {
 		panic(err)
 	}
@@ -72,7 +70,7 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentIdAndClie
 
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetSuccessByComponentId(componentId int) []ContentPuzzleActivityComponentPuzzle {
 	var puzzleActivityComponentPuzzles []ContentPuzzleActivityComponentPuzzle
-	err := DB.Where("contentPuzzleActivityComponentId =? and type = ?", componentId, 1).Find(&puzzleActivityComponentPuzzles)
+	err := this.DB.Where("contentPuzzleActivityComponentId =? and type = ?", componentId, 1).Find(&puzzleActivityComponentPuzzles)
 	if err != nil {
 		panic(err)
 	}
@@ -81,7 +79,7 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetSuccessByComponentId
 
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentId(componentId int) []ContentPuzzleActivityComponentPuzzle {
 	var puzzleActivityComponentPuzzles []ContentPuzzleActivityComponentPuzzle
-	err := DB.Where("contentPuzzleActivityComponentId=?", componentId).OrderBy("createTime desc").Find(&puzzleActivityComponentPuzzles)
+	err := this.DB.Where("contentPuzzleActivityComponentId=?", componentId).OrderBy("createTime desc").Find(&puzzleActivityComponentPuzzles)
 	if err != nil {
 		panic(err)
 	}
@@ -90,7 +88,7 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentId(compon
 
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentIdAndPuzzleId(componentId int, puzzleId int) []ContentPuzzleActivityComponentPuzzle {
 	var puzzleActivityComponentPuzzles []ContentPuzzleActivityComponentPuzzle
-	err := DB.Where("contentPuzzleActivityComponentId=? and puzzleId=?", componentId, puzzleId).Find(&puzzleActivityComponentPuzzles)
+	err := this.DB.Where("contentPuzzleActivityComponentId=? and puzzleId=?", componentId, puzzleId).Find(&puzzleActivityComponentPuzzles)
 	if err != nil {
 		panic(err)
 	}
@@ -107,7 +105,7 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetByComponentIdForTran
 }
 
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) Add(data ContentPuzzleActivityComponentPuzzle) ContentPuzzleActivityComponentPuzzle {
-	_, err := DB.Insert(&data)
+	_, err := this.DB.Insert(&data)
 	if err != nil {
 		panic(err)
 	}
@@ -115,7 +113,7 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) Add(data ContentPuzzleA
 }
 
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) Mod(componentPuzzleId int, data ContentPuzzleActivityComponentPuzzle) {
-	_, err := DB.Where("contentPuzzleActivityComponentPuzzleId = ?", componentPuzzleId).Update(&data)
+	_, err := this.DB.Where("contentPuzzleActivityComponentPuzzleId = ?", componentPuzzleId).Update(&data)
 	if err != nil {
 		panic(err)
 	}
@@ -131,7 +129,7 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) AddForTrans(sess *xorm.
 
 func (this *ContentPuzzleActivityComponentPuzzleDbModel) DelByComponentId(componentId int) {
 	var puzzle ContentPuzzleActivityComponentPuzzle
-	_, err := DB.Where("contentPuzzleActivityComponentId = ?", componentId).Delete(&puzzle)
+	_, err := this.DB.Where("contentPuzzleActivityComponentId = ?", componentId).Delete(&puzzle)
 	if err != nil {
 		panic(err)
 	}

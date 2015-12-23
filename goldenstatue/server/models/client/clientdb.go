@@ -3,17 +3,15 @@ package client
 import (
 	. "goldenstatue/models/common"
 	. "github.com/fishedee/language"
-	. "github.com/fishedee/web"
 	"strconv"
 )
 
 type ClientDbModel struct {
+	BaseModel
 }
 
-var ClientDb = &ClientDbModel{}
-
 func (this *ClientDbModel) Search(where Client, limit CommonPage) Clients {
-	db := DB.NewSession()
+	db := this.DB.NewSession()
 	defer db.Close()
 
 	if limit.PageIndex == 0 && limit.PageSize == 0 {
@@ -50,7 +48,7 @@ func (this *ClientDbModel) Search(where Client, limit CommonPage) Clients {
 
 func (this *ClientDbModel) Get(id int) Client {
 	var clients []Client
-	err := DB.Where("clientId = ?", id).Find(&clients)
+	err := this.DB.Where("clientId = ?", id).Find(&clients)
 	if err != nil {
 		panic(err)
 	}
@@ -62,7 +60,7 @@ func (this *ClientDbModel) Get(id int) Client {
 
 func (this *ClientDbModel) GetByOpenId(openid string) []Client {
 	var clients []Client
-	err := DB.Where("openid = ?",openid).Find(&clients)
+	err := this.DB.Where("openid = ?",openid).Find(&clients)
 	if err != nil{
 		panic(err)
 	}
@@ -71,7 +69,7 @@ func (this *ClientDbModel) GetByOpenId(openid string) []Client {
 
 func (this *ClientDbModel) GetByIds(ids []int) []Client {
 	var clients []Client
-	err := DB.In("clientId", ids).Find(&clients)
+	err := this.DB.In("clientId", ids).Find(&clients)
 	if err != nil {
 		panic(err)
 	}
@@ -79,7 +77,7 @@ func (this *ClientDbModel) GetByIds(ids []int) []Client {
 }
 
 func (this *ClientDbModel) Add(data Client)(int){
-	_, err := DB.Insert(&data)
+	_, err := this.DB.Insert(&data)
 	if err != nil {
 		panic(err)
 	}
@@ -87,7 +85,7 @@ func (this *ClientDbModel) Add(data Client)(int){
 }
 
 func (this *ClientDbModel) Mod(id int, data Client) {
-	_, err := DB.Where("clientId = ?", id).Update(&data)
+	_, err := this.DB.Where("clientId = ?", id).Update(&data)
 	if err != nil {
 		panic(err)
 	}
@@ -95,7 +93,7 @@ func (this *ClientDbModel) Mod(id int, data Client) {
 
 func (this *ClientDbModel) Del(id int) {
 	var client Client
-	_, err := DB.Where("clientId = ?", id).Delete(&client)
+	_, err := this.DB.Where("clientId = ?", id).Delete(&client)
 	if err != nil {
 		panic(err)
 	}

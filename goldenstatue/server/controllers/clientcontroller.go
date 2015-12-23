@@ -8,6 +8,10 @@ import (
 
 type ClientController struct {
 	BaseController
+	UserLoginAo UserLoginAoModel
+	ClientLoginAo ClientLoginAoModel
+	ClientWxLoginAo ClientWxLoginAoModel
+	ClientAo ClientAoModel
 }
 
 func (this *ClientController) Search_Json() interface{} {
@@ -19,14 +23,14 @@ func (this *ClientController) Search_Json() interface{} {
 	this.CheckGet(&limit)
 
 	//检查权限
-	UserLoginAo.CheckMustLogin(this.Ctx)
+	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	return ClientAo.Search(where,limit)
+	return this.ClientAo.Search(where,limit)
 }
 
 func (this *ClientController) IsLogin_Json() interface{} {
-	client := ClientLoginAo.IsLogin(this.Ctx)
+	client := this.ClientLoginAo.IsLogin()
 	if client.ClientId != 0 {
 		return client
 	} else {
@@ -40,11 +44,11 @@ func (this *ClientController) TestLogin_Json() {
 	this.CheckGet(&client)
 
 	//登录
-	ClientLoginAo.Login(this.Ctx, client.ClientId)
+	this.ClientLoginAo.Login(client.ClientId)
 }
 
 func (this *ClientController) LoginCallback_Redirect()(interface{}){
-	return ClientWxLoginAo.LoginCallback(this.Ctx)
+	return this.ClientWxLoginAo.LoginCallback()
 }
 
 func (this *ClientController) Login_Json()(interface{}){
@@ -53,19 +57,19 @@ func (this *ClientController) Login_Json()(interface{}){
 	}
 	this.CheckGet(&callback)
 
-	return ClientWxLoginAo.Login(this.Ctx,callback.Callback)
+	return this.ClientWxLoginAo.Login(callback.Callback)
 }
 
 func (this *ClientController) Logout_Json(){
-	ClientLoginAo.Logout(this.Ctx)
+	this.ClientLoginAo.Logout()
 }
 
 func (this *ClientController) CheckHasPhone_Json()(interface{}){	
 	//检查登陆态
-	clientInfo := ClientLoginAo.CheckMustLogin(this.Ctx)
+	clientInfo := this.ClientLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	return ClientWxLoginAo.CheckHasPhoneNumber(this.Ctx,clientInfo.ClientId)
+	return this.ClientWxLoginAo.CheckHasPhoneNumber(clientInfo.ClientId)
 }
 
 func (this *ClientController) GetPhoneCaptcha_Json(){
@@ -76,10 +80,10 @@ func (this *ClientController) GetPhoneCaptcha_Json(){
 	this.CheckPost(&phoneInfo)
 
 	//检查登陆态
-	ClientLoginAo.CheckMustLogin(this.Ctx)
+	this.ClientLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	ClientWxLoginAo.GetPhoneCaptcha(this.Ctx,phoneInfo.Phone)
+	this.ClientWxLoginAo.GetPhoneCaptcha(phoneInfo.Phone)
 }
 
 func (this *ClientController) RegisterPhone_Json(){
@@ -91,8 +95,8 @@ func (this *ClientController) RegisterPhone_Json(){
 	this.CheckPost(&phoneInfo)
 
 	//检查登陆态
-	clientInfo := ClientLoginAo.CheckMustLogin(this.Ctx)
+	clientInfo := this.ClientLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	ClientWxLoginAo.RegisterPhoneNumber(this.Ctx,clientInfo.ClientId,phoneInfo.Phone,phoneInfo.Captcha)
+	this.ClientWxLoginAo.RegisterPhoneNumber(clientInfo.ClientId,phoneInfo.Phone,phoneInfo.Captcha)
 }

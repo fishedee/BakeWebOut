@@ -9,6 +9,10 @@ import (
 
 type PuzzleActivityController struct {
 	BaseController
+	UserLoginAo UserLoginAoModel
+	ClientLoginAo ClientLoginAoModel
+	ClientWxLoginAo ClientWxLoginAoModel
+	PuzzleActivityAo PuzzleActivityAoModel
 }
 
 //搜索所有活动
@@ -21,10 +25,10 @@ func (this *PuzzleActivityController) Search_Json() PuzzleActivitys {
 	this.CheckGet(&limit)
 
 	//检查权限
-	UserLoginAo.CheckMustLogin(this.Ctx)
+	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	return PuzzleActivityAo.Search(where, limit)
+	return this.PuzzleActivityAo.Search(where, limit)
 }
 
 func (this *PuzzleActivityController) Get_Json() ContentPuzzleActivity {
@@ -35,10 +39,10 @@ func (this *PuzzleActivityController) Get_Json() ContentPuzzleActivity {
 	this.CheckGet(&data)
 
 	//检查权限
-	UserLoginAo.CheckMustLogin(this.Ctx)
+	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	return PuzzleActivityAo.Get(data.ContentId)
+	return this.PuzzleActivityAo.Get(data.ContentId)
 }
 
 func (this *PuzzleActivityController) Add_Json() {
@@ -47,10 +51,10 @@ func (this *PuzzleActivityController) Add_Json() {
 	this.CheckPost(&puzzleActivity)
 
 	//检查权限
-	UserLoginAo.CheckMustLogin(this.Ctx)
+	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	PuzzleActivityAo.Add(puzzleActivity)
+	this.PuzzleActivityAo.Add(puzzleActivity)
 }
 
 func (this *PuzzleActivityController) Mod_Json() {
@@ -63,10 +67,10 @@ func (this *PuzzleActivityController) Mod_Json() {
 	this.CheckPost(&puzzleActivity)
 
 	//检查权限
-	UserLoginAo.CheckMustLogin(this.Ctx)
+	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	PuzzleActivityAo.Mod(data.ContentId, puzzleActivity)
+	this.PuzzleActivityAo.Mod(data.ContentId, puzzleActivity)
 }
 
 func (this *PuzzleActivityController) Del_Json() {
@@ -77,10 +81,10 @@ func (this *PuzzleActivityController) Del_Json() {
 	this.CheckPost(&data)
 
 	//检查权限
-	UserLoginAo.CheckMustLogin(this.Ctx)
+	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	PuzzleActivityAo.Del(data.ContentId)
+	this.PuzzleActivityAo.Del(data.ContentId)
 }
 
 func (this *PuzzleActivityController) SearchComponent_Json() PuzzleActivityComponentWithClientInfos {
@@ -92,10 +96,10 @@ func (this *PuzzleActivityController) SearchComponent_Json() PuzzleActivityCompo
 	this.CheckGet(&limit)
 
 	//检查权限
-	UserLoginAo.CheckMustLogin(this.Ctx)
+	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	return PuzzleActivityAo.SearchComponent(where, limit)
+	return this.PuzzleActivityAo.SearchComponent(where, limit)
 }
 
 func (this *PuzzleActivityController) GetComponentAddress_Json() ContentPuzzleActivityComponentAddress {
@@ -104,10 +108,10 @@ func (this *PuzzleActivityController) GetComponentAddress_Json() ContentPuzzleAc
 	this.CheckGet(&where)
 
 	//检查权限
-	UserLoginAo.CheckMustLogin(this.Ctx)
+	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	return PuzzleActivityAo.GetComponentAddress(where.ContentPuzzleActivityComponentId)
+	return this.PuzzleActivityAo.GetComponentAddress(where.ContentPuzzleActivityComponentId)
 }
 
 func (this *PuzzleActivityController) SearchComponentPuzzle_Json() PuzzleActivityComponentPuzzleWithClientInfos {
@@ -119,10 +123,10 @@ func (this *PuzzleActivityController) SearchComponentPuzzle_Json() PuzzleActivit
 	this.CheckGet(&limit)
 
 	//检查权限
-	UserLoginAo.CheckMustLogin(this.Ctx)
+	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	return PuzzleActivityAo.SearchComponentPuzzle(where, limit)
+	return this.PuzzleActivityAo.SearchComponentPuzzle(where, limit)
 }
 
 func (this *PuzzleActivityController) GetTitles_Json() interface{} {
@@ -151,7 +155,7 @@ func (this *PuzzleActivityController) GetComponentInfo_Json() interface{} {
 	this.CheckGet(&where)
 
 	//检查权限
-	client := ClientLoginAo.CheckMustLogin(this.Ctx)
+	client := this.ClientLoginAo.CheckMustLogin()
 
 	//业务逻辑
 	clientId := where.ClientId
@@ -161,7 +165,7 @@ func (this *PuzzleActivityController) GetComponentInfo_Json() interface{} {
 	if clientId == client.ClientId {
 		isLoginClient = true
 	}
-	puzzleActivityComponentInfo := PuzzleActivityAo.GetComponentInfo(contentId, clientId, client.ClientId)
+	puzzleActivityComponentInfo := this.PuzzleActivityAo.GetComponentInfo(contentId, clientId, client.ClientId)
 	puzzleActivityComponentInfo.IsLoginClient = isLoginClient
 
 	return puzzleActivityComponentInfo
@@ -174,10 +178,10 @@ func (this *PuzzleActivityController) SetComponentTitle_Json() {
 	this.CheckPost(&where)
 
 	//检查权限
-	client := ClientLoginAo.CheckMustLogin(this.Ctx)
+	client := this.ClientLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	PuzzleActivityAo.SetComponentTitle(where.ContentId, client.ClientId, where.TitleId)
+	this.PuzzleActivityAo.SetComponentTitle(where.ContentId, client.ClientId, where.TitleId)
 }
 
 //获得一块材料
@@ -191,12 +195,12 @@ func (this *PuzzleActivityController) AddComponentPuzzle_Json() ContentPuzzleAct
 	this.CheckPost(&where)
 
 	//检查权限
-	client := ClientLoginAo.CheckMustLogin(this.Ctx)
+	client := this.ClientLoginAo.CheckMustLogin()
 
-	ClientWxLoginAo.CheckMustHasPhone(this.Ctx,client.ClientId)
+	this.ClientWxLoginAo.CheckMustHasPhone(client.ClientId)
 
 	//业务逻辑
-	return PuzzleActivityAo.AddComponentPuzzle(where.ContentId, where.ClientId, client.ClientId, where.PuzzleId)
+	return this.PuzzleActivityAo.AddComponentPuzzle(where.ContentId, where.ClientId, client.ClientId, where.PuzzleId)
 }
 
 //记录收获信息
@@ -210,12 +214,12 @@ func (this *PuzzleActivityController) SetComponentAddress_Json() {
 	this.CheckPost(&address)
 
 	//检查权限
-	client := ClientLoginAo.CheckMustLogin(this.Ctx)
+	client := this.ClientLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	PuzzleActivityAo.SetComponentAddress(where.ContentId, client.ClientId, address)
+	this.PuzzleActivityAo.SetComponentAddress(where.ContentId, client.ClientId, address)
 
-	ClientWxLoginAo.AddAddress(this.Ctx,client.ClientId,ClientAddress{
+	this.ClientWxLoginAo.AddAddress(client.ClientId,ClientAddress{
 		Name:address.Name,
 		Address:address.Address,
 		Phone:address.Phone,
@@ -234,8 +238,8 @@ func (this *PuzzleActivityController) GetFinishComponent_Json() []ContentPuzzleA
 	this.CheckGet(&limit)
 
 	//检查权限
-	ClientLoginAo.CheckMustLogin(this.Ctx)
+	this.ClientLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	return PuzzleActivityAo.GetFinishComponent(where.ContentId, limit)
+	return this.PuzzleActivityAo.GetFinishComponent(where.ContentId, limit)
 }

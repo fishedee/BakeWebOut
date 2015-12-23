@@ -1,19 +1,17 @@
 package user
 
 import (
-	. "github.com/fishedee/language"
-	. "github.com/fishedee/web"
 	. "goldenstatue/models/common"
+	. "github.com/fishedee/language"
 	"strconv"
 )
 
 type UserDbModel struct {
+	BaseModel
 }
 
-var UserDb = &UserDbModel{}
-
 func (this *UserDbModel) Search(where User,limit CommonPage )Users{
-	db := DB.NewSession()
+	db := this.DB.NewSession()
 
 	if limit.PageSize == 0 && limit.PageIndex == 0 {
 		return Users{
@@ -48,7 +46,7 @@ func (this *UserDbModel) Search(where User,limit CommonPage )Users{
 
 func (this *UserDbModel) Get(id int) User {
 	var users []User
-	err := DB.Where("userId=?", id).Find(&users)
+	err := this.DB.Where("userId=?", id).Find(&users)
 	if err != nil {
 		panic(err)
 	}
@@ -60,7 +58,7 @@ func (this *UserDbModel) Get(id int) User {
 
 func (this *UserDbModel) GetByName( name string)[]User{
 	var users []User
-	err := DB.Where("name = ?",name).Find(&users)
+	err := this.DB.Where("name = ?",name).Find(&users)
 	if err != nil{
 		panic(err)
 	}
@@ -68,21 +66,21 @@ func (this *UserDbModel) GetByName( name string)[]User{
 }
 
 func (this *UserDbModel)Del(id int){
-	_,err := DB.Where("userId = ?",id).Delete(&User{})
+	_,err := this.DB.Where("userId = ?",id).Delete(&User{})
 	if err != nil{
 		panic(err)
 	}
 }
 
 func (this *UserDbModel)Add(user User){
-	_,err := DB.Insert(user)
+	_,err := this.DB.Insert(user)
 	if err != nil{
 		panic(err)
 	}
 }
 
 func (this *UserDbModel)Mod( id int,user User){
-	_,err := DB.Where("userId = ?", id).Update(&user)
+	_,err := this.DB.Where("userId = ?", id).Update(&user)
 	if err != nil{
 		panic(err)
 	}

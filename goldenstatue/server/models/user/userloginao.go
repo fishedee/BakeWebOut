@@ -1,69 +1,68 @@
 package user
 
 import (
-	"github.com/astaxie/beego/context"
+	. "goldenstatue/models/common"
 	. "github.com/fishedee/language"
-	. "github.com/fishedee/web"
 )
 
 type UserLoginAoModel struct {
+	BaseModel
+	UserAo UserAoModel
 }
 
-var UserLoginAo UserLoginAoModel
-
-func (this *UserLoginAoModel) IsLogin(context *context.Context) User {
-	sess, err := Session.SessionStart(context.ResponseWriter, context.Request)
+func (this *UserLoginAoModel) IsLogin() User {
+	sess, err := this.Session.SessionStart(this.Ctx.ResponseWriter, this.Ctx.Request)
 	if err != nil {
 		panic("session启动失败")
 	}
-	defer sess.SessionRelease(context.ResponseWriter)
+	defer sess.SessionRelease(this.Ctx.ResponseWriter)
 
 	userId := sess.Get("userId")
 	userIdInt, ok := userId.(int)
 	if ok && userIdInt >= 1000 {
-		return UserAo.Get(userIdInt)
+		return this.UserAo.Get(userIdInt)
 	} else {
 		return User{}
 	}
 }
 
-func (this *UserLoginAoModel) CheckMustLogin(context *context.Context) User {
-	user := this.IsLogin(context)
+func (this *UserLoginAoModel) CheckMustLogin() User {
+	user := this.IsLogin()
 	if user.UserId == 0 {
 		Throw(1, "用户未登录")
 	}
 	return user
 }
 
-func (this *UserLoginAoModel) CheckMustAdmin(context *context.Context) User{
-	user := this.CheckMustLogin(context)
+func (this *UserLoginAoModel) CheckMustAdmin() User{
+	user := this.CheckMustLogin()
 	if user.Type != UserTypeEnum.ADMIN{
 		Throw(1, "非管理员没有权限执行此操作")
 	}
 	return user
 }
 
-func (this *UserLoginAoModel) Logout(context *context.Context){
-	sess, err := Session.SessionStart(context.ResponseWriter, context.Request)
+func (this *UserLoginAoModel) Logout(){
+	sess, err := this.Session.SessionStart(this.Ctx.ResponseWriter, this.Ctx.Request)
 	if err != nil {
 		panic("session启动失败")
 	}
-	defer sess.SessionRelease(context.ResponseWriter)
+	defer sess.SessionRelease(this.Ctx.ResponseWriter)
 
 	sess.Set("userId",0)
 }
 
-func (this *UserLoginAoModel) Login(context *context.Context,name string,password string){
-	sess, err := Session.SessionStart(context.ResponseWriter, context.Request)
+func (this *UserLoginAoModel) Login(name string,password string){
+	sess, err := this.Session.SessionStart(this.Ctx.ResponseWriter, this.Ctx.Request)
 	if err != nil {
 		panic("session启动失败")
 	}
-	defer sess.SessionRelease(context.ResponseWriter)
+	defer sess.SessionRelease(this.Ctx.ResponseWriter)
 
-	users := UserAo.GetByName(name)
+	users := this.UserAo.GetByName(name)
 	if len(users) == 0{
 		Throw(1,"不存在此帐号")
 	}
-	UserAo.CheckMustVaildPassword(password,users[0].Password)
+	this.UserAo.CheckMustVaildPassword(password,users[0].Password)
 	sess.Set("userId",users[0].UserId)
 }

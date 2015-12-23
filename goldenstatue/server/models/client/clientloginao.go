@@ -1,56 +1,55 @@
 package client
 
 import (
-	"github.com/astaxie/beego/context"
+	. "goldenstatue/models/common"
 	. "github.com/fishedee/language"
-	. "github.com/fishedee/web"
 )
 
 type ClientLoginAoModel struct {
+	BaseModel
+	ClientAo ClientAoModel
 }
 
-var ClientLoginAo = &ClientLoginAoModel{}
-
-func (this *ClientLoginAoModel) Login(context *context.Context, clientId int) {
-	sess, err := Session.SessionStart(context.ResponseWriter, context.Request)
+func (this *ClientLoginAoModel) Login(clientId int) {
+	sess, err := this.Session.SessionStart(this.Ctx.ResponseWriter, this.Ctx.Request)
 	if err != nil {
 		panic("session启动失败！")
 	}
-	defer sess.SessionRelease(context.ResponseWriter)
+	defer sess.SessionRelease(this.Ctx.ResponseWriter)
 
-	ClientAo.Get(clientId)
+	this.ClientAo.Get(clientId)
 	sess.Set("clientId", clientId)
 }
 
-func (this *ClientLoginAoModel) Logout(context *context.Context) {
-	sess, err := Session.SessionStart(context.ResponseWriter, context.Request)
+func (this *ClientLoginAoModel) Logout() {
+	sess, err := this.Session.SessionStart(this.Ctx.ResponseWriter, this.Ctx.Request)
 	if err != nil {
 		panic("session启动失败！")
 	}
-	defer sess.SessionRelease(context.ResponseWriter)
+	defer sess.SessionRelease(this.Ctx.ResponseWriter)
 
 	sess.Set("clientId", 0)
 }
 
-func (this *ClientLoginAoModel) CheckMustLogin(context *context.Context) Client {
-	client := this.IsLogin(context)
+func (this *ClientLoginAoModel) CheckMustLogin() Client {
+	client := this.IsLogin()
 	if client.ClientId == 0 {
 		Throw(1, "用户未登录！")
 	}
 	return client
 }
 
-func (this *ClientLoginAoModel) IsLogin(context *context.Context) Client {
-	sess, err := Session.SessionStart(context.ResponseWriter, context.Request)
+func (this *ClientLoginAoModel) IsLogin() Client {
+	sess, err := this.Session.SessionStart(this.Ctx.ResponseWriter, this.Ctx.Request)
 	if err != nil {
 		panic("session启动失败")
 	}
-	defer sess.SessionRelease(context.ResponseWriter)
+	defer sess.SessionRelease(this.Ctx.ResponseWriter)
 
 	clientId := sess.Get("clientId")
 	clientIdInt, ok := clientId.(int)
 	if ok && clientIdInt >= 10000 {
-		return ClientAo.Get(clientIdInt)
+		return this.ClientAo.Get(clientIdInt)
 	} else {
 		return Client{}
 	}

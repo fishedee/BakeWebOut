@@ -2,18 +2,16 @@ package puzzleactivity
 
 import (
 	. "github.com/fishedee/language"
-	. "github.com/fishedee/web"
 	. "goldenstatue/models/common"
 	"strconv"
 )
 
 type ContentPuzzleActivityDbModel struct {
+	BaseModel
 }
 
-var PuzzleActivityDb = &ContentPuzzleActivityDbModel{}
-
 func (this *ContentPuzzleActivityDbModel) Search(puzzleActivity ContentPuzzleActivity, limit CommonPage) PuzzleActivitys {
-	db := DB.NewSession()
+	db := this.DB.NewSession()
 	defer db.Close()
 
 	if limit.PageSize == 0 && limit.PageIndex == 0 {
@@ -53,7 +51,7 @@ func (this *ContentPuzzleActivityDbModel) Search(puzzleActivity ContentPuzzleAct
 
 func (this *ContentPuzzleActivityDbModel) Get(id int) ContentPuzzleActivity {
 	var puzzleActivitys []ContentPuzzleActivity
-	err := DB.Where("contentId = ?", id).Find(&puzzleActivitys)
+	err := this.DB.Where("contentId = ?", id).Find(&puzzleActivitys)
 	if err != nil {
 		panic(err)
 	}
@@ -64,14 +62,14 @@ func (this *ContentPuzzleActivityDbModel) Get(id int) ContentPuzzleActivity {
 }
 
 func (this *ContentPuzzleActivityDbModel) Add(puzzleActivity ContentPuzzleActivity) {
-	_, err := DB.Insert(&puzzleActivity)
+	_, err := this.DB.Insert(&puzzleActivity)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func (this *ContentPuzzleActivityDbModel) Mod(id int, puzzleActivity ContentPuzzleActivity) {
-	_, err := DB.Where("contentId=?", id).Update(&puzzleActivity)
+	_, err := this.DB.Where("contentId=?", id).Update(&puzzleActivity)
 	if err != nil {
 		panic(err)
 	}
@@ -79,7 +77,7 @@ func (this *ContentPuzzleActivityDbModel) Mod(id int, puzzleActivity ContentPuzz
 
 func (this *ContentPuzzleActivityDbModel) Del(id int) {
 	var puzzleActivity ContentPuzzleActivity
-	_, err := DB.Where("contentId = ?", id).Delete(&puzzleActivity)
+	_, err := this.DB.Where("contentId = ?", id).Delete(&puzzleActivity)
 	if err != nil {
 		panic(err)
 	}

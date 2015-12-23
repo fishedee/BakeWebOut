@@ -6,8 +6,10 @@ import (
 
 type WeixinController struct {
 	BaseController
+	WeixinAo WeixinAoModel
 }
 
+/*
 func (this *WeixinController) GetJsConfig_Json() interface{} {
 	//检查输入
 	var Data struct {
@@ -16,9 +18,14 @@ func (this *WeixinController) GetJsConfig_Json() interface{} {
 	this.CheckGet(&Data)
 
 	//业务逻辑
-	return WeixinAo.GetJsConfig(Data.Url)
+	return this.WeixinAo.GetJsConfig(Data.Url)
 }
 
 func (this *WeixinController) Refresh_Json() {
-	WeixinAo.RefreshConfig()
+	this.WeixinAo.RefreshConfig()
+}
+*/
+
+func (this *WeixinController) Test_Json()(interface{}){
+	return "Hello World"
 }

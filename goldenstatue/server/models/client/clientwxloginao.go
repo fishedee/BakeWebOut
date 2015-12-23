@@ -4,45 +4,44 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/astaxie/beego/context"
-	. "github.com/fishedee/language"
-	. "github.com/fishedee/web"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
+	. "goldenstatue/models/common"
+	. "github.com/fishedee/language"
 )
 
 type ClientWxLoginAoModel struct {
+	BaseModel
+	ClientAo ClientAoModel
 }
 
 var officalHost = "lamsoon.solomochina.com"
-var ClientWxLoginAo = &ClientWxLoginAoModel{}
 
-func (this *ClientWxLoginAoModel) Login(context *context.Context, callback string) string {
+func (this *ClientWxLoginAoModel) Login(callback string) string {
 	//启动session
-	sess, err := Session.SessionStart(context.ResponseWriter, context.Request)
+	sess, err := this.Session.SessionStart(this.Ctx.ResponseWriter, this.Ctx.Request)
 	if err != nil {
 		panic("session启动失败！")
 	}
-	defer sess.SessionRelease(context.ResponseWriter)
+	defer sess.SessionRelease(this.Ctx.ResponseWriter)
 
 	//设置callback
 	sess.Set("clientCallback", callback)
 
 	//生成跳转url
 	currentTime := fmt.Sprintf("%d", time.Now().Unix())
-	forward := "http://" + context.Input.Host() + "/client/loginCallback/" + currentTime
+	forward := "http://" + this.Ctx.Input.Host() + "/client/loginCallback/" + currentTime
 	query := url.Values{}
 	query.Set("forward", forward)
 	queryEncode := query.Encode()
 	return "http://" + officalHost + "/weixin/oauth2?" + queryEncode
 }
 
-func (this *ClientWxLoginAoModel) callInterface(context *context.Context, method string, url string, urlInfo url.Values, result interface{}) {
+func (this *ClientWxLoginAoModel) callInterface(method string, url string, urlInfo url.Values, result interface{}) {
 	//提取request的cookie
-	requestCookies := context.Request.Cookies()
-	Log.Debug("test urlInfo", urlInfo)
+	requestCookies := this.Ctx.Request.Cookies()
 	//请求url
 	httpClient := &http.Client{}
 	var request *http.Request
@@ -85,18 +84,18 @@ func (this *ClientWxLoginAoModel) callInterface(context *context.Context, method
 	//写入cookie
 	responseCookies := resp.Cookies()
 	for _, value := range responseCookies {
-		http.SetCookie(context.ResponseWriter, value)
-		context.Request.AddCookie(value)
+		http.SetCookie(this.Ctx.ResponseWriter, value)
+		this.Ctx.Request.AddCookie(value)
 	}
 }
 
-func (this *ClientWxLoginAoModel) LoginCallback(context *context.Context) string {
+func (this *ClientWxLoginAoModel) LoginCallback() string {
 	//启动session
-	sess, err := Session.SessionStart(context.ResponseWriter, context.Request)
+	sess, err := this.Session.SessionStart(this.Ctx.ResponseWriter, this.Ctx.Request)
 	if err != nil {
 		panic("session启动失败！")
 	}
-	defer sess.SessionRelease(context.ResponseWriter)
+	defer sess.SessionRelease(this.Ctx.ResponseWriter)
 
 	//获取用户信息
 	var clientInfo struct {
@@ -110,13 +109,13 @@ func (this *ClientWxLoginAoModel) LoginCallback(context *context.Context) string
 		HeadImgUrl string `json:"headimgurl"`
 	}
 
-	openid := context.Input.Query("openid")
-	this.callInterface(context, "get", "/weixin/user", url.Values{
+	openid := this.Ctx.Input.Query("openid")
+	this.callInterface("get", "/weixin/user", url.Values{
 		"openid": {openid},
 	}, &clientInfo)
 
 	//写入登陆态
-	clientId := ClientAo.AddOnce(Client{
+	clientId := this.ClientAo.AddOnce(Client{
 		Name:   clientInfo.NickName,
 		Image:  clientInfo.HeadImgUrl,
 		OpenId: clientInfo.OpenId,
@@ -130,32 +129,32 @@ func (this *ClientWxLoginAoModel) LoginCallback(context *context.Context) string
 	return clientCallback
 }
 
-func (this *ClientWxLoginAoModel) CheckHasPhoneNumber(context *context.Context, clientId int) bool {
-	clientInfo := ClientAo.Get(clientId)
+func (this *ClientWxLoginAoModel) CheckHasPhoneNumber(clientId int) bool {
+	clientInfo := this.ClientAo.Get(clientId)
 
 	var userPhoneInfo struct {
 		Registered bool `json:registered`
 	}
-	this.callInterface(context, "get", "/api/user/query", url.Values{
+	this.callInterface("get", "/api/user/query", url.Values{
 		"openid": {clientInfo.OpenId},
 	}, &userPhoneInfo)
 
 	return userPhoneInfo.Registered
 }
 
-func (this *ClientWxLoginAoModel) CheckMustHasPhone(context *context.Context, clientId int) {
-	hasPhone := this.CheckHasPhoneNumber(context, clientId)
+func (this *ClientWxLoginAoModel) CheckMustHasPhone(clientId int) {
+	hasPhone := this.CheckHasPhoneNumber(clientId)
 	if hasPhone == false {
 		Throw(1, "还没有注册手机号码噢")
 	}
 }
 
-func (this *ClientWxLoginAoModel) GetPhoneCaptcha(context *context.Context, phoneNumber string) {
+func (this *ClientWxLoginAoModel) GetPhoneCaptcha(phoneNumber string) {
 	var sendResult struct {
 		Error   int    `json:error,omitempty`
 		Message string `json:message,omitempty`
 	}
-	this.callInterface(context, "get", "/api/sms_captcha", url.Values{
+	this.callInterface("get", "/api/sms_captcha", url.Values{
 		"mobile": {phoneNumber},
 	}, &sendResult)
 	if sendResult.Error != 0 {
@@ -163,8 +162,8 @@ func (this *ClientWxLoginAoModel) GetPhoneCaptcha(context *context.Context, phon
 	}
 }
 
-func (this *ClientWxLoginAoModel) RegisterPhoneNumber(context *context.Context, clientId int, phoneNumber string, phoneCaptcha string) {
-	clientInfo := ClientAo.Get(clientId)
+func (this *ClientWxLoginAoModel) RegisterPhoneNumber(clientId int, phoneNumber string, phoneCaptcha string) {
+	clientInfo := this.ClientAo.Get(clientId)
 
 	var registerInfo struct {
 		OpenId     string
@@ -184,7 +183,7 @@ func (this *ClientWxLoginAoModel) RegisterPhoneNumber(context *context.Context, 
 		Message string `json:message,omitempty`
 	}
 
-	this.callInterface(context, "post", "/api/user", url.Values{
+	this.callInterface("post", "/api/user", url.Values{
 		"openid":      {registerInfo.OpenId},
 		"mobile":      {registerInfo.Mobile},
 		"sms_captcha": {registerInfo.Captcha},
@@ -196,15 +195,15 @@ func (this *ClientWxLoginAoModel) RegisterPhoneNumber(context *context.Context, 
 	}
 }
 
-func (this *ClientWxLoginAoModel) AddAddress(context *context.Context, clientId int, address ClientAddress) {
-	clientInfo := ClientAo.Get(clientId)
+func (this *ClientWxLoginAoModel) AddAddress(clientId int, address ClientAddress) {
+	clientInfo := this.ClientAo.Get(clientId)
 
 	var sendResult struct {
 		Error   int    `json:error,omitempty`
 		Message string `json:message,omitempty`
 	}
 
-	this.callInterface(context, "post", "/api/user/address", url.Values{
+	this.callInterface("post", "/api/user/address", url.Values{
 		"openid":  {clientInfo.OpenId},
 		"mobile":  {address.Phone},
 		"name":    {address.Name},
