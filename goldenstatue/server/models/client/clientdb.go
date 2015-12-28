@@ -1,8 +1,8 @@
 package client
 
 import (
-	. "goldenstatue/models/common"
 	. "github.com/fishedee/language"
+	. "goldenstatue/models/common"
 	"strconv"
 )
 
@@ -16,8 +16,8 @@ func (this *ClientDbModel) Search(where Client, limit CommonPage) Clients {
 
 	if limit.PageIndex == 0 && limit.PageSize == 0 {
 		return Clients{
-			Count:0,
-			Data:[]Client{},
+			Count: 0,
+			Data:  []Client{},
 		}
 	}
 
@@ -60,8 +60,8 @@ func (this *ClientDbModel) Get(id int) Client {
 
 func (this *ClientDbModel) GetByOpenId(openid string) []Client {
 	var clients []Client
-	err := this.DB.Where("openid = ?",openid).Find(&clients)
-	if err != nil{
+	err := this.DB.Where("openid = ?", openid).Find(&clients)
+	if err != nil {
 		panic(err)
 	}
 	return clients
@@ -76,7 +76,7 @@ func (this *ClientDbModel) GetByIds(ids []int) []Client {
 	return clients
 }
 
-func (this *ClientDbModel) Add(data Client)(int){
+func (this *ClientDbModel) Add(data Client) int {
 	_, err := this.DB.Insert(&data)
 	if err != nil {
 		panic(err)

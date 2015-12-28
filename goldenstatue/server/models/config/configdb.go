@@ -8,14 +8,14 @@ type ConfigDbModel struct {
 	BaseModel
 }
 
-func (this *ConfigDbModel) Search(where Config,limit CommonPage) Configs {
+func (this *ConfigDbModel) Search(where Config, limit CommonPage) Configs {
 	db := this.DB.NewSession()
 	defer db.Close()
 
 	if limit.PageIndex == 0 && limit.PageSize == 0 {
 		return Configs{
-			Count:0,
-			Data:[]Config{},
+			Count: 0,
+			Data:  []Config{},
 		}
 	}
 

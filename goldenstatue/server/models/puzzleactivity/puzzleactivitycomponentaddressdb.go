@@ -35,7 +35,7 @@ func (this *PuzzleActivityComponentAddressDbModel) Add(data ContentPuzzleActivit
 }
 
 func (this *PuzzleActivityComponentAddressDbModel) GetByComponentIds(componentIds []int) []ContentPuzzleActivityComponentAddress {
-	if len(componentIds) == 0{
+	if len(componentIds) == 0 {
 		return []ContentPuzzleActivityComponentAddress{}
 	}
 	var results []ContentPuzzleActivityComponentAddress

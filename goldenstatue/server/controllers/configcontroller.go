@@ -1,18 +1,18 @@
 package controllers
 
 import (
-	. "goldenstatue/models/config"
 	. "goldenstatue/models/common"
+	. "goldenstatue/models/config"
 	. "goldenstatue/models/user"
 )
 
 type ConfigController struct {
 	BaseController
 	UserLoginAo UserLoginAoModel
-	ConfigAo ConfigAoModel
+	ConfigAo    ConfigAoModel
 }
 
-func (this *ConfigController) Search_Json() (interface{}) {
+func (this *ConfigController) Search_Json() interface{} {
 	//检查输入
 	var where Config
 	this.CheckGet(&where)
@@ -24,10 +24,10 @@ func (this *ConfigController) Search_Json() (interface{}) {
 	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	return this.ConfigAo.Search(where,limit)
+	return this.ConfigAo.Search(where, limit)
 }
 
-func (this *ConfigController) Get_Json() (interface{}) {
+func (this *ConfigController) Get_Json() interface{} {
 	//检查输入
 	var config Config
 	this.CheckGet(&config)
@@ -39,7 +39,7 @@ func (this *ConfigController) Get_Json() (interface{}) {
 	return this.ConfigAo.Get(config.Name)
 }
 
-func (this *ConfigController) Set_Json(){
+func (this *ConfigController) Set_Json() {
 	//检查输入
 	var config Config
 	this.CheckPost(&config)
@@ -48,5 +48,5 @@ func (this *ConfigController) Set_Json(){
 	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	this.ConfigAo.Set(config.Name,config.Value)
+	this.ConfigAo.Set(config.Name, config.Value)
 }

@@ -1,8 +1,8 @@
 package client
 
 import (
-	. "goldenstatue/models/common"
 	. "github.com/fishedee/language"
+	. "goldenstatue/models/common"
 )
 
 type ClientLoginAoModel struct {

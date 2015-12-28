@@ -2,9 +2,9 @@ package puzzleactivity
 
 import (
 	. "github.com/fishedee/language"
+	"github.com/go-xorm/xorm"
 	. "goldenstatue/models/client"
 	. "goldenstatue/models/common"
-	"github.com/go-xorm/xorm"
 	"math/rand"
 	"strconv"
 	"time"
@@ -12,31 +12,31 @@ import (
 
 type PuzzleActivityComponentAoModel struct {
 	BaseModel
-	PuzzleActivityComponentDb PuzzleActivityComponentDbModel
-	PuzzleActivityComponentPuzzleDb ContentPuzzleActivityComponentPuzzleDbModel
+	PuzzleActivityComponentDb        PuzzleActivityComponentDbModel
+	PuzzleActivityComponentPuzzleDb  ContentPuzzleActivityComponentPuzzleDbModel
 	PuzzleActivityComponentAddressDb PuzzleActivityComponentAddressDbModel
-	ClientAo ClientAoModel
+	ClientAo                         ClientAoModel
 }
 
 func (this *PuzzleActivityComponentAoModel) Search(where ContentPuzzleActivityComponent, limit CommonPage) PuzzleActivityComponentWithClientInfos {
 	data := this.PuzzleActivityComponentDb.Search(where, limit)
 
 	//提取addressId
-	componentIds := ArrayColumnKey(data.Data,"ContentPuzzleActivityComponentId").([]int)
+	componentIds := ArrayColumnKey(data.Data, "ContentPuzzleActivityComponentId").([]int)
 	addresses := this.PuzzleActivityComponentAddressDb.GetByComponentIds(componentIds)
-	mapIdToAddress := ArrayColumnMap(addresses,"ContentPuzzleActivityComponentId").(map[int]ContentPuzzleActivityComponentAddress)
+	mapIdToAddress := ArrayColumnMap(addresses, "ContentPuzzleActivityComponentId").(map[int]ContentPuzzleActivityComponentAddress)
 
 	//提取clientId
-	clientIds := ArrayColumnKey(data.Data,"ClientId").([]int)
+	clientIds := ArrayColumnKey(data.Data, "ClientId").([]int)
 	clients := this.ClientAo.GetByIds(clientIds)
-	mapIdToClient := ArrayColumnMap(clients,"ClientId").(map[int]Client)
-	
+	mapIdToClient := ArrayColumnMap(clients, "ClientId").(map[int]Client)
+
 	//合并信息
 	result := PuzzleActivityComponentWithClientInfos{}
 	result.Count = data.Count
 	for _, value := range data.Data {
-		singleClient,_ := mapIdToClient[value.ClientId]
-		address,_ := mapIdToAddress[value.ContentPuzzleActivityComponentId]
+		singleClient, _ := mapIdToClient[value.ClientId]
+		address, _ := mapIdToAddress[value.ContentPuzzleActivityComponentId]
 		result.Data = append(
 			result.Data,
 			ContentPuzzleActivityComponentWithClientInfo{
@@ -213,7 +213,7 @@ func (this *PuzzleActivityComponentAoModel) AddPuzzle(contentId int, clientId in
 		Throw(1, "你已为TA点亮过了！")
 	}
 
-	puzzleId, isSuccess := this.makePuzzle(clientId,loginClientId,puzzleIds)
+	puzzleId, isSuccess := this.makePuzzle(clientId, loginClientId, puzzleIds)
 	if inPuzzleId != 0 &&
 		isSuccessPuzzle != true &&
 		isSuccess == PuzzleActivityComponentPuzzleEnum.SUCCESS {
@@ -268,7 +268,7 @@ func (this *PuzzleActivityComponentAoModel) getRate(num int) float64 {
 	return result
 }
 
-func (this *PuzzleActivityComponentAoModel) makePuzzle(clientId int,loginClientId int,puzzleIds []int) (int, int) {
+func (this *PuzzleActivityComponentAoModel) makePuzzle(clientId int, loginClientId int, puzzleIds []int) (int, int) {
 	var result int
 	isSuccess := PuzzleActivityComponentPuzzleEnum.FAIL
 	failPuzzleIds := []int{}
@@ -294,15 +294,15 @@ func (this *PuzzleActivityComponentAoModel) makePuzzle(clientId int,loginClientI
 	var rate float64
 
 	if clientId != loginClientId {
-		if this.PuzzleActivityComponentPuzzleDb.GetCountByClientIdAndType(loginClientId,PuzzleActivityComponentPuzzleEnum.SUCCESS) >= 2{
+		if this.PuzzleActivityComponentPuzzleDb.GetCountByClientIdAndType(loginClientId, PuzzleActivityComponentPuzzleEnum.SUCCESS) >= 2 {
 			//整场活动中点亮超过3次就不能再点亮了
 			rate = 1.0
-		}else{
+		} else {
 			//否则，按照随机数点亮
 			rate = rand.Float64()
 		}
 	}
-	
+
 	num := 0
 	if rate <= nextRate {
 		num = rand.Intn(len(failPuzzleIds))

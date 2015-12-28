@@ -2,8 +2,8 @@ package puzzleactivity
 
 import (
 	. "github.com/fishedee/language"
-	. "goldenstatue/models/common"
 	"github.com/go-xorm/xorm"
+	. "goldenstatue/models/common"
 	"strconv"
 )
 

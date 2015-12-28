@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	. "github.com/fishedee/language"
+	. "goldenstatue/models/common"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
-	. "goldenstatue/models/common"
-	. "github.com/fishedee/language"
 )
 
 type ClientWxLoginAoModel struct {

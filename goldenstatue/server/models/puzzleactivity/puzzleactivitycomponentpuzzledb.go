@@ -51,9 +51,9 @@ func (this *ContentPuzzleActivityComponentPuzzleDbModel) Search(where ContentPuz
 	}
 }
 
-func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetCountByClientIdAndType(clientId int,puzzleType int) int{
-	count,err := this.DB.Where("puzzleClientId = ? and type = ?",clientId,puzzleType).Count(&ContentPuzzleActivityComponentPuzzle{})
-	if err != nil{
+func (this *ContentPuzzleActivityComponentPuzzleDbModel) GetCountByClientIdAndType(clientId int, puzzleType int) int {
+	count, err := this.DB.Where("puzzleClientId = ? and type = ?", clientId, puzzleType).Count(&ContentPuzzleActivityComponentPuzzle{})
+	if err != nil {
 		panic(err)
 	}
 	return int(count)

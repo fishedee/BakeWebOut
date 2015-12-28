@@ -9,8 +9,8 @@ type ConfigAoModel struct {
 	ConfigDb ConfigDbModel
 }
 
-func (this *ConfigAoModel) Search(where Config,limit CommonPage) Configs {
-	return this.ConfigDb.Search(where,limit)
+func (this *ConfigAoModel) Search(where Config, limit CommonPage) Configs {
+	return this.ConfigDb.Search(where, limit)
 }
 
 func (this *ConfigAoModel) Get(name string) string {

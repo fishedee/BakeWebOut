@@ -8,36 +8,36 @@ import (
 type UserController struct {
 	BaseController
 	UserLoginAo UserLoginAoModel
-	UserAo UserAoModel
-	UserDb UserDbModel
+	UserAo      UserAoModel
+	UserDb      UserDbModel
 }
 
-func (this *UserController) Islogin_Json()(interface{}){
+func (this *UserController) Islogin_Json() interface{} {
 	user := this.UserLoginAo.IsLogin()
-	if user.UserId != 0{
+	if user.UserId != 0 {
 		return user
-	}else{
+	} else {
 		return nil
 	}
 }
 
-func (this *UserController) Login_Json(){
+func (this *UserController) Login_Json() {
 	//检查输入参数
 	var user User
 	this.CheckPost(&user)
-	
-	this.UserLoginAo.Login(user.Name,user.Password)
+
+	this.UserLoginAo.Login(user.Name, user.Password)
 }
 
-func (this *UserController) Logout_Json(){
+func (this *UserController) Logout_Json() {
 	this.UserLoginAo.Logout()
 }
 
-func (this *UserController) GetType_Json()(interface{}){
+func (this *UserController) GetType_Json() interface{} {
 	return UserTypeEnum.Names()
 }
 
-func (this *UserController) Search_Json()(interface{}){
+func (this *UserController) Search_Json() interface{} {
 	//检查输入参数
 	var where User
 	this.CheckGet(&where)
@@ -49,10 +49,10 @@ func (this *UserController) Search_Json()(interface{}){
 	this.UserLoginAo.CheckMustAdmin()
 
 	//执行业务逻辑
-	return this.UserAo.Search(where,limit)
+	return this.UserAo.Search(where, limit)
 }
 
-func (this *UserController) Get_Json()(interface{}){
+func (this *UserController) Get_Json() interface{} {
 	//检查输入参数
 	var user User
 	this.CheckGet(&user)
@@ -64,7 +64,7 @@ func (this *UserController) Get_Json()(interface{}){
 	return this.UserAo.Get(user.UserId)
 }
 
-func (this *UserController) Add_Json(){
+func (this *UserController) Add_Json() {
 	//检查输入参数
 	var user User
 	this.CheckPost(&user)
@@ -76,7 +76,7 @@ func (this *UserController) Add_Json(){
 	this.UserAo.Add(user)
 }
 
-func (this *UserController) Del_Json(){
+func (this *UserController) Del_Json() {
 	//检查输入参数
 	var user User
 	this.CheckPost(&user)
@@ -88,19 +88,7 @@ func (this *UserController) Del_Json(){
 	this.UserAo.Del(user.UserId)
 }
 
-func (this *UserController) ModType_Json(){
-	//检查输入参数
-	var user User
-	this.CheckPost( &user )
-
-	//检查权限
-	this.UserLoginAo.CheckMustAdmin()
-
-	//执行业务逻辑
-	this.UserAo.ModType( user.UserId , user.Type)
-}
-
-func (this *UserController) ModPassword_Json(){
+func (this *UserController) ModType_Json() {
 	//检查输入参数
 	var user User
 	this.CheckPost(&user)
@@ -109,12 +97,24 @@ func (this *UserController) ModPassword_Json(){
 	this.UserLoginAo.CheckMustAdmin()
 
 	//执行业务逻辑
-	this.UserAo.ModPassword( user.UserId , user.Password )
+	this.UserAo.ModType(user.UserId, user.Type)
 }
 
-func (this *UserController) ModMyPassword_Json(){
+func (this *UserController) ModPassword_Json() {
 	//检查输入参数
-	var input struct{
+	var user User
+	this.CheckPost(&user)
+
+	//检查权限
+	this.UserLoginAo.CheckMustAdmin()
+
+	//执行业务逻辑
+	this.UserAo.ModPassword(user.UserId, user.Password)
+}
+
+func (this *UserController) ModMyPassword_Json() {
+	//检查输入参数
+	var input struct {
 		OldPassword string
 		NewPassword string
 	}
@@ -124,5 +124,5 @@ func (this *UserController) ModMyPassword_Json(){
 	loginUser := this.UserLoginAo.CheckMustLogin()
 
 	//执行业务逻辑
-	this.UserAo.ModPasswordByOld( loginUser.UserId , input.OldPassword , input.NewPassword )
+	this.UserAo.ModPasswordByOld(loginUser.UserId, input.OldPassword, input.NewPassword)
 }

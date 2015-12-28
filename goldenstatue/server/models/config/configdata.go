@@ -12,7 +12,7 @@ type Config struct {
 	ModifyTime time.Time `xorm:"updated"`
 }
 
-type Configs struct{
-	Data []Config
+type Configs struct {
+	Data  []Config
 	Count int
 }

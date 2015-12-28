@@ -35,12 +35,12 @@ type PuzzleActivityComponents struct {
 	Data  []ContentPuzzleActivityComponent
 }
 
-type ContentPuzzleActivityComponentWithClientInfo struct {	
+type ContentPuzzleActivityComponentWithClientInfo struct {
 	ContentPuzzleActivityComponentAddress
 	ContentPuzzleActivityComponent
 	AddressModifyTime time.Time `xorm:"created"`
-	ClientName  string
-	ClientImage string
+	ClientName        string
+	ClientImage       string
 }
 
 type PuzzleActivityComponentWithClientInfos struct {

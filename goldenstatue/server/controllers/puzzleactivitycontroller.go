@@ -9,9 +9,9 @@ import (
 
 type PuzzleActivityController struct {
 	BaseController
-	UserLoginAo UserLoginAoModel
-	ClientLoginAo ClientLoginAoModel
-	ClientWxLoginAo ClientWxLoginAoModel
+	UserLoginAo      UserLoginAoModel
+	ClientLoginAo    ClientLoginAoModel
+	ClientWxLoginAo  ClientWxLoginAoModel
 	PuzzleActivityAo PuzzleActivityAoModel
 }
 
@@ -219,10 +219,10 @@ func (this *PuzzleActivityController) SetComponentAddress_Json() {
 	//业务逻辑
 	this.PuzzleActivityAo.SetComponentAddress(where.ContentId, client.ClientId, address)
 
-	this.ClientWxLoginAo.AddAddress(client.ClientId,ClientAddress{
-		Name:address.Name,
-		Address:address.Address,
-		Phone:address.Phone,
+	this.ClientWxLoginAo.AddAddress(client.ClientId, ClientAddress{
+		Name:    address.Name,
+		Address: address.Address,
+		Phone:   address.Phone,
 	})
 }
 

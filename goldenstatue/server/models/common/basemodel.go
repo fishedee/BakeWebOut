@@ -4,6 +4,6 @@ import (
 	. "github.com/fishedee/web"
 )
 
-type BaseModel struct{
+type BaseModel struct {
 	BeegoValidateModel
 }

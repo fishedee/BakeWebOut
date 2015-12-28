@@ -13,9 +13,9 @@ type Client struct {
 	ModifyTime time.Time `xorm:"updated"`
 }
 
-type ClientAddress struct{
-	Name string
-	Phone string
+type ClientAddress struct {
+	Name    string
+	Phone   string
 	Address string
 }
 

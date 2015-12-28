@@ -8,10 +8,10 @@ import (
 
 type ClientController struct {
 	BaseController
-	UserLoginAo UserLoginAoModel
-	ClientLoginAo ClientLoginAoModel
+	UserLoginAo     UserLoginAoModel
+	ClientLoginAo   ClientLoginAoModel
 	ClientWxLoginAo ClientWxLoginAoModel
-	ClientAo ClientAoModel
+	ClientAo        ClientAoModel
 }
 
 func (this *ClientController) Search_Json() interface{} {
@@ -26,7 +26,7 @@ func (this *ClientController) Search_Json() interface{} {
 	this.UserLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	return this.ClientAo.Search(where,limit)
+	return this.ClientAo.Search(where, limit)
 }
 
 func (this *ClientController) IsLogin_Json() interface{} {
@@ -47,12 +47,12 @@ func (this *ClientController) TestLogin_Json() {
 	this.ClientLoginAo.Login(client.ClientId)
 }
 
-func (this *ClientController) LoginCallback_Redirect()(interface{}){
+func (this *ClientController) LoginCallback_Redirect() interface{} {
 	return this.ClientWxLoginAo.LoginCallback()
 }
 
-func (this *ClientController) Login_Json()(interface{}){
-	var callback struct{
+func (this *ClientController) Login_Json() interface{} {
+	var callback struct {
 		Callback string
 	}
 	this.CheckGet(&callback)
@@ -60,11 +60,11 @@ func (this *ClientController) Login_Json()(interface{}){
 	return this.ClientWxLoginAo.Login(callback.Callback)
 }
 
-func (this *ClientController) Logout_Json(){
+func (this *ClientController) Logout_Json() {
 	this.ClientLoginAo.Logout()
 }
 
-func (this *ClientController) CheckHasPhone_Json()(interface{}){	
+func (this *ClientController) CheckHasPhone_Json() interface{} {
 	//检查登陆态
 	clientInfo := this.ClientLoginAo.CheckMustLogin()
 
@@ -72,9 +72,9 @@ func (this *ClientController) CheckHasPhone_Json()(interface{}){
 	return this.ClientWxLoginAo.CheckHasPhoneNumber(clientInfo.ClientId)
 }
 
-func (this *ClientController) GetPhoneCaptcha_Json(){
+func (this *ClientController) GetPhoneCaptcha_Json() {
 	//检查输入
-	var phoneInfo struct{
+	var phoneInfo struct {
 		Phone string
 	}
 	this.CheckPost(&phoneInfo)
@@ -86,10 +86,10 @@ func (this *ClientController) GetPhoneCaptcha_Json(){
 	this.ClientWxLoginAo.GetPhoneCaptcha(phoneInfo.Phone)
 }
 
-func (this *ClientController) RegisterPhone_Json(){
+func (this *ClientController) RegisterPhone_Json() {
 	//检查输入
-	var phoneInfo struct{
-		Phone string
+	var phoneInfo struct {
+		Phone   string
 		Captcha string
 	}
 	this.CheckPost(&phoneInfo)
@@ -98,5 +98,5 @@ func (this *ClientController) RegisterPhone_Json(){
 	clientInfo := this.ClientLoginAo.CheckMustLogin()
 
 	//业务逻辑
-	this.ClientWxLoginAo.RegisterPhoneNumber(clientInfo.ClientId,phoneInfo.Phone,phoneInfo.Captcha)
+	this.ClientWxLoginAo.RegisterPhoneNumber(clientInfo.ClientId, phoneInfo.Phone, phoneInfo.Captcha)
 }

@@ -8,7 +8,7 @@ import (
 
 type PuzzleActivityAoModel struct {
 	BaseModel
-	PuzzleActivityDb ContentPuzzleActivityDbModel
+	PuzzleActivityDb          ContentPuzzleActivityDbModel
 	PuzzleActivityComponentAo PuzzleActivityComponentAoModel
 }
 

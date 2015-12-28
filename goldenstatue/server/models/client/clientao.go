@@ -1,8 +1,8 @@
 package client
 
 import (
-	. "goldenstatue/models/common"
 	. "github.com/fishedee/language"
+	. "goldenstatue/models/common"
 )
 
 type ClientAoModel struct {
@@ -34,15 +34,15 @@ func (this *ClientAoModel) Del(id int) {
 	this.ClientDb.Del(id)
 }
 
-func (this *ClientAoModel) AddOnce(data Client)(int){
-	if data.OpenId == ""{
-		Throw(1,"不合法的openId"+data.OpenId)
+func (this *ClientAoModel) AddOnce(data Client) int {
+	if data.OpenId == "" {
+		Throw(1, "不合法的openId"+data.OpenId)
 	}
 	clients := this.ClientDb.GetByOpenId(data.OpenId)
-	if len(clients) != 0{
-		this.ClientDb.Mod(data.ClientId,data)
+	if len(clients) != 0 {
+		this.ClientDb.Mod(data.ClientId, data)
 		return clients[0].ClientId
-	}else{
+	} else {
 		return this.ClientDb.Add(data)
 	}
 }

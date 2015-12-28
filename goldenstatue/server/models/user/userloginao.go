@@ -1,8 +1,8 @@
 package user
 
 import (
-	. "goldenstatue/models/common"
 	. "github.com/fishedee/language"
+	. "goldenstatue/models/common"
 )
 
 type UserLoginAoModel struct {
@@ -34,25 +34,25 @@ func (this *UserLoginAoModel) CheckMustLogin() User {
 	return user
 }
 
-func (this *UserLoginAoModel) CheckMustAdmin() User{
+func (this *UserLoginAoModel) CheckMustAdmin() User {
 	user := this.CheckMustLogin()
-	if user.Type != UserTypeEnum.ADMIN{
+	if user.Type != UserTypeEnum.ADMIN {
 		Throw(1, "非管理员没有权限执行此操作")
 	}
 	return user
 }
 
-func (this *UserLoginAoModel) Logout(){
+func (this *UserLoginAoModel) Logout() {
 	sess, err := this.Session.SessionStart(this.Ctx.ResponseWriter, this.Ctx.Request)
 	if err != nil {
 		panic("session启动失败")
 	}
 	defer sess.SessionRelease(this.Ctx.ResponseWriter)
 
-	sess.Set("userId",0)
+	sess.Set("userId", 0)
 }
 
-func (this *UserLoginAoModel) Login(name string,password string){
+func (this *UserLoginAoModel) Login(name string, password string) {
 	sess, err := this.Session.SessionStart(this.Ctx.ResponseWriter, this.Ctx.Request)
 	if err != nil {
 		panic("session启动失败")
@@ -60,9 +60,9 @@ func (this *UserLoginAoModel) Login(name string,password string){
 	defer sess.SessionRelease(this.Ctx.ResponseWriter)
 
 	users := this.UserAo.GetByName(name)
-	if len(users) == 0{
-		Throw(1,"不存在此帐号")
+	if len(users) == 0 {
+		Throw(1, "不存在此帐号")
 	}
-	this.UserAo.CheckMustVaildPassword(password,users[0].Password)
-	sess.Set("userId",users[0].UserId)
+	this.UserAo.CheckMustVaildPassword(password, users[0].Password)
+	sess.Set("userId", users[0].UserId)
 }
