@@ -18,6 +18,7 @@ var style = StyleSheet.create({
 		left:'0',
 		border:'0'
 	},
+	/*
 	hat:{
 		width:'23%',
 		position:'absolute',
@@ -26,6 +27,7 @@ var style = StyleSheet.create({
 		border:'0',
 		zIndex:'1'
 	},
+	*/
 	btnActivityRule:{
 		width:'23%',
 		height:'3.7%',
@@ -272,7 +274,6 @@ export default Views.createClass({
 				<img ref='imageMaterial' className={style.imagePage} src='/img/materialPage.png' />
 				<img className={style.flag} src='/gif/flag.gif' />
 				<div className={style.btnActivityRule} onClick={this.props.rulePageClick}></div>
-				<img className={style.hat} src='/img/hat.png' />
 				<ClientImage className={style.headSculpture} src={data.get("clientImage")!=""?data.get("clientImage"):null} />
 				<div className={style.name}>
 					<img className={style.imageName} src={styleName} />
