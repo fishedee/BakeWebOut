@@ -294,8 +294,8 @@ func (this *PuzzleActivityComponentAoModel) makePuzzle(clientId int, loginClient
 	var rate float64
 
 	if clientId != loginClientId {
-		if this.PuzzleActivityComponentPuzzleDb.GetCountByClientIdAndType(loginClientId, PuzzleActivityComponentPuzzleEnum.SUCCESS) >= 2 {
-			//整场活动中点亮超过3次就不能再点亮了
+		if this.PuzzleActivityComponentPuzzleDb.GetCountByClientIdAndType(loginClientId, PuzzleActivityComponentPuzzleEnum.SUCCESS) >= 3 {
+			//整场活动中点亮超过4次就不能再点亮了
 			rate = 1.0
 		} else {
 			//否则，按照随机数点亮
