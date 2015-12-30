@@ -50,8 +50,12 @@ func (this *BaseController) excelRender(result baseControllerResult) {
 	this.Check(&excelArgs)
 
 	excelTitle := excelArgs.ViewTitle
+	excelFormat, err := DecodeUrl(excelArgs.ViewFormat)
+	if err != nil {
+		panic(err)
+	}
 	jsonFormat := map[string]string{}
-	err := json.Unmarshal([]byte(excelArgs.ViewFormat), &jsonFormat)
+	err = json.Unmarshal([]byte(excelFormat), &jsonFormat)
 	if err != nil {
 		panic(err)
 	}
