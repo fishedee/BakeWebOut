@@ -66,7 +66,7 @@ func (this *ClientWxLoginAoModel) callInterface(method string, url string, urlIn
 	resp, err = httpClient.Do(request)
 
 	if err != nil {
-		Throw(1, "调用金象官方系统接口失败:"+err.Error())
+		Throw(1, fmt.Sprintf("调用金象官方系统接口失败:[%s],url为:[%s],参数为:[%v]", err.Error(), url, urlInfo))
 	}
 	defer resp.Body.Close()
 	respString, err := ioutil.ReadAll(resp.Body)
@@ -74,7 +74,7 @@ func (this *ClientWxLoginAoModel) callInterface(method string, url string, urlIn
 		Throw(1, "获取金象官方系统接口的body失败")
 	}
 	if resp.StatusCode != 200 {
-		Throw(1, "调用金象官方系统接口,状态码为:"+resp.Status)
+		Throw(1, fmt.Sprintf("调用金象官方系统接口,状态码为:[%s],url为:[%s],参数为:[%v]", resp.Status, url, urlInfo))
 	}
 	err = json.Unmarshal(respString, result)
 	if err != nil {
