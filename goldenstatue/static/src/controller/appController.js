@@ -2,6 +2,16 @@ import AppView from '../view/appView';
 import LoginModel from '../model/loginModel';
 import WeixinModel from '../model/weixinModel';
 import BaiduModel from '../model/baiduModel';
+import Env from 'fishfront/runtime/env';
+
+Env.registerErrorHandler(function(err){
+	if(Env.isInBrowser()){
+		alert(err.message);
+	}
+	if( err.stack ){
+		console.error(err);
+	}
+});
 
 export default Controllers.createClass({
 	initialize(){

@@ -1,21 +1,44 @@
 import ReactFetch from 'fishfront/react/react-fetch';
 
 export default {
-	fetch:ReactFetch.fetch,
-	getDataUrlEncode(data){
-		var result = [];
-		for( var i in data ){
-			result.push(i + "=" + encodeURIComponent(data[i]))
-		}
-		return result.join("&");
+	fetchJson:ReactFetch.fetchJson,
+	_getFetchUrl(url){
+		var host = window.location.hostname;
+		var apiUrl = 'http://api.'+host+url;
+		return apiUrl;
 	},
-	getDataForm(data){
-		var form = new FormData()
-		for( var i in data ){
-			form.append(i, data[i])
+	async fetchGet(url,data){
+		var resultJson = await this.fetchJson({
+			method:'get',
+			data:data,
+			url:this._getFetchUrl(url),
+			xhrFields:{
+				withCredentials:true,
+			},
+		});
+		if( resultJson.code != 0 ){
+			throw new Error( resultJson.msg );
 		}
-		return form
+		return Immutable.fromJS(resultJson.data);
 	},
+	async fetchPost(url,data){
+		var resultJson = await this.fetchJson({
+			method:'post',
+			data:data,
+			url:this._getFetchUrl(url),
+			xhrFields:{
+				withCredentials:true,
+			},
+			headers:{
+				"Content-Type":"application/x-www-form-urlencoded; charset=UTF-8"
+			}
+		});
+		if( resultJson.code != 0 ){
+			throw new Error( resultJson.msg );
+		}
+		return Immutable.fromJS(resultJson.data);
+	},
+	/*
 	async fetchGet(url,data){
 		var value = new Date().valueOf();
 		var host = window.location.hostname;
@@ -45,4 +68,5 @@ export default {
 		}
 		return Immutable.fromJS(resultJson.data);
 	}
+	*/
 }

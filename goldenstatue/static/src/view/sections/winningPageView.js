@@ -4,9 +4,11 @@ var style = StyleSheet.create({
 	dialogPage:{
 		position:'relative',
 		zIndex:'1',
+		height:'100%',
 	},
 	imagePage:{
 		maxWidth:'500px',
+		height:'100%',
 		backgroundImage:'url(/img/winningPage.png)',
 		backgroundRepeat:'no-repeat',
 		backgroundPosition:'center',
@@ -87,7 +89,7 @@ var Input = React.createClass({
 			)
 		});
 		return (
-			<div>
+			<div style={{height:'100%'}}>
 				{inputData}
 			</div>
 		)

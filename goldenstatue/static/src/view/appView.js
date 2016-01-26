@@ -7,7 +7,7 @@ var style = StyleSheet.create({
 		padding:'0',
 		//backgroundColor:'#fcd54a',
 		maxWidth:'500px',
-		//height:'100%',
+		height:'100%',
 		margin:'0 auto',
 		position:'relative',
 		overflow:'hidden',

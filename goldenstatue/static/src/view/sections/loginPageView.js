@@ -3,9 +3,11 @@ var style = StyleSheet.create({
 	dialogPage:{
 		position:'relative',
 		zIndex:'1',
+		height:'100%',
 	},
 	imagePage:{
 		maxWidth:'500px',
+		height:'100%',
 		backgroundImage:'url(/img/loginPage.png)',
 		backgroundRepeat:'no-repeat',
 		backgroundPosition:'center',

@@ -264,7 +264,7 @@ export default Views.createClass({
 			}
 		}
 		return (
-			<div>
+			<div style={{height:'100%'}}>
 				{this.state.isStyleSelectPage? 
 					<StyleSelectPage onClick={this.setTitleClick} materialData={materialData} />
 					:null

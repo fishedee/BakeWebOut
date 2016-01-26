@@ -1,7 +1,7 @@
 
 var style = StyleSheet.create({
 	loading:{
-		position:'relative',
+		position:'absolute',
 		top:'0',
 		left:'0',
 		bottom:'0',

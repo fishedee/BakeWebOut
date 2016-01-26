@@ -8,7 +8,7 @@ import Env from 'fishfront/runtime/env';
 function asyncLoader(moduleLoader){
 	if( Env.isInBrowser() ){
 		return (location,cb)=>{
-			moduleLoader((result)=>{cb(null,result.default)});
+			cb(null,moduleLoader);
 		}
 	}else{
 		return (location,cb)=>{

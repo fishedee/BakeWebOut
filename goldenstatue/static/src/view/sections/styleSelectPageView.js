@@ -3,7 +3,7 @@ import classnames from 'classnames';
 
 var style = StyleSheet.create({
 	dialogPage:{
-		position:'relative',
+		position:'absolute',
 		top:'0',
 		right:'0',
 		bottom:'0',

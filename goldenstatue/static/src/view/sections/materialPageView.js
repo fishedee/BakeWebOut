@@ -2,6 +2,13 @@ import classnames from 'classnames';
 import ClientImage from './clientImageView';
 
 var style = StyleSheet.create({
+	wrap:{
+		position:'absolute',
+		top:'0',
+		bottom:'0',
+		right:'0',
+		left:'0',
+	},
 	imagePage:{
 		width:'100%',
 		height:'100%',
@@ -269,7 +276,7 @@ export default Views.createClass({
 			var radioData = "";
 		}
 		return (
-			<div>
+			<div className={style.wrap}>
 
 				<img ref='imageMaterial' className={style.imagePage} src='/img/materialPage.png' />
 				<img className={style.flag} src='/gif/flag.gif' />
