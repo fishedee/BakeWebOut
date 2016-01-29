@@ -27,7 +27,7 @@ var style = StyleSheet.create({
 		width:'75.2%',
 		height:'9.43%',
 		position:'absolute',
-		bottom:'20%',
+		bottom:'16%',
 		left:'12.4%',
 		cursor:'pointer',
 	},
