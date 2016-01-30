@@ -1,7 +1,12 @@
 start:
 	echo nothing!
 watch:
-	node src/server-bridge.js
+	-pkill -9 node
+	-mkdir src2 build
+	cp -r src/public/* build/
+	babel src --out-dir src2 --watch &
+	webpack --progress --color --watch &
+	node src2/server.js
 release:
 	-rm -rf src2 build2
 	babel src --out-dir src2

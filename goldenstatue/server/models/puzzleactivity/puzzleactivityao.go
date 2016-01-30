@@ -53,7 +53,11 @@ func (this *PuzzleActivityAoModel) SearchComponentPuzzle(where ContentPuzzleActi
 }
 
 func (this *PuzzleActivityAoModel) GetComponentInfo(contentId int, clientId int, loginClientId int) PuzzleActivityComponentInfo {
-	return this.PuzzleActivityComponentAo.Get(contentId, clientId, loginClientId)
+	result := this.PuzzleActivityComponentAo.Get(contentId, clientId, loginClientId)
+
+	result.Activity = this.Get(contentId)
+
+	return result
 }
 
 func (this *PuzzleActivityAoModel) SetComponentTitle(contentId int, loginClientId int, titleId int) {

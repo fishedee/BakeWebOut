@@ -94,6 +94,7 @@ type PuzzleActivityComponentInfo struct {
 	ClientImage   string
 	ClientName    string
 	Puzzle        [6]bool
+	Activity      ContentPuzzleActivity
 	AllPuzzle     []PuzzleActivityComponentPuzzleWithClientInfo
 }
 

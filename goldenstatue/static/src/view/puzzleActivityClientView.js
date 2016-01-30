@@ -14,6 +14,7 @@ import ThanksPage from './sections/thanksPageView';
 import SorryPage from './sections/sorryPageView';
 import SorryRepeatPage from './sections/sorryRepeatPageView';
 import LoadingPage from './sections/loadingPageView';
+import OverPage from './sections/overPageView';
 
 function wait(time){
 	return new Promise(function(resolve,reject){
@@ -39,17 +40,34 @@ export default Views.createClass({
 			isDetailInfoPage:false,
 			isGetGiftPage:false,
 			isThanksPage:false,
+			isOverPage:false,
 		};
 	},
 	async componentDidMount(){
+		var date = new Date();
+		var systemYear = date.getFullYear();
+		var systemMonth = (date.getMonth()+1) < 10 ? '0'+(date.getMonth()+1) : (date.getMonth()+1);
+		var systemDate = date.getDate() < 10 ? '0'+date.getDate() : date.getDate();
+		var systemHours = date.getHours() < 10 ? '0'+date.getHours() : date.getHours();
+		var systemMinutes = date.getMinutes() < 10 ? '0'+date.getMinutes() : date.getMinutes();
+		var systemSeconds = date.getSeconds() < 10 ? '0'+date.getSeconds() : date.getSeconds();
+		var systemDate = systemYear+'-'+systemMonth+'-'+systemDate+' '+systemHours+':'+systemMinutes+':'+systemSeconds;
+
 		if(this.props.loginClient == null){
 			return;
 		}
 		await this.props.fetchComponentInfo();
 		await this.props.fetchFinishComponentInfo();
-
+		var endDate = this.props.componentData.getIn(["activity","endTime"]);
 		var isPuzzleClient = this.props.componentData.get("isLoginClient");
 		var state = this.props.componentData.getIn(["component","state"]);
+		
+		if( endDate < systemDate && state < 4 ){
+			this.setState({
+				isOverPage:true,
+			});
+			return;
+		}
 		if(isPuzzleClient){
 			if(state == 1){
 				this.setState({
@@ -342,6 +360,11 @@ export default Views.createClass({
 				{this.state.isThanksPage ?
 					<ThanksPage closeClick={this.changePage.bind(null,'isScanningCodePage')}
 						onClick={this.goNewClientPage.bind(null,this.props.loginClient.get("clientId"))} />
+					:null
+				}
+
+				{this.state.isOverPage ?
+					<OverPage />
 					:null
 				}
 			</div>

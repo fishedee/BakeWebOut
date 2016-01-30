@@ -23,13 +23,9 @@ export default Views.createClass({
 		}
 	},
 	render(){
-		if( Env.isInNode() && 
-			process.env.NODE_ENV === 'production' && 
-			this.props.webpackJson.main && 
-			this.props.webpackJson.main.js){
-			var entryJs = this.props.webpackJson.main.js;
-		}else{
-			var entryJs = '/bundle.js?t='+new Date().valueOf();
+		var entryJs = '';
+		if( Env.isInNode() && this.props.webpackJson.main){
+			entryJs = this.props.webpackJson.main.js;
 		}
 		return (
 			<div className={style.body}>
